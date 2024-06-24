@@ -1,0 +1,8 @@
+# Editor / IDE-related
+.bsp/
+.metals/
+.vscode/
+
+# Scala project related
+target
+
