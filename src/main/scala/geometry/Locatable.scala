@@ -12,11 +12,11 @@ trait Locatable[A, C]:
     def getPoint3D: A => Point3D[C]
 end Locatable
 
-/** Helpers for working with the [[at.ac.oeaw.imba.gerlich.reparafil.Locatable]] typeclass */
+/** Helpers for working with the [[at.ac.oeaw.imba.gerlich.gerlib.geometry.Locatable]] typeclass */
 object Locatable:
     private type FixedCoordinateTypeLocatable[C] = [A] =>> Locatable[A, C]
 
-    /** Maintain cats tradition of invariant typeclasses, but as with [[cats.kernel.Show]], e.g., provide contravariance mechanism. */
+    /** Maintain cats tradition of invariant typeclasses, but as with [[cats.Show]], e.g., provide contravariance mechanism. */
     given contravariantForLocatable[C]: Contravariant[FixedCoordinateTypeLocatable[C]] with
         /** Simply convert the B to an A, and then apply the localisation function for A */
         def contramap[A, B](fa: Locatable[A, C])(f: B => A): Locatable[B, C] = new:

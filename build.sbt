@@ -2,7 +2,7 @@ import Dependencies._
 
 ThisBuild / scalaVersion     := "3.4.2"
 ThisBuild / version          := "0.0.1"
-ThisBuild / organization     := "at.ac.oeaw.imba.gerlich"
+ThisBuild / organization     := "com.github.gerlichlab"
 ThisBuild / organizationName := "Gerlich Group, IMBA, ÖAW"
 
 /* sbt-github-actions settings */
@@ -15,7 +15,7 @@ ThisBuild / githubWorkflowBuildPreamble ++= Seq(WorkflowStep.Run(commands = List
 
 lazy val root = (project in file("."))
   .settings(
-    name := "reparafil",
+    name := "gerlib",
     scalacOptions ++= Seq(
       "-deprecation",
       "-encoding", "utf8",

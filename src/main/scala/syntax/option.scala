@@ -1,6 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib.syntax
 
-/** Syntax enrichment on [[scala.util.Option]] */
+/** Syntax enrichment on [[scala.Option]] */
 object option:
     /** Syntax for when a value wrapped as optional is provably nonempty */
     extension [A](sa: Some[A])
