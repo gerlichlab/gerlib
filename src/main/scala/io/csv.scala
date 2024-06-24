@@ -1,5 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib.io
 
+import scala.util.NotGiven
 import cats.data.NonEmptyList
 import cats.effect.IO
 import cats.syntax.all.*
@@ -9,10 +10,25 @@ import fs2.data.*
 import fs2.data.csv.*
 import fs2.data.text.CharLikeChunks
 
+import at.ac.oeaw.imba.gerlich.gerlib.geometry.*
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.option.*
 
 /** Tools for working with files */
 object csv:
+
+    def getCellDecoderForCoordinate[A, C[A] <: Coordinate[A] : [C[A]] =>> NotGiven[C[A] =:= Coordinate[A]]](
+        parseA: String => Either[String, A], 
+        liftA: A => C[A],
+    ): CellDecoder[C[A]] = 
+        liftToCellDecoder{ parseA.map(_.map(liftA)) }
+
+    given cellEncoderForCoordinate[A : Numeric, C[A] <: Coordinate[A] : [C[A]] =>> NotGiven[C[A] =:= Coordinate[A]]](using enc: CellEncoder[A]): CellEncoder[C[A]] =
+        // NB: here the Numeric[A] is needed to prove valid access to the A which the coordinate wraps (it's .get which requires the Numeric.)
+        enc.contramap(_.get)
+
+    def liftToCellDecoder[A](parse: String => Either[String, A]): CellDecoder[A] = 
+        CellDecoder.instance{ (s: String) => parse(s).leftMap(msg => DecoderError(msg)) }
+
     /** Combine two decoders and a builder to get a decoder for the target output type. */
     def getCsvRowDecoderForProduct2[I1, I2, O, Head](build: (I1, I2) => O)(using decI1: CsvRowDecoder[I1, Head], decI2: CsvRowDecoder[I2, Head]): CsvRowDecoder[O, Head] = new:
         override def apply(row: RowF[Some, Head]): DecoderResult[O] =
