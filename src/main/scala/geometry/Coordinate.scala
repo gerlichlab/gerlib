@@ -1,6 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib.geometry
 
-// for .toDouble on a provably-Numeric
+// to provide .toDouble syntax on a provably-Numeric
 import scala.math.Numeric.Implicits.infixNumericOps
 
 import cats.*
@@ -13,16 +13,21 @@ sealed trait Coordinate[A]:
     /** With proof that the underlying, wrapped value is numeric, convert it to a [[scala.Double]]  */
     def toDouble(using Numeric[A]): Double = get.toDouble
 
+/** Wrap the given value as reprsenting a x-coordinate in space. */
 final case class XCoordinate[A](private val value: A) extends Coordinate[A]:
     def get(using Numeric[A]): A = value
 
+/** Wrap the given value as reprsenting a y-coordinate in space. */
 final case class YCoordinate[A](private val value: A) extends Coordinate[A]:
     def get(using Numeric[A]): A = value
 
+/** Wrap the given value as reprsenting a z-coordinate in space. */
 final case class ZCoordinate[A](private val value: A) extends Coordinate[A]:
     def get(using Numeric[A]): A = value
 
+/** Helpers for working with coordinates in space */
 object Coordinate:
+    /** Use the [[cats.Show]] instance for the underlying type to `.show` a coordinate which wraps it. */
     given showForCoordinate[A : Show]: Show[Coordinate[A]] = Show.show{
         (_: Coordinate[A]) match {
             case XCoordinate(value) => value.show
