@@ -100,7 +100,7 @@ package object numeric:
         
         def orError(context: String)(z: Int): Either[IllegalRefinement, NonnegativeInt] = maybe(z).toRight(IllegalRefinement(z, context))
         
-        def parse(s: String): Either[String, NonnegativeInt] = parseInt(s).flatMap(either)
+        def parse(s: String): Either[String, NonnegativeInt] = readAsInt(s).flatMap(either)
         
         def unsafe(z: Int): NonnegativeInt = orError(z).fold(throw _, identity)
         
@@ -119,7 +119,7 @@ package object numeric:
         def either(x: Double): Either[String, NonnegativeReal] = 
             (x >= 0).either(s"Cannot refine as nonnegative number: $x", x : NonnegativeReal)
         def maybe(x: Double): Option[NonnegativeReal] = either(x).toOption
-        def parse(s: String): Either[String, NonnegativeReal] = parseDouble(s).flatMap(either)
+        def parse(s: String): Either[String, NonnegativeReal] = readAsDouble(s).flatMap(either)
         given numericForNonnegativeReal: Numeric[NonnegativeReal] = summon[Numeric[Double]]
     end NonnegativeReal
 
@@ -130,6 +130,7 @@ package object numeric:
     object PositiveInt:
         extension (n: PositiveInt)
             def asInt: Int = n
+            def asNonnegativeInt: NonnegativeInt = n
         inline def apply(z: Int): PositiveInt = 
             inline if z <= 0 then compiletime.error("Non-positive integer where positive integer is required!")
             else (z: PositiveInt)
@@ -158,10 +159,21 @@ package object numeric:
                 .flatMap(either)
     end PositiveReal
 
-    private def parseInt(s: String): Either[String, Int] =
+    def readAsInt(s: String): Either[String, Int] =
         Try{ s.toInt }.toEither.leftMap(e => s"Cannot convert given value to integer: $s")
 
-    private def parseDouble(s: String): Either[String, Double] =
+    def readAsDouble(s: String): Either[String, Double] =
         Try{ s.toDouble }.toEither.leftMap(e => s"Cannot convert given value to double: $s")
+
+    /**
+      * Try to read a string into a target type, through nonnegative integer intermediate.
+      *
+      * @param aName The name of the target type, used to contextualise error message
+      * @param lift How to lift raw nonnegative integer into target type
+      * @return Either a [[scala.util.Left]]-wrapped error message, or a [[scala.util.Right]]-wrapped 
+      *     parsed value
+      */
+    def parseThroughNonnegativeInt[A](aName: String)(lift: NonnegativeInt => A): String => Either[String, A] = s =>
+        NonnegativeInt.parse(s).bimap(msg => s"For $aName -- $msg", lift)
 
 end numeric
