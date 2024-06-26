@@ -1,8 +1,12 @@
 # Editor / IDE-related
+.bloop/
 .bsp/
 .metals/
 .vscode/
 
 # Scala project related
 target
-
+project/
+!project/Dependencies.scala
+!project/build.properties
+!project/plugins.sbt
