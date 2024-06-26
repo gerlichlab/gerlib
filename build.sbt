@@ -17,7 +17,7 @@ ThisBuild / githubWorkflowBuildPreamble ++= Seq(WorkflowStep.Run(commands = List
 
 lazy val root = project
   .in(file("."))
-  .aggregate(cell, geometry, imaging, io, numeric, syntax)
+  .aggregate(cell, geometry, imaging, io, numeric, syntax, testing)
   .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings)
   .settings(noPublishSettings)
@@ -49,8 +49,12 @@ lazy val imaging = defineModule("imaging")(project)
   .dependsOn(numeric % "compile->compile;test->test")
 
 lazy val numeric = defineModule("numeric")(project)
+  .dependsOn(testing % "test->test")
 
 lazy val syntax = defineModule("syntax")(project)
+
+lazy val testing = defineModule("testing", false)(project)
+  .settings(libraryDependencies ++= testDependencies)
 
 lazy val commonSettings = Def.settings(
   compileSettings, 
@@ -98,8 +102,15 @@ lazy val metadataSettings = Def.settings(
   )
 )
 
+lazy val testDependencies = Seq(
+  scalacheck, 
+  scalactic, 
+  scalatest, 
+  scalatestScalacheck,
+)
+
 // The subprojects/modules share similar structure, so DRY.
-def defineModule(name: String): Project => Project =
+def defineModule(name: String, addTestDeps: Boolean = true): Project => Project =
   _.in(file(s"modules/$name"))
     .settings(commonSettings)
     .settings(moduleName := s"$projectName-$name")
@@ -108,10 +119,7 @@ def defineModule(name: String): Project => Project =
         catsCore,
         kittens,
         mouse,
-      ) ++ Seq( // only for tests
-        scalacheck, 
-        scalactic, 
-        scalatest, 
-        scalatestScalacheck,
-      ).map(_ % Test),
+      ) ++ (
+        if (addTestDeps) testDependencies.map(_ % Test) else Seq()
+      ),
     )
