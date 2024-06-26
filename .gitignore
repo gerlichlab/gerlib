@@ -6,7 +6,7 @@
 
 # Scala project related
 target
-project/
+project/*
 !project/Dependencies.scala
 !project/build.properties
 !project/plugins.sbt
