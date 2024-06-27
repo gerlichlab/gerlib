@@ -51,7 +51,7 @@ lazy val numeric = defineModule("numeric")(project)
 lazy val syntax = defineModule("syntax")(project)
 
 lazy val testing = defineModule("testing", false)(project)
-  .dependsOn(numeric)
+  .dependsOn(imaging, numeric)
   .settings(libraryDependencies ++= testDependencies)
 
 lazy val commonSettings = Def.settings(
