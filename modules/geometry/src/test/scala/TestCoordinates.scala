@@ -8,23 +8,35 @@ import org.scalacheck.Arbitrary.arbitrary
 
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
-
-import at.ac.oeaw.imba.gerlich.gerlib.testing.ScalacheckSuite
+import org.scalatest.prop.Configuration.PropertyCheckConfiguration
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 /** Tests for the geometric coordinate abstractions */
-class TestCoordinates extends AnyFunSuite, should.Matchers, ScalacheckSuite:
+class TestCoordinates extends AnyFunSuite, should.Matchers, ScalaCheckPropertyChecks:
+    override implicit val generatorDrivenConfig: PropertyCheckConfiguration = PropertyCheckConfiguration(minSuccessful = 100)
     
     test("Ordering coordinates works.") {
+        def assertOrder[A : Numeric : Order, C[A] <: Coordinate[A] : [C[A]] =>> NotGiven[C[A] =:= Coordinate[A]]](
+            rawValues: List[A], 
+            build: A => C[A]
+        ) = {
+            val orderedFirst = rawValues.sorted.map(build)
+            val builtFirst = Random.shuffle(rawValues).map(build).sorted(summon[Order[C[A]]].toOrdering)
+            orderedFirst shouldEqual builtFirst
+        }
+
         enum CoordinateKey:
             case X, Y, Z
 
         given arbCoordinateKey: Arbitrary[CoordinateKey] = 
             Arbitrary{ Gen.oneOf(CoordinateKey.X, CoordinateKey.Y, CoordinateKey.Z) }
 
-        forAll (Gen.zip(arbitrary[CoordinateKey], arbitrary[List[Double]])) { 
-            case (CoordinateKey.X, xs) => assertOrder(xs, XCoordinate.apply)
-            case (CoordinateKey.Y, ys) => assertOrder(ys, YCoordinate.apply)
-            case (CoordinateKey.Z, zs) => assertOrder(zs, ZCoordinate.apply)
+        forAll { (arbKey: CoordinateKey, arbValues: List[Double]) => 
+            (arbKey, arbValues) match { 
+                case (CoordinateKey.X, xs) => assertOrder(xs, XCoordinate.apply)
+                case (CoordinateKey.Y, ys) => assertOrder(ys, YCoordinate.apply)
+                case (CoordinateKey.Z, zs) => assertOrder(zs, ZCoordinate.apply)
+            }
         }
     }
     
@@ -88,11 +100,4 @@ class TestCoordinates extends AnyFunSuite, should.Matchers, ScalacheckSuite:
         assertTypeError("new Coordinate[Double]{ def get = 1.0 }")
         assertTypeError("new Coordinate[Int]{ def get = 1 }")
     }
-
-    def assertOrder[A : Numeric : Order, C[A] <: Coordinate[A] : [C[A]] =>> NotGiven[C[A] =:= Coordinate[A]]](rawValues: List[A], build: A => C[A]) = {
-        val orderedFirst = rawValues.sorted.map(build)
-        val builtFirst = Random.shuffle(rawValues).map(build).sorted(summon[Order[C[A]]].toOrdering)
-        orderedFirst shouldEqual builtFirst
-    }
-
 end TestCoordinates

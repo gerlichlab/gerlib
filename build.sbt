@@ -1,4 +1,4 @@
-import Dependencies._
+import Dependencies.*
 
 /* Core settings */
 val groupId = "com.github.gerlichlab"
@@ -28,16 +28,13 @@ lazy val root = project
   )
 
 lazy val cell = defineModule("cell")(project)
-  .dependsOn(numeric % "compile->compile;test->test")
+  .dependsOn(numeric)
 
 lazy val geometry = defineModule("geometry")(project)
-  .dependsOn(testing % "test->test")
+  .dependsOn(testing % Test)
 
 lazy val io = defineModule("io")(project)
-  .dependsOn(
-    geometry % "compile->compile;test->test",
-    syntax % "compile->compile",
-  )
+  .dependsOn(geometry, syntax)
   .settings(
     libraryDependencies ++= Seq(
       fs2Csv, 
@@ -47,14 +44,14 @@ lazy val io = defineModule("io")(project)
   )
 
 lazy val imaging = defineModule("imaging")(project)
-  .dependsOn(numeric % "compile->compile;test->test")
+  .dependsOn(numeric)
 
 lazy val numeric = defineModule("numeric")(project)
-  .dependsOn(testing % "test->test")
 
 lazy val syntax = defineModule("syntax")(project)
 
 lazy val testing = defineModule("testing", false)(project)
+  .dependsOn(numeric)
   .settings(libraryDependencies ++= testDependencies)
 
 lazy val commonSettings = Def.settings(
