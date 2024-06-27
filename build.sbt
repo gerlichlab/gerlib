@@ -7,6 +7,9 @@ val rootPkg = s"at.ac.oeaw.imba.gerlich.$projectName"
 val gitHubOwner = "gerlichlab"
 val gitPubUrl = s"https://github.com/$gitHubOwner/$projectName.git"
 
+// Needed for ZARR (jzarr) (?)
+ThisBuild / resolvers += "Unidata UCAR" at "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/"
+
 /* sbt-github-actions settings */
 ThisBuild / githubWorkflowOSes := Seq("ubuntu-latest", "ubuntu-20.04", "macos-latest")
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
@@ -17,7 +20,7 @@ ThisBuild / githubWorkflowBuildPreamble ++= Seq(WorkflowStep.Run(commands = List
 
 lazy val root = project
   .in(file("."))
-  .aggregate(cell, geometry, imaging, io, numeric, syntax, testing)
+  .aggregate(cell, geometry, imaging, io, numeric, syntax, testing, zarr)
   .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings)
   .settings(noPublishSettings)
@@ -53,6 +56,10 @@ lazy val syntax = defineModule("syntax")(project)
 lazy val testing = defineModule("testing", false)(project)
   .dependsOn(imaging, numeric)
   .settings(libraryDependencies ++= testDependencies)
+
+lazy val zarr = defineModule("zarr")(project)
+  .dependsOn(imaging, numeric)
+  .settings(libraryDependencies ++= Seq(jzarr))
 
 lazy val commonSettings = Def.settings(
   compileSettings, 
