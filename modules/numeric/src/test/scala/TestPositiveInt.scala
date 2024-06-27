@@ -4,10 +4,13 @@ import org.scalacheck.Gen
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 
-import at.ac.oeaw.imba.gerlich.gerlib.testing.ScalacheckSuite
+import org.scalatest.prop.Configuration.PropertyCheckConfiguration
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 /** Tests for positive integer refinement type */
-class TestPositiveInt extends AnyFunSuite, should.Matchers, ScalacheckSuite:
+class TestPositiveInt extends AnyFunSuite, should.Matchers, ScalaCheckPropertyChecks:
+    override implicit val generatorDrivenConfig: PropertyCheckConfiguration = PropertyCheckConfiguration(minSuccessful = 100)
+
     test("PositiveInt correctly restricts which expressions compile.") {
         assertCompiles("PositiveInt(1)")
         assertTypeError("PositiveInt(0)")
