@@ -31,6 +31,7 @@ lazy val cell = defineModule("cell")(project)
   .dependsOn(numeric % "compile->compile;test->test")
 
 lazy val geometry = defineModule("geometry")(project)
+  .dependsOn(testing % "test->test")
 
 lazy val io = defineModule("io")(project)
   .dependsOn(
