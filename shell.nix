@@ -4,7 +4,6 @@
     ref = "refs/tags/24.05";
   }) {}, 
   dev ? true,
-  pipeline ? true,
   javaSpec ? "jdk21",
 }:
 let 
