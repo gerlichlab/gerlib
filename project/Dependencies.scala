@@ -1,10 +1,9 @@
-import sbt._
+import sbt.*
 
 /** Dependencies for the project */
 object Dependencies {
     /* Versions */
-    lazy val scalatestVersion = "3.2.18"
-    lazy val fs2CsvVersion = "1.11.0"
+    lazy val scalatestVersion = "3.2.19"
     
     /* Core dependencies */
     lazy val catsCore = "org.typelevel" %% "cats-core" % "2.12.0"
@@ -12,7 +11,7 @@ object Dependencies {
     lazy val mouse = "org.typelevel" %% "mouse" % "1.3.0"
 
     /* IO dependencies */
-    lazy val fs2Csv = "org.gnieh" %% "fs2-data-csv" % fs2CsvVersion
+    lazy val fs2Csv = "org.gnieh" %% "fs2-data-csv" % "1.11.0"
     lazy val fs2IO = "co.fs2" %% "fs2-io" % "3.10.2"
     lazy val os = "com.lihaoyi" %% "os-lib" % "0.10.2"
 
