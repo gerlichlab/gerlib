@@ -3,7 +3,7 @@ package at.ac.oeaw.imba.gerlich.gerlib.testing
 import cats.*
 import org.scalacheck.{ Arbitrary, Gen }
 
-/** [[org.typelevel.cats]] instances for [[org.scalacheck]] data types */
+/** [[cats]] instances for [[org.scalacheck]] data types */
 trait CatsScalacheckInstances:
     given applicativeForArbitrary: Applicative[Arbitrary] with
         /** Define the pure operation by always generating the given value. */
