@@ -4,6 +4,9 @@ import cats.*
 import cats.derived.*
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 
+// Seems to be needed to get the Order[Int :| Nonnegative] instance
+import at.ac.oeaw.imba.gerlich.gerlib.numeric.NonnegativeInt.given
+
 /** Semantic wrapper around value representing 0-based imaging timepoint */
 final case class ImagingTimepoint(get: NonnegativeInt) derives Order, Show
 

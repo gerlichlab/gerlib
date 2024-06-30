@@ -50,12 +50,21 @@ lazy val imaging = defineModule("imaging")(project)
   .dependsOn(numeric)
 
 lazy val numeric = defineModule("numeric")(project)
+  .settings(
+    libraryDependencies ++= Seq(
+      iron, 
+      ironCats,
+    )
+  )
 
 lazy val syntax = defineModule("syntax")(project)
 
 lazy val testing = defineModule("testing", false)(project)
   .dependsOn(imaging, numeric)
-  .settings(libraryDependencies ++= testDependencies)
+  .settings(libraryDependencies ++= Seq(
+    scalacheck, 
+    ironScalacheck,
+  ))
 
 lazy val zarr = defineModule("zarr")(project)
   .dependsOn(imaging, numeric)
