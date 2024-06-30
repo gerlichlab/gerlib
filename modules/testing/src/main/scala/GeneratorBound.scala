@@ -1,6 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib.testing
 
-import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
+import at.ac.oeaw.imba.gerlich.gerlib.numeric.extrema.*
 
 /** Bounding the values of a particular type to be generated */
 sealed trait GeneratorBound[A]:

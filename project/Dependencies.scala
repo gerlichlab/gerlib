@@ -2,13 +2,28 @@ import sbt.*
 
 /** Dependencies for the project */
 object Dependencies {
+    object Iron {
+        def moduleId = getModuleID(None)
+        def getModuleID(name: String): ModuleID = getModuleID(Some(name))
+        private def getModuleID(name: Option[String]): ModuleID = 
+            groupId %% ("iron" ++ name.fold("")("-" ++ _)) % version
+        private val rootName = "iron"
+        private val groupId = "io.github.iltotore"
+        private val version = "2.6.0"
+    }
     /* Versions */
+    lazy val ironVersion = "2.6.0"
     lazy val scalatestVersion = "3.2.19"
     
     /* Core dependencies */
     lazy val catsCore = "org.typelevel" %% "cats-core" % "2.12.0"
     lazy val kittens = "org.typelevel" %% "kittens" % "3.3.0"
-    lazy val mouse = "org.typelevel" %% "mouse" % "1.3.0"
+    lazy val mouse = "org.typelevel" %% "mouse" % "1.3.1"
+    
+    /* numeric dependencies */
+    lazy val iron = Iron.moduleId
+    lazy val ironCats = Iron.getModuleID("cats")
+    lazy val ironScalacheck = Iron.getModuleID("scalacheck")
 
     /* IO dependencies */
     lazy val fs2Csv = "org.gnieh" %% "fs2-data-csv" % "1.11.0"

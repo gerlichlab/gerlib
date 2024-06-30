@@ -1,27 +1,23 @@
 package at.ac.oeaw.imba.gerlich.gerlib.cell
 
 import cats.*
+import cats.instances.int.*
 import cats.derived.*
 import cats.syntax.all.*
+
+// Seems to be needed to get the Order[Int :| Positive] instance
+import at.ac.oeaw.imba.gerlich.gerlib.numeric.PositiveInt.given
+
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 
 /** Designation of whether something's in a cell nucleus or not */
-sealed trait NuclearDesignation:
-    /** Represent the nucleus designation as a simple integer.  */
-    final def asInt: Int = asNonnegativeInt.asInt
-    /** Represent the nucleus designation as a simple nonnegative integer. */
-    def asNonnegativeInt: NonnegativeInt
+sealed trait NuclearDesignation
 
 /** Something that's not in a cell nucleus */
-case object OutsideNucleus extends NuclearDesignation:
-    /** */
-    final override def asNonnegativeInt: NonnegativeInt = NonnegativeInt(0)
+case object OutsideNucleus extends NuclearDesignation
 
 /** A natural number with which to label / identify a nucleus in a field of view */
-final case class NucleusNumber(get: PositiveInt) extends NuclearDesignation derives Order, Show:
-    import PositiveInt.*
-    /** */
-    final override def asNonnegativeInt: NonnegativeInt = get.asNonnegativeInt
+final case class NucleusNumber(get: PositiveInt) extends NuclearDesignation derives Order, Show
 
 /** Helpers for working with nuclei number labels */
 object NuclearDesignation:

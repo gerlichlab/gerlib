@@ -26,9 +26,9 @@ class TestNonnegativeInt extends AnyFunSuite, should.Matchers, ScalaCheckPropert
     }
 
     test("NonnegativeInt.unsafe behaves in accordance with its safe counterpart.") {
-        forAll { (z: Int) => NonnegativeInt.maybe(z) match {
-            case None => assertThrows[NumberFormatException]{ NonnegativeInt.unsafe(z) }
-            case Some(n) => n shouldEqual NonnegativeInt.unsafe(z)
+        forAll { (z: Int) => NonnegativeInt.either(z) match {
+            case Left(_) => assertThrows[NumberFormatException]{ NonnegativeInt.unsafe(z) }
+            case Right(n) => n shouldEqual NonnegativeInt.unsafe(z)
         } }
     }
 end TestNonnegativeInt
