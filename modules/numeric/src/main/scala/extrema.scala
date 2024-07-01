@@ -3,6 +3,8 @@ package at.ac.oeaw.imba.gerlich.gerlib.numeric
 import cats.*
 import cats.syntax.all.*
 
+import io.github.iltotore.iron.*
+
 object extrema:
     /** Typelevel encoding of notion that a value is a type's maximum */
     opaque type MaximumValue[A] = A & Singleton
@@ -45,7 +47,7 @@ object extrema:
     object MaximumValue:
         private inline def apply[A](a: A): MaximumValue[A] = a
         private[extrema] val ForNonnegative: MaximumValue[NonnegativeInt] =
-            apply(NonnegativeInt.unsafe(Int.MaxValue))
+            apply(NonnegativeInt(Int.MaxValue))
         extension [A](maxA: MaximumValue[A])
             def asBaseTypeValue: A = maxA
     end MaximumValue
@@ -53,7 +55,7 @@ object extrema:
     object MinimumValue:
         private inline def apply[A](a: A): MinimumValue[A] = a
         private[extrema] val ForNonnegative: MinimumValue[NonnegativeInt] = 
-            apply(NonnegativeInt.unsafe(0))
+            apply(NonnegativeInt(0))
         extension [A](minA: MinimumValue[A])
             def asBaseTypeValue: A = minA
     end MinimumValue

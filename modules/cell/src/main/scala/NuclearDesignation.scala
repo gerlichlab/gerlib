@@ -17,7 +17,7 @@ sealed trait NuclearDesignation
 case object OutsideNucleus extends NuclearDesignation
 
 /** A natural number with which to label / identify a nucleus in a field of view */
-final case class NucleusNumber(get: PositiveInt) extends NuclearDesignation derives Order, Show
+final case class NucleusNumber(get: PositiveInt) extends NuclearDesignation derives Order
 
 /** Helpers for working with nuclei number labels */
 object NuclearDesignation:
@@ -26,5 +26,10 @@ object NuclearDesignation:
         if z > 0 then NucleusNumber(PositiveInt.unsafe(z)).asRight
         else if z === 0 then OutsideNucleus.asRight
         else s"Negative value parsed for nucleus number: $z".asLeft
+    }
+
+    given showForNuclearDesignation: Show[NuclearDesignation] = Show.show{
+        case OutsideNucleus => "0"
+        case NucleusNumber(get) => get.show
     }
 end NuclearDesignation

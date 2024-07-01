@@ -28,7 +28,7 @@ class TestPositiveInt extends AnyFunSuite, should.Matchers, ScalaCheckPropertyCh
 
     test("PositiveInt.unsafe behaves in accordance with its safe counterpart.") {
         forAll { (z: Int) => PositiveInt.either(z) match {
-            case Left(_) => assertThrows[NumberFormatException]{ PositiveInt.unsafe(z) }
+            case Left(_) => assertThrows[IllegalRefinement[Int]]{ PositiveInt.unsafe(z) }
             case Right(n) => n shouldEqual PositiveInt.unsafe(z)
         } }
     }

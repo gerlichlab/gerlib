@@ -8,7 +8,6 @@ import mouse.boolean.*
 
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.given
-import io.github.iltotore.iron.constraint.any.*
 import io.github.iltotore.iron.constraint.numeric.* // for summoning Order[(Int | Double) :| P]
 
 /** Numeric tools and types */
@@ -21,20 +20,24 @@ package object numeric:
      *     this is used to craft a more informative error message
      */
     final case class IllegalRefinement[A] private[numeric](rawValue: A, msg: String, context: Option[String])
-        extends NumberFormatException(s"Cannot refine value $rawValue: $msg.${context.fold("")(ctx => s" Context: $ctx")}")
+        extends IllegalArgumentException(
+            s"Cannot refine value $rawValue: $msg.${context.fold("")(ctx => s" Context: $ctx")}"
+        )
 
     object IllegalRefinement:
-        private[numeric] def apply[A](value: A, msg: String): IllegalRefinement[A] = new IllegalRefinement(value, msg, None)
-        private[numeric] def apply[A](value: A, msg: String, ctx: String): IllegalRefinement[A] = new IllegalRefinement(value, msg, ctx.some)
+        private[numeric] def apply[A](value: A, msg: String): IllegalRefinement[A] = 
+            new IllegalRefinement(value, msg, None)
+        private[numeric] def apply[A](value: A, msg: String, ctx: String): IllegalRefinement[A] = 
+            new IllegalRefinement(value, msg, ctx.some)
     
-    private sealed trait RefinementBuilder[V, P]:
+    private sealed trait RefinementBuilder[V, P] extends RefinedTypeOps.Transparent[V :| P]:
         protected def context: String
         protected def parseRaw: String => Either[String, V]
-        protected def liftRaw: V => Either[String, V :| P]
-        final def either: V => Either[String, V :| P] = liftRaw
-        def maybe: V => Option[V :| P] = either.map(_.toOption)
+        override def either(v: V): Either[String, V :| P] = 
+            super.either(v).leftMap(msg => s"Cannot refine value ($context): $msg")
+        final def maybe(v: V): Option[V :| P] = option(v)
         def parse: String => Either[String, V :| P] = parseRaw.map(_.flatMap(either))
-        def unsafe: V => V :| P = v => either(v).fold(msg => throw IllegalRefinement(v, msg, context), identity)
+        final def unsafe: V => V :| P = v => either(v).fold(msg => throw IllegalRefinement(v, msg, context), identity)
 
     /** Refinement type for nonnegative integers */
     type NonnegativeInt = Int :| Not[Negative]
@@ -43,9 +46,9 @@ package object numeric:
     object NonnegativeInt extends RefinementBuilder[Int, Not[Negative]]:
         override protected def context: String = "nonnegative integer"
         override protected def parseRaw: String => Either[String, Int] = readAsInt
-        override protected def liftRaw: Int => Either[String, NonnegativeInt] = _.refineEither[Not[Negative]]
         def indexed[A](as: List[A]): List[(A, NonnegativeInt)] = as.zipWithIndex.map{ (a, i) => a -> unsafe(i) }
         given orderForNonnegativeInt: Order[NonnegativeInt] = summon[Order[NonnegativeInt]]
+        given showForNonnegativeInt: Show[NonnegativeInt] = summon[Show[NonnegativeInt]]
     end NonnegativeInt
 
     /** Nonnegative real number */
@@ -55,7 +58,9 @@ package object numeric:
     object NonnegativeReal extends RefinementBuilder[Double, Not[Negative]]:
         override protected def context: String = "nonnegative real"
         override protected def parseRaw: String => Either[String, Double] = readAsDouble
-        override def liftRaw: Double => Either[String, NonnegativeReal] = _.refineEither[Not[Negative]]
+        given orderForNonnegativeReal: Order[NonnegativeReal] = summon[Order[NonnegativeReal]]
+        given showForNonnegativeReal(using ev: Show[Double]): Show[NonnegativeReal] = 
+            ev.contramap(identity)
     end NonnegativeReal
 
     /** Refinement type for positive integers */
@@ -65,8 +70,8 @@ package object numeric:
     object PositiveInt extends RefinementBuilder[Int, Positive]:
         override protected def context: String = "positive integer"
         override protected def parseRaw: String => Either[String, Int] = readAsInt
-        override def liftRaw: Int => Either[String, PositiveInt] = _.refineEither[Positive]
         given orderForPositiveInt: Order[PositiveInt] = summon[Order[PositiveInt]]
+        given showForPositiveInt: Show[PositiveInt] = summon[Show[PositiveInt]]
     end PositiveInt
 
     /** Positive real number */
@@ -76,7 +81,9 @@ package object numeric:
     object PositiveReal extends RefinementBuilder[Double, Positive]:
         override protected def context: String = "positive real"
         override protected def parseRaw: String => Either[String, Double] = readAsDouble
-        override def liftRaw: Double => Either[String, PositiveReal] = _.refineEither[Positive]
+        given orderForPositiveReal: Order[PositiveReal] = summon[Order[PositiveReal]]
+        given showForPositiveReal(using ev: Show[Double]): Show[PositiveReal] = 
+            ev.contramap(identity)
     end PositiveReal
 
     def readAsInt(s: String): Either[String, Int] =
