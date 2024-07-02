@@ -11,11 +11,18 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 class TestNonnegativeInt extends AnyFunSuite, should.Matchers, ScalaCheckPropertyChecks:
     override implicit val generatorDrivenConfig: PropertyCheckConfiguration = PropertyCheckConfiguration(minSuccessful = 100)
 
-    test("NonnegativeInt correctly restricts which expressions compile.") {
+    test("NonnegativeInt correctly restricts which expressions compile by direct assignment.") {
         import io.github.iltotore.iron.autoRefine
         assertCompiles("val one: NonnegativeInt = 1")
         assertCompiles("val zero: NonnegativeInt = 0")
         assertTypeError("val moinsDeux: NonnegativeInt = -2")
+    }
+
+    test("NonnegativeInt correctly restricts which expressions compile by constructor syntax.") {
+        import io.github.iltotore.iron.autoRefine
+        assertCompiles("NonnegativeInt(1)")
+        assertCompiles("NonnegativeInt(0)")
+        assertTypeError("NonnegativeInt(-2)")
     }
 
     test("NonnegativeInt.maybe behaves correctly.") {
