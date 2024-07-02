@@ -18,6 +18,13 @@ class TestPositiveInt extends AnyFunSuite, should.Matchers, ScalaCheckPropertyCh
         assertTypeError("val moinsDeux: PositiveInt = -2")
     }
 
+    test("PositiveInt correctly restricts which expressions compile by constructor syntax.") {
+        import io.github.iltotore.iron.autoRefine
+        assertCompiles("PositiveInt(1)")
+        assertTypeError("PositiveInt(0)")
+        assertTypeError("PositiveInt(-2)")
+    }
+
     test("PositiveInt.maybe behaves correctly.") {
         forAll { (z: Int) => PositiveInt.maybe(z) match {
             case None if z <= 0 => succeed
