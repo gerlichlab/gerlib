@@ -9,7 +9,6 @@ import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 
 /** Helpers for working with indexing into ZARR */
 object OmeZarrIndex:
-    import io.github.iltotore.iron.autoRefine
     extension (i: Time | Channel | Z | Y | X | LengthTime | LengthChannel | LengthZ | LengthY | LengthX)
         def asInt: Int = i
 

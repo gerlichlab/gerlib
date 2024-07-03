@@ -25,7 +25,8 @@ object extrema:
         given admitsMaximumForInt: AdmitsMaximum[Int] with
             def maximum: MaximumValue[Int] = Int.MaxValue
         given admitsMaximumForNonnegativeInt: AdmitsMaximum[NonnegativeInt] with
-            def maximum: MaximumValue[NonnegativeInt] = MaximumValue.ForNonnegative
+            def maximum: MaximumValue[NonnegativeInt] = 
+                MaximumValue(NonnegativeInt(Int.MaxValue))
     end AdmitsMaximum
 
     /**
@@ -41,21 +42,17 @@ object extrema:
         given admitsMinimumForInt: AdmitsMinimum[Int] with
             def minimum: MinimumValue[Int] = Int.MinValue
         given admitsMinimumForNonnegativeInt: AdmitsMinimum[NonnegativeInt] with
-            def minimum: MinimumValue[NonnegativeInt] = MinimumValue.ForNonnegative
+            def minimum: MinimumValue[NonnegativeInt] = MinimumValue(NonnegativeInt(0))
     end AdmitsMinimum
 
     object MaximumValue:
-        private inline def apply[A](a: A): MaximumValue[A] = a
-        private[extrema] val ForNonnegative: MaximumValue[NonnegativeInt] =
-            apply(NonnegativeInt(Int.MaxValue))
+        private[extrema] def apply[A](a: A): MaximumValue[A] = a
         extension [A](maxA: MaximumValue[A])
             def asBaseTypeValue: A = maxA
     end MaximumValue
     
     object MinimumValue:
-        private inline def apply[A](a: A): MinimumValue[A] = a
-        private[extrema] val ForNonnegative: MinimumValue[NonnegativeInt] = 
-            apply(NonnegativeInt(0))
+        private[extrema] def apply[A](a: A): MinimumValue[A] = a
         extension [A](minA: MinimumValue[A])
             def asBaseTypeValue: A = minA
     end MinimumValue

@@ -12,14 +12,16 @@ class TestPositiveInt extends AnyFunSuite, should.Matchers, ScalaCheckPropertyCh
     override implicit val generatorDrivenConfig: PropertyCheckConfiguration = PropertyCheckConfiguration(minSuccessful = 100)
 
     test("PositiveInt correctly restricts which expressions compile.") {
-        import io.github.iltotore.iron.autoRefine
-        assertCompiles("val one: PositiveInt = 1")
+        // NB: autoRefine is required for this (raw, non-constructor) syntax of type refinement.
+        assertCompiles("import io.github.iltotore.iron.autoRefine; val one: PositiveInt = 1")
+        assertTypeError("val one: PositiveInt = 1")
         assertTypeError("val zero: PositiveInt = 0")
+        assertTypeError("import io.github.iltotore.iron.autoRefine; val zero: PositiveInt = 0")
         assertTypeError("val moinsDeux: PositiveInt = -2")
     }
 
     test("PositiveInt correctly restricts which expressions compile by constructor syntax.") {
-        import io.github.iltotore.iron.autoRefine
+        // NB: Here, autoRefine isn't needed; it's provided by apply() in our subtrait of RefinedTypeOps.
         assertCompiles("PositiveInt(1)")
         assertTypeError("PositiveInt(0)")
         assertTypeError("PositiveInt(-2)")
