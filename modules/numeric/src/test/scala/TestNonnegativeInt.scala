@@ -12,14 +12,15 @@ class TestNonnegativeInt extends AnyFunSuite, should.Matchers, ScalaCheckPropert
     override implicit val generatorDrivenConfig: PropertyCheckConfiguration = PropertyCheckConfiguration(minSuccessful = 100)
 
     test("NonnegativeInt correctly restricts which expressions compile by direct assignment.") {
-        import io.github.iltotore.iron.autoRefine
-        assertCompiles("val one: NonnegativeInt = 1")
-        assertCompiles("val zero: NonnegativeInt = 0")
+        // NB: autoRefine is required for this (raw, non-constructor) syntax of type refinement.
+        assertCompiles("import io.github.iltotore.iron.autoRefine; val one: NonnegativeInt = 1")
+        assertTypeError("val one: NonnegativeInt = 1")
+        assertCompiles("import io.github.iltotore.iron.autoRefine; val zero: NonnegativeInt = 0")
         assertTypeError("val moinsDeux: NonnegativeInt = -2")
     }
 
     test("NonnegativeInt correctly restricts which expressions compile by constructor syntax.") {
-        import io.github.iltotore.iron.autoRefine
+        // NB: Here, autoRefine isn't needed; it's provided by apply() in our subtrait of RefinedTypeOps.
         assertCompiles("NonnegativeInt(1)")
         assertCompiles("NonnegativeInt(0)")
         assertTypeError("NonnegativeInt(-2)")
