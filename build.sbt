@@ -54,6 +54,7 @@ lazy val numeric = defineModule("numeric")(project)
     libraryDependencies ++= Seq(
       iron, 
       ironCats,
+      ironScalacheck % Test,
     )
   )
 
