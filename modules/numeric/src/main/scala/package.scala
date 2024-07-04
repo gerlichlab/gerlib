@@ -14,6 +14,28 @@ import io.github.iltotore.iron.macros.assertCondition
 /** Numeric tools and types */
 package object numeric:
     /**
+      * Evidence that a value is integer-like
+      * 
+      * @tparam A The type of value which is integer-like
+      */
+    trait IntLike[A]:
+        /** Get an integer from the given value. */
+        def asInt: A => Int
+
+    /** Instances of the trait */
+    object IntLike:
+        /** IntLike for Int is identity. */
+        given IntLike[Int] with
+            def asInt: Int => Int = identity
+        /** Syntax */
+        extension [A](a: A)(using ev: IntLike[A])
+            def asInt: Int = ev.asInt(a)
+        /** Transitive Int fetching */
+        given Contravariant[IntLike] with
+            def contramap[A, B](fa: IntLike[A])(f: B => A): IntLike[B] = new:
+                def asInt: B => Int = f `andThen` fa.asInt
+
+    /**
      * Error subtype for when refinement of a negative integer as nonnegative is attempted
      *
      * @param getInt The integer to refine as nonnegative
@@ -68,8 +90,10 @@ package object numeric:
     object NonnegativeInt extends RefinementBuilder[Int, Not[Negative]]:
         override protected def parseRaw: String => Either[String, Int] = readAsInt
         def indexed[A](as: List[A]): List[(A, NonnegativeInt)] = as.zipWithIndex.map{ (a, i) => a -> unsafe(i) }
-        given orderForNonnegativeInt: Order[NonnegativeInt] = summon[Order[NonnegativeInt]]
-        given showForNonnegativeInt: Show[NonnegativeInt] = summon[Show[NonnegativeInt]]
+        given IntLike[NonnegativeInt] with
+            override def asInt = identity
+        given Order[NonnegativeInt] = summon[Order[NonnegativeInt]]
+        given Show[NonnegativeInt] = summon[Show[NonnegativeInt]]
     end NonnegativeInt
 
     /** Nonnegative real number */
@@ -89,8 +113,10 @@ package object numeric:
     /** Helpers for working with positive integers */
     object PositiveInt extends RefinementBuilder[Int, Positive]:
         override protected def parseRaw: String => Either[String, Int] = readAsInt
-        given orderForPositiveInt: Order[PositiveInt] = summon[Order[PositiveInt]]
-        given showForPositiveInt: Show[PositiveInt] = summon[Show[PositiveInt]]
+        given IntLike[PositiveInt] with
+            override def asInt = identity
+        given Order[PositiveInt] = summon[Order[PositiveInt]]
+        given Show[PositiveInt] = summon[Show[PositiveInt]]
     end PositiveInt
 
     /** Positive real number */
@@ -99,7 +125,7 @@ package object numeric:
     /** Helpers for working with positive real numbers */
     object PositiveReal extends RefinementBuilder[Double, Positive]:
         override protected def parseRaw: String => Either[String, Double] = readAsDouble
-        given orderForPositiveReal: Order[PositiveReal] = summon[Order[PositiveReal]]
+        given Order[PositiveReal] = summon[Order[PositiveReal]]
         given showForPositiveReal(using ev: Show[Double]): Show[PositiveReal] = 
             ev.contramap(identity)
     end PositiveReal
