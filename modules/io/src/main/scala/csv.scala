@@ -26,10 +26,8 @@ object csv:
      * @return A decoder for a single field of a CSV
      */
     def getCellDecoderForCoordinate[A, C[A] <: Coordinate[A] : [C[A]] =>> NotGiven[C[A] =:= Coordinate[A]]](
-        parseA: String => Either[String, A], 
-        liftA: A => C[A],
-    ): CellDecoder[C[A]] = 
-        liftToCellDecoder{ parseA.map(_.map(liftA)) }
+        parse: String => Either[String, C[A]], 
+    ): CellDecoder[C[A]] = liftToCellDecoder(parse)
 
     /**
       * Use the contravariant nature of encoding to build an encoder for a coordinate.
@@ -42,8 +40,7 @@ object csv:
       * @param enc The [[fs2.data.csv.CellEncoder]] instance for the raw, underlying value 
       *     which is wrapped as a coordinate
       */
-    given cellEncoderForCoordinate[A : Numeric, C[A] <: Coordinate[A] : [C[A]] =>> NotGiven[C[A] =:= Coordinate[A]]](using enc: CellEncoder[A]): CellEncoder[C[A]] =
-        // NB: here the Numeric[A] is needed to prove valid access to the A which the coordinate wraps (it's .get which requires the Numeric.)
+    given cellEncoderForCoordinate[A, C[A] <: Coordinate[A] : [C[A]] =>> NotGiven[C[A] =:= Coordinate[A]]](using enc: CellEncoder[A]): CellEncoder[C[A]] =
         enc.contramap(_.get)
 
     /** Wrap the given parsing function as a CSV cell/field encoder, turning the message into an error in fail case. */
