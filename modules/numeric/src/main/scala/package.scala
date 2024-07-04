@@ -105,6 +105,8 @@ package object numeric:
         given orderForNonnegativeReal: Order[NonnegativeReal] = summon[Order[NonnegativeReal]]
         given showForNonnegativeReal(using ev: Show[Double]): Show[NonnegativeReal] = 
             ev.contramap(identity)
+        given Subtraction[NonnegativeReal, Double, Double] with
+            def minus(minuend: NonnegativeReal)(subtrahend: Double): Double = minuend - subtrahend
     end NonnegativeReal
 
     /** Refinement type for positive integers */
@@ -128,6 +130,8 @@ package object numeric:
         given Order[PositiveReal] = summon[Order[PositiveReal]]
         given showForPositiveReal(using ev: Show[Double]): Show[PositiveReal] = 
             ev.contramap(identity)
+        given Subtraction[PositiveReal, Double, Double] with
+            def minus(minuend: PositiveReal)(subtrahend: Double): Double = minuend - subtrahend
     end PositiveReal
 
     /** Attempt to parse the given text as integer, wrapping error message as a [[scala.util.Left]] for fail. */
