@@ -19,6 +19,9 @@ case object OutsideNucleus extends NuclearDesignation
 /** A natural number with which to label / identify a nucleus in a field of view */
 final case class NucleusNumber(get: PositiveInt) extends NuclearDesignation derives Order
 
+object NucleusNumber:
+    given Show[NucleusNumber] = Show.show(_.get.show)
+
 /** Helpers for working with nuclei number labels */
 object NuclearDesignation:
     /** Attempt to read the given text as a nucleus number. */
@@ -30,6 +33,6 @@ object NuclearDesignation:
 
     given showForNuclearDesignation: Show[NuclearDesignation] = Show.show{
         case OutsideNucleus => "0"
-        case NucleusNumber(get) => get.show
+        case nn: NucleusNumber => nn.show
     }
 end NuclearDesignation
