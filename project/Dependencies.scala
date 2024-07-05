@@ -2,6 +2,7 @@ import sbt.*
 
 /** Dependencies for the project */
 object Dependencies {
+    /** Bundle data related to getting ModuleID for an iron subproject. */
     object Iron {
         def moduleId = getModuleID(None)
         def getModuleID(name: String): ModuleID = getModuleID(Some(name))
@@ -11,8 +12,8 @@ object Dependencies {
         private val groupId = "io.github.iltotore"
         private val version = "2.6.0"
     }
+
     /* Versions */
-    lazy val ironVersion = "2.6.0"
     lazy val scalatestVersion = "3.2.19"
     
     /* Core dependencies */
