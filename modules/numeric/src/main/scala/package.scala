@@ -83,11 +83,14 @@ package object numeric:
         /** Modify the parent trait's {@code either} member by injecting semantic context into fail message. */
         final def unsafe: V => V :| P = v => either(v).fold(msg => throw IllegalRefinement(v, msg), identity)
 
+    /** Alias to hide implementation choice of Not[Negative] vs. GreaterEqual[0] vs., e.g., Not[Less[0]] */
+    private[gerlib] type Nonnegative = Not[Negative]
+    
     /** Refinement type for nonnegative integers */
-    type NonnegativeInt = Int :| Not[Negative]
+    type NonnegativeInt = Int :| Nonnegative
 
     /** Helpers for working with nonnegative integers */
-    object NonnegativeInt extends RefinementBuilder[Int, Not[Negative]]:
+    object NonnegativeInt extends RefinementBuilder[Int, Nonnegative]:
         override protected def parseRaw: String => Either[String, Int] = readAsInt
         def indexed[A](as: List[A]): List[(A, NonnegativeInt)] = as.zipWithIndex.map{ (a, i) => a -> unsafe(i) }
         given IntLike[NonnegativeInt] with
@@ -97,10 +100,10 @@ package object numeric:
     end NonnegativeInt
 
     /** Nonnegative real number */
-    type NonnegativeReal = Double :| Not[Negative]
+    type NonnegativeReal = Double :| Nonnegative
 
     /** Helpers for working with nonnegative real numbers */
-    object NonnegativeReal extends RefinementBuilder[Double, Not[Negative]]:
+    object NonnegativeReal extends RefinementBuilder[Double, Nonnegative]:
         override protected def parseRaw: String => Either[String, Double] = readAsDouble
         given orderForNonnegativeReal: Order[NonnegativeReal] = summon[Order[NonnegativeReal]]
         given showForNonnegativeReal(using ev: Show[Double]): Show[NonnegativeReal] = 
