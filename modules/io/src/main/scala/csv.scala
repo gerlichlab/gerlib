@@ -16,6 +16,11 @@ import at.ac.oeaw.imba.gerlich.gerlib.syntax.option.*
 /** Tools for working with files */
 object csv:
 
+    /* Coordinate decoders */
+    given cellDecoderForZCoordinate[A](using dec: CellDecoder[A]): CellDecoder[ZCoordinate[A]] = dec.map(ZCoordinate.apply)
+    given cellDecoderForYCoordinate[A](using dec: CellDecoder[A]): CellDecoder[YCoordinate[A]] = dec.map(YCoordinate.apply)
+    given cellDecoderForXCoordinate[A](using dec: CellDecoder[A]): CellDecoder[XCoordinate[A]] = dec.map(XCoordinate.apply)
+
     /** 
      * Wrap the given parse attempt function in a [[fs2.data.csv.CellEncoder]], then map over it with the given builder.
      * 
