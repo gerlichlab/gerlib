@@ -8,7 +8,8 @@ import mouse.boolean.*
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.any.Not
-import io.github.iltotore.iron.constraint.numeric.* // for summoning Order[(Int | Double) :| P]
+// for summoning Order[Int :| P] or Order[Double :| P]
+import io.github.iltotore.iron.constraint.numeric.*
 import io.github.iltotore.iron.macros.assertCondition
 
 /** Numeric tools and types */
@@ -97,6 +98,7 @@ package object numeric:
             override def asInt = identity
         given Order[NonnegativeInt] = summon[Order[NonnegativeInt]]
         given Show[NonnegativeInt] = summon[Show[NonnegativeInt]]
+        given SimpleShow[NonnegativeInt] = SimpleShow.fromShow
     end NonnegativeInt
 
     /** Nonnegative real number */
@@ -108,6 +110,8 @@ package object numeric:
         given orderForNonnegativeReal: Order[NonnegativeReal] = summon[Order[NonnegativeReal]]
         given showForNonnegativeReal(using ev: Show[Double]): Show[NonnegativeReal] = 
             ev.contramap(identity)
+        given simpleShowForNonnegativeReal(using Show[Double]): SimpleShow[NonnegativeReal] = 
+            SimpleShow.fromShow
         given Subtraction[NonnegativeReal, Double, Double] with
             def minus(minuend: NonnegativeReal)(subtrahend: Double): Double = minuend - subtrahend
     end NonnegativeReal
@@ -117,11 +121,15 @@ package object numeric:
 
     /** Helpers for working with positive integers */
     object PositiveInt extends RefinementBuilder[Int, Positive]:
+        /** Enable the refinement of autoRefine in client code where the import's not present. */
+        extension (x: PositiveInt)
+            def asNonnegative: NonnegativeInt = x.refineUnsafe
         override protected def parseRaw: String => Either[String, Int] = readAsInt
         given IntLike[PositiveInt] with
             override def asInt = identity
         given Order[PositiveInt] = summon[Order[PositiveInt]]
         given Show[PositiveInt] = summon[Show[PositiveInt]]
+        given SimpleShow[PositiveInt] = SimpleShow.fromShow
     end PositiveInt
 
     /** Positive real number */
@@ -129,10 +137,15 @@ package object numeric:
 
     /** Helpers for working with positive real numbers */
     object PositiveReal extends RefinementBuilder[Double, Positive]:
+        /** Enable the refinement of autoRefine in client code where the import's not present. */
+        extension (x: PositiveReal)
+            def asNonnegative: NonnegativeReal = x.refineUnsafe
         override protected def parseRaw: String => Either[String, Double] = readAsDouble
         given Order[PositiveReal] = summon[Order[PositiveReal]]
         given showForPositiveReal(using ev: Show[Double]): Show[PositiveReal] = 
             ev.contramap(identity)
+        given simpleShowForPositiveReal(using Show[Double]): SimpleShow[PositiveReal] = 
+            SimpleShow.fromShow
         given Subtraction[PositiveReal, Double, Double] with
             def minus(minuend: PositiveReal)(subtrahend: Double): Double = minuend - subtrahend
     end PositiveReal
