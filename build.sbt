@@ -20,7 +20,7 @@ ThisBuild / githubWorkflowBuildPreamble ++= Seq(WorkflowStep.Run(commands = List
 
 lazy val root = project
   .in(file("."))
-  .aggregate(cell, geometry, imaging, io, numeric, syntax, testing, zarr)
+  .aggregate(cell, geometry, imaging, io, numeric, pan, syntax, testing, zarr)
   .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings)
   .settings(noPublishSettings)
@@ -50,6 +50,7 @@ lazy val imaging = defineModule("imaging")(project)
   .dependsOn(numeric)
 
 lazy val numeric = defineModule("numeric")(project)
+  .dependsOn(pan)
   .settings(
     libraryDependencies ++= Seq(
       iron, 
@@ -57,6 +58,9 @@ lazy val numeric = defineModule("numeric")(project)
       ironScalacheck % Test,
     )
   )
+
+// "pan"-subproject types and functions
+lazy val pan = defineModule("pan")(project)
 
 lazy val syntax = defineModule("syntax")(project)
 
