@@ -9,8 +9,6 @@ package object gerlib:
         def show_(t: T): String
 
     object SimpleShow:
-        extension [T](t: T)(using ev: SimpleShow[T])
-            def `show_`: String = ev.show_(t)
         def fromShow[A : Show]: SimpleShow[A] = new:
             override def show_(a: A): String = a.show
         def fromToString[A]: SimpleShow[A] = new:
