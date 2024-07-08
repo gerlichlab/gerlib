@@ -6,7 +6,6 @@ import cats.syntax.all.*
 import mouse.boolean.*
 
 import io.github.iltotore.iron.*
-import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.any.Not
 // for summoning Order[Int :| P] or Order[Double :| P]
 import io.github.iltotore.iron.constraint.numeric.*
@@ -94,11 +93,6 @@ package object numeric:
     object NonnegativeInt extends RefinementBuilder[Int, Nonnegative]:
         override protected def parseRaw: String => Either[String, Int] = readAsInt
         def indexed[A](as: List[A]): List[(A, NonnegativeInt)] = as.zipWithIndex.map{ (a, i) => a -> unsafe(i) }
-        given IntLike[NonnegativeInt] with
-            override def asInt = identity
-        given Order[NonnegativeInt] = summon[Order[NonnegativeInt]]
-        given Show[NonnegativeInt] = summon[Show[NonnegativeInt]]
-        given SimpleShow[NonnegativeInt] = SimpleShow.fromShow
     end NonnegativeInt
 
     /** Nonnegative real number */
@@ -107,13 +101,6 @@ package object numeric:
     /** Helpers for working with nonnegative real numbers */
     object NonnegativeReal extends RefinementBuilder[Double, Nonnegative]:
         override protected def parseRaw: String => Either[String, Double] = readAsDouble
-        given orderForNonnegativeReal: Order[NonnegativeReal] = summon[Order[NonnegativeReal]]
-        given showForNonnegativeReal(using ev: Show[Double]): Show[NonnegativeReal] = 
-            ev.contramap(identity)
-        given simpleShowForNonnegativeReal(using Show[Double]): SimpleShow[NonnegativeReal] = 
-            SimpleShow.fromShow
-        given Subtraction[NonnegativeReal, Double, Double] with
-            def minus(minuend: NonnegativeReal)(subtrahend: Double): Double = minuend - subtrahend
     end NonnegativeReal
 
     /** Refinement type for positive integers */
@@ -125,11 +112,6 @@ package object numeric:
         extension (x: PositiveInt)
             def asNonnegative: NonnegativeInt = x.refineUnsafe
         override protected def parseRaw: String => Either[String, Int] = readAsInt
-        given IntLike[PositiveInt] with
-            override def asInt = identity
-        given Order[PositiveInt] = summon[Order[PositiveInt]]
-        given Show[PositiveInt] = summon[Show[PositiveInt]]
-        given SimpleShow[PositiveInt] = SimpleShow.fromShow
     end PositiveInt
 
     /** Positive real number */
@@ -141,13 +123,6 @@ package object numeric:
         extension (x: PositiveReal)
             def asNonnegative: NonnegativeReal = x.refineUnsafe
         override protected def parseRaw: String => Either[String, Double] = readAsDouble
-        given Order[PositiveReal] = summon[Order[PositiveReal]]
-        given showForPositiveReal(using ev: Show[Double]): Show[PositiveReal] = 
-            ev.contramap(identity)
-        given simpleShowForPositiveReal(using Show[Double]): SimpleShow[PositiveReal] = 
-            SimpleShow.fromShow
-        given Subtraction[PositiveReal, Double, Double] with
-            def minus(minuend: PositiveReal)(subtrahend: Double): Double = minuend - subtrahend
     end PositiveReal
 
     /** Attempt to parse the given text as integer, wrapping error message as a [[scala.util.Left]] for fail. */
