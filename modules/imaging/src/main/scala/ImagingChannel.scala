@@ -4,9 +4,8 @@ import cats.*
 import cats.derived.*
 import cats.syntax.all.*
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
+import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
 
-// Seems to be needed to get the Order[Int :| Nonnegative] instance
-import at.ac.oeaw.imba.gerlich.gerlib.numeric.NonnegativeInt.given
 
 /** Semantic wrapper around value representing 0-based imaging channel */
 final case class ImagingChannel(get: NonnegativeInt) derives Order

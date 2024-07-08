@@ -5,10 +5,8 @@ import cats.instances.int.*
 import cats.derived.*
 import cats.syntax.all.*
 
-// Seems to be needed to get the Order[Int :| Positive] instance
-import at.ac.oeaw.imba.gerlich.gerlib.numeric.PositiveInt.given
-
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
+import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.positiveInt.given
 
 /** Designation of whether something's in a cell nucleus or not */
 sealed trait NuclearDesignation
