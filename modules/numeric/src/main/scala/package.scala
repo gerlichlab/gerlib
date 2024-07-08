@@ -108,9 +108,6 @@ package object numeric:
 
     /** Helpers for working with positive integers */
     object PositiveInt extends RefinementBuilder[Int, Positive]:
-        /** Enable the refinement of autoRefine in client code where the import's not present. */
-        extension (x: PositiveInt)
-            def asNonnegative: NonnegativeInt = x.refineUnsafe
         override protected def parseRaw: String => Either[String, Int] = readAsInt
     end PositiveInt
 
@@ -119,9 +116,6 @@ package object numeric:
 
     /** Helpers for working with positive real numbers */
     object PositiveReal extends RefinementBuilder[Double, Positive]:
-        /** Enable the refinement of autoRefine in client code where the import's not present. */
-        extension (x: PositiveReal)
-            def asNonnegative: NonnegativeReal = x.refineUnsafe
         override protected def parseRaw: String => Either[String, Double] = readAsDouble
     end PositiveReal
 
