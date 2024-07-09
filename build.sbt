@@ -24,7 +24,7 @@ ThisBuild / githubWorkflowBuildPreamble ++= Seq(
 
 lazy val root = project
   .in(file("."))
-  .aggregate(cell, geometry, imaging, io, numeric, pan, syntax, testing, zarr)
+  .aggregate(cell, geometry, imaging, io, numeric, pan, testing, zarr)
   .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings)
   .settings(noPublishSettings)
@@ -40,7 +40,7 @@ lazy val cell = defineModule("cell")(project)
 lazy val geometry = defineModule("geometry")(project)
 
 lazy val io = defineModule("io")(project)
-  .dependsOn(geometry, syntax)
+  .dependsOn(geometry, pan)
   .settings(
     libraryDependencies ++= Seq(
       fs2Csv, 
@@ -64,8 +64,6 @@ lazy val numeric = defineModule("numeric")(project)
 
 // "pan"-subproject types and functions
 lazy val pan = defineModule("pan")(project)
-
-lazy val syntax = defineModule("syntax")(project)
 
 lazy val testing = defineModule("testing", false)(project)
   .dependsOn(geometry, imaging, numeric)
