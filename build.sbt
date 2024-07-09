@@ -34,7 +34,6 @@ lazy val cell = defineModule("cell")(project)
   .dependsOn(numeric)
 
 lazy val geometry = defineModule("geometry")(project)
-  .dependsOn(testing % Test)
 
 lazy val io = defineModule("io")(project)
   .dependsOn(geometry, syntax)
@@ -65,7 +64,7 @@ lazy val pan = defineModule("pan")(project)
 lazy val syntax = defineModule("syntax")(project)
 
 lazy val testing = defineModule("testing", false)(project)
-  .dependsOn(imaging, numeric)
+  .dependsOn(geometry, imaging, numeric)
   .settings(libraryDependencies ++= Seq(
     scalacheck, 
     ironScalacheck,
