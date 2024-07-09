@@ -17,7 +17,10 @@ ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq()
 ThisBuild / githubWorkflowJavaVersions := Seq("11", "17", "19", "21").map(JavaSpec.temurin)
 // Account for the absence of sbt in newer versions of the setup-java GitHub Action.
-ThisBuild / githubWorkflowBuildPreamble ++= Seq(WorkflowStep.Run(commands = List("brew install sbt"), cond = Some("contains(runner.os, 'macos')")))
+ThisBuild / githubWorkflowBuildPreamble ++= Seq(
+  WorkflowStep.Run(commands = List("brew install sbt"), cond = Some("contains(runner.os, 'macos')")), 
+  WorkflowStep.Sbt(List("scalafmtCheckAll"), name = Some("Check Formatting"))
+)
 
 lazy val root = project
   .in(file("."))
