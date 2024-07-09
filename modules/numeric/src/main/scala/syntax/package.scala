@@ -1,8 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib.numeric
 
 package object syntax:
-    object all extends AllSyntax
+  object all extends AllSyntax
 
-    trait AllSyntax extends
-        SyntaxForPositiveInt, 
-        SyntaxForPositiveReal
+  trait AllSyntax extends SyntaxForPositiveInt, SyntaxForPositiveReal

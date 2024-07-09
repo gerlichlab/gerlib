@@ -8,4 +8,5 @@ import at.ac.oeaw.imba.gerlich.gerlib.numeric.NonnegativeInt
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
 
 trait ImagingTimepointInstances:
-    given SimpleShow[ImagingTimepoint] = summon[SimpleShow[NonnegativeInt]].contramap(_.get)
+  given SimpleShow[ImagingTimepoint] =
+    summon[SimpleShow[NonnegativeInt]].contramap(_.get)

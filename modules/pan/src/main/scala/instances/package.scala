@@ -1,7 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib
 
 package object instances:
-    object all extends AllInstances
+  object all extends AllInstances
 
-    trait AllInstances extends 
-        SimpleShowInstances
+  trait AllInstances extends SimpleShowInstances

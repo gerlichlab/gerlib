@@ -1,9 +1,9 @@
 package at.ac.oeaw.imba.gerlich.gerlib.imaging
 
 package object instances:
-    object all extends AllInstances
+  object all extends AllInstances
 
-    trait AllInstances extends
-        FieldOfViewInstances, 
+  trait AllInstances
+      extends FieldOfViewInstances,
         ImagingChannelInstances,
         ImagingTimepointInstances

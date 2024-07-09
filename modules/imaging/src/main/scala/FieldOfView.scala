@@ -10,7 +10,7 @@ final case class FieldOfView(get: NonnegativeInt) derives Order
 
 /** Helpers for working with fields of view */
 object FieldOfView:
-    /** Wrap the given value as a field of view, if it's valid as one. */
-    def parse: String => Either[String, FieldOfView] = 
-        parseThroughNonnegativeInt("FieldOfView")(FieldOfView.apply)
+  /** Wrap the given value as a field of view, if it's valid as one. */
+  def parse: String => Either[String, FieldOfView] =
+    parseThroughNonnegativeInt("FieldOfView")(FieldOfView.apply)
 end FieldOfView

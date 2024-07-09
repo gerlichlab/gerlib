@@ -8,4 +8,5 @@ import at.ac.oeaw.imba.gerlich.gerlib.numeric.NonnegativeInt
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
 
 trait FieldOfViewInstances:
-    given SimpleShow[FieldOfView] = summon[SimpleShow[NonnegativeInt]].contramap(_.get)
+  given SimpleShow[FieldOfView] =
+    summon[SimpleShow[NonnegativeInt]].contramap(_.get)
