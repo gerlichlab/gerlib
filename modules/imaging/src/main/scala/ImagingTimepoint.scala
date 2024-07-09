@@ -11,12 +11,14 @@ final case class ImagingTimepoint(get: NonnegativeInt) derives Order
 
 /** Helpers for working with imaging timepoints */
 object ImagingTimepoint:
-    given showForImagingTimepoint: Show[ImagingTimepoint] = Show.show(_.get.show)
+  given showForImagingTimepoint: Show[ImagingTimepoint] = Show.show(_.get.show)
 
-    /** Attempt to create a timepoint from an integer, first refining through {@code NonnegativeInt}. */
-    def fromInt = NonnegativeInt.either.map(_.map(ImagingTimepoint.apply))
-    
-    /** Wrap the given value as an imaging timepoint, if it's valid as one. */
-    def parse: String => Either[String, ImagingTimepoint] = 
-        parseThroughNonnegativeInt("ImagingTimepoint")(ImagingTimepoint.apply)
+  /** Attempt to create a timepoint from an integer, first refining through
+    * {@code NonnegativeInt} .
+    */
+  def fromInt = NonnegativeInt.either.map(_.map(ImagingTimepoint.apply))
+
+  /** Wrap the given value as an imaging timepoint, if it's valid as one. */
+  def parse: String => Either[String, ImagingTimepoint] =
+    parseThroughNonnegativeInt("ImagingTimepoint")(ImagingTimepoint.apply)
 end ImagingTimepoint
