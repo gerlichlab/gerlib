@@ -1,6 +1,7 @@
 import Dependencies.*
 
 /* Core settings */
+ThisBuild / scalaVersion := "3.4.2"
 val groupId = "com.github.gerlichlab"
 val projectName = "gerlib"
 val rootPkg = s"at.ac.oeaw.imba.gerlich.$projectName"
@@ -103,7 +104,6 @@ lazy val metadataSettings = Def.settings(
   name := projectName,
   description := "Gerlich lab programming utilities, especially for data from imaging or sequencing", 
   version := "0.1.0",
-  scalaVersion := "3.4.2",
   organization := groupId, 
   organizationName := "Gerlich Group, IMBA, ÖAW",
   homepage := Some(url(s"https://github.com/$gitHubOwner/$projectName")),
