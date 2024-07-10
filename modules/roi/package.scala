@@ -1,7 +1,7 @@
 package at.ac.oeaw.imba.gerlich.gerlib
 
 import scala.reflect.ClassTag
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 import cats.*
 import cats.data.{NonEmptyList, ValidatedNel}
@@ -82,7 +82,7 @@ package object roi:
   ) => Either[NonEmptyList[String], Array[Int]] =
     (time, channel, centroid) => {
       val shape = za.getShape()
-      val halfWidth: Double = 0.5 * diameter
+      0.5 * diameter
       val zDepthNel = Try { shape(indexMapping.zIndex) }.toEither
         .leftMap(e => s"Failed to get Z axis raw length: ${e.getMessage}")
         .flatMap(z =>

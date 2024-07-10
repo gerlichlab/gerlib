@@ -2,7 +2,6 @@ package at.ac.oeaw.imba.gerlich.gerlib.io.csv
 package instances
 
 import scala.util.NotGiven
-import cats.syntax.all.*
 import fs2.data.csv.*
 
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.*

@@ -8,7 +8,6 @@ import org.scalatest.matchers.should
 import org.scalatest.prop.Configuration.PropertyCheckConfiguration
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-import io.github.iltotore.iron.:|
 import io.github.iltotore.iron.constraint.numeric.Positive
 import io.github.iltotore.iron.scalacheck.numeric.intervalArbitrary
 
@@ -87,7 +86,6 @@ class TestPositiveInt
   }
 
   test("PositiveInt is a transparent type alias for Int :| Positive") {
-    import io.github.iltotore.iron.autoRefine
 
     assertCompiles {
       "val ironRef: Int :| Positive = 1; val aliased: PositiveInt = ironRef"
