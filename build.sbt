@@ -35,6 +35,13 @@ ThisBuild / githubWorkflowBuildPreamble ++= Seq(
   ),
 )
 
+ThisBuild / assemblyMergeStrategy := {
+  case "module-info.class" => MergeStrategy.discard
+  case x =>
+    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+    oldStrategy(x)
+}
+
 lazy val root = project
   .in(file("."))
   .aggregate(cell, geometry, imaging, io, numeric, pan, roi, testing, zarr)
