@@ -7,19 +7,32 @@ val projectName = "gerlib"
 val rootPkg = s"at.ac.oeaw.imba.gerlich.$projectName"
 val gitHubOwner = "gerlichlab"
 val gitPubUrl = s"https://github.com/$gitHubOwner/$projectName.git"
+val primaryJavaVersion = "11"
+val primaryOs = "ubuntu-latest"
+val isPrimaryOsAndPrimaryJavaTest = s"runner.os == '$primaryOs' && runner.java-version == '$primaryJavaVersion'"
 
 // Needed for ZARR (jzarr) (?)
 ThisBuild / resolvers += "Unidata UCAR" at "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/"
 
 /* sbt-github-actions settings */
-ThisBuild / githubWorkflowOSes := Seq("ubuntu-latest", "ubuntu-20.04", "macos-latest")
+ThisBuild / githubWorkflowOSes := Seq(primaryOs, "ubuntu-20.04", "macos-latest")
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq()
 ThisBuild / githubWorkflowJavaVersions := Seq("11", "17", "19", "21").map(JavaSpec.temurin)
-// Account for the absence of sbt in newer versions of the setup-java GitHub Action.
 ThisBuild / githubWorkflowBuildPreamble ++= Seq(
+  // Account for the absence of sbt in newer versions of the setup-java GitHub Action.
   WorkflowStep.Run(commands = List("brew install sbt"), cond = Some("contains(runner.os, 'macos')")), 
-  WorkflowStep.Sbt(List("scalafmtCheckAll"), name = Some("Check Formatting"))
+  /* Add linting and formatting checks, but only limit to a single platform + Java combo. */
+  WorkflowStep.Sbt(
+    List("scalafmtCheckAll"), 
+    name = Some("Check formatting with scalafmt"),
+    cond = Some(isPrimaryOsAndPrimaryJavaTest),
+  ), 
+  WorkflowStep.Sbt(
+    List("scalafixAll --check"), 
+    name = Some("Lint with scalafix"), 
+    cond = Some(isPrimaryOsAndPrimaryJavaTest),
+  ),
 )
 
 lazy val root = project
