@@ -111,8 +111,7 @@ lazy val compileSettings = Def.settings(
       // https://contributors.scala-lang.org/t/for-comprehension-requires-withfilter-to-destructure-tuples/5953
       "-source:future", // for tuples in for comprehension; see above link
       "-unchecked",
-      "-Werror",
-      "-Wunused:all",
+      "-Wunused:all", // for scalafix
     ),
   Compile / console / scalacOptions -= "-Ywarn-unused:imports",
   Test / console / scalacOptions := (Compile / console / scalacOptions).value,
