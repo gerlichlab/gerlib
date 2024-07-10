@@ -18,7 +18,7 @@ ThisBuild / resolvers += "Unidata UCAR" at "https://artifacts.unidata.ucar.edu/c
 ThisBuild / githubWorkflowOSes := Seq(primaryOs, "ubuntu-20.04", "macos-latest")
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq()
-ThisBuild / githubWorkflowJavaVersions := Seq("11", "17", "19", "21").map(JavaSpec.temurin)
+ThisBuild / githubWorkflowJavaVersions := Seq(primaryJavaVersion, "17", "19", "21").map(JavaSpec.temurin)
 ThisBuild / githubWorkflowBuildPreamble ++= Seq(
   // Account for the absence of sbt in newer versions of the setup-java GitHub Action.
   WorkflowStep.Run(commands = List("brew install sbt"), cond = Some("contains(runner.os, 'macos')")), 
