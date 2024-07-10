@@ -5,6 +5,8 @@ import cats.instances.int.*
 import cats.derived.*
 import cats.syntax.all.*
 
+import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
+import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.positiveInt.given
 
@@ -20,7 +22,7 @@ final case class NucleusNumber(get: PositiveInt) extends NuclearDesignation
     derives Order
 
 object NucleusNumber:
-  given Show[NucleusNumber] = Show.show(_.get.show)
+  given SimpleShow[NucleusNumber] = SimpleShow.instance(_.get.show)
 
 /** Helpers for working with nuclei number labels */
 object NuclearDesignation:
@@ -32,8 +34,9 @@ object NuclearDesignation:
       else s"Negative value parsed for nucleus number: $z".asLeft
     }
 
-  given showForNuclearDesignation: Show[NuclearDesignation] = Show.show {
-    case OutsideNucleus    => "0"
-    case nn: NucleusNumber => nn.show
-  }
+  given SimpleShow[NuclearDesignation] with
+    override def show_(nd: NuclearDesignation): String = nd match {
+      case OutsideNucleus    => "0"
+      case nn: NucleusNumber => nn.show_
+    }
 end NuclearDesignation
