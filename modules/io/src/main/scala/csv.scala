@@ -20,12 +20,33 @@ object csv:
   given cellDecoderForZCoordinate[A](using
       dec: CellDecoder[A]
   ): CellDecoder[ZCoordinate[A]] = dec.map(ZCoordinate.apply)
+
   given cellDecoderForYCoordinate[A](using
       dec: CellDecoder[A]
   ): CellDecoder[YCoordinate[A]] = dec.map(YCoordinate.apply)
+
   given cellDecoderForXCoordinate[A](using
       dec: CellDecoder[A]
   ): CellDecoder[XCoordinate[A]] = dec.map(XCoordinate.apply)
+
+  /** Use the contravariant nature of encoding to build an encoder for a
+    * coordinate.
+    *
+    * Simply encode the coordinate the same way as its raw, unwrapped,
+    * underlying value would be encoded in CSV.
+    *
+    * @tparam A
+    *   The wrapped/underlying coordinate value type
+    * @tparam C
+    *   The coordinate (sub)type constructor
+    * @param enc
+    *   The [[fs2.data.csv.CellEncoder]] instance for the raw, underlying value
+    *   which is wrapped as a coordinate
+    */
+  given cellEncoderForCoordinate[A, C[A] <: Coordinate[A]: [C[A]] =>> NotGiven[
+    C[A] =:= Coordinate[A]
+  ]](using enc: CellEncoder[A]): CellEncoder[C[A]] =
+    enc.contramap(_.get)
 
   /** Wrap the given parse attempt function in a [[fs2.data.csv.CellEncoder]],
     * then map over it with the given builder.
@@ -46,25 +67,6 @@ object csv:
   ]](
       parse: String => Either[String, C[A]]
   ): CellDecoder[C[A]] = liftToCellDecoder(parse)
-
-  /** Use the contravariant nature of encoding to build an encoder for a
-    * coordinate.
-    *
-    * Simply encode the coordinate the same way as its raw, unwrapped,
-    * underlying value would be encoded in CSV.
-    *
-    * @tparam A
-    *   The wrapped/underlying coordinate value type
-    * @tparam C
-    *   The coordinate (sub)type constructor
-    * @param enc
-    *   The [[fs2.data.csv.CellEncoder]] instance for the raw, underlying value
-    *   which is wrapped as a coordinate
-    */
-  given cellEncoderForCoordinate[A, C[A] <: Coordinate[A]: [C[A]] =>> NotGiven[
-    C[A] =:= Coordinate[A]
-  ]](using enc: CellEncoder[A]): CellEncoder[C[A]] =
-    enc.contramap(_.get)
 
   /** Wrap the given parsing function as a CSV cell/field encoder, turning the
     * message into an error in fail case.

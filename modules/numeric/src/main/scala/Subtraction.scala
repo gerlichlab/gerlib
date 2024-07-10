@@ -7,6 +7,7 @@ trait Subtraction[Min, Sub, Result]:
 
 object Subtraction:
   import scala.math.Numeric.Implicits.infixNumericOps
+
   given subtractionForNumeric[A: Numeric]: Subtraction[A, A, A] with
     infix def minus(minuend: A)(subtrahend: A): A = minuend - subtrahend
   extension [Min](minuend: Min)
