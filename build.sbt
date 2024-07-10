@@ -24,12 +24,12 @@ ThisBuild / githubWorkflowBuildPreamble ++= Seq(
 
 lazy val root = project
   .in(file("."))
-  .aggregate(cell, geometry, imaging, io, numeric, pan, testing, zarr)
+  .aggregate(cell, geometry, imaging, io, numeric, pan, roi, testing, zarr)
   .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings)
   .settings(noPublishSettings)
   .settings(
-    name := "gerlib",
+    name := projectName,
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion), 
     buildInfoPackage := s"$rootPkg.internal"
   )
@@ -64,6 +64,9 @@ lazy val numeric = defineModule("numeric")(project)
 
 // "pan"-subproject types and functions
 lazy val pan = defineModule("pan")(project)
+
+lazy val roi = defineModule("roi")(project)
+  .dependsOn(geometry, numeric, zarr)
 
 lazy val testing = defineModule("testing", false)(project)
   .dependsOn(geometry, imaging, numeric)
