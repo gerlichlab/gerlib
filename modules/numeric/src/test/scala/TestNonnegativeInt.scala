@@ -89,7 +89,7 @@ class TestNonnegativeInt
   }
 
   test("NonnegativeInt is a transparent type alias for Int :| Not[Negative]") {
-    import io.github.iltotore.iron.{ :|, autoRefine } // scalafix:ok
+    import io.github.iltotore.iron.{:|, autoRefine} // scalafix:ok
     assertCompiles {
       "val ironRef: Int :| Not[Negative] = 0; val aliased: NonnegativeInt = ironRef"
     }
@@ -99,9 +99,12 @@ class TestNonnegativeInt
   }: @nowarn
 
   test("NonnegativeInt's predicate is Not[Negative], not GreaterEqual[0]") {
-    import io.github.iltotore.iron.{ :|, autoRefine } // scalafix:ok
+    import io.github.iltotore.iron.{:|, autoRefine} // scalafix:ok
     import io.github.iltotore.iron.constraint.any.StrictEqual // scalafix:ok
-    import io.github.iltotore.iron.constraint.numeric.{ Greater, GreaterEqual} // scalafix:ok
+    import io.github.iltotore.iron.constraint.numeric.{
+      Greater,
+      GreaterEqual
+    } // scalafix:ok
     /* With GreaterEqual[0] */
     assertCompiles { "val ironRef: Int :| GreaterEqual[0] = 0" }
     assertTypeError {
