@@ -87,8 +87,8 @@ class TestPositiveInt
   }
 
   test("PositiveInt is a transparent type alias for Int :| Positive") {
-    import io.github.iltotore.iron.{:|, autoRefine} // scalafix:ok
-    import io.github.iltotore.iron.constraint.numeric.Positive // scalafix:ok
+    import io.github.iltotore.iron.{:|, autoRefine}
+    import io.github.iltotore.iron.constraint.numeric.Positive
     assertCompiles {
       "val ironRef: Int :| Positive = 1; val aliased: PositiveInt = ironRef"
     }
