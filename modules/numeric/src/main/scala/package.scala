@@ -3,7 +3,6 @@ package at.ac.oeaw.imba.gerlich.gerlib
 import scala.util.Try
 import cats.*
 import cats.syntax.all.*
-import mouse.boolean.*
 
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.any.Not

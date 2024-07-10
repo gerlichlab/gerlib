@@ -1,7 +1,5 @@
 package at.ac.oeaw.imba.gerlich.gerlib.numeric
 
-import io.github.iltotore.iron.:|
-
 trait Subtraction[Min, Sub, Result]:
   infix def minus(minuend: Min)(subtrahend: Sub): Result
 

@@ -8,13 +8,8 @@ import org.scalatest.matchers.should
 import org.scalatest.prop.Configuration.PropertyCheckConfiguration
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-import io.github.iltotore.iron.:|
-import io.github.iltotore.iron.constraint.any.{Not, StrictEqual}
-import io.github.iltotore.iron.constraint.numeric.{
-  Greater,
-  GreaterEqual,
-  Negative
-}
+import io.github.iltotore.iron.constraint.any.Not
+import io.github.iltotore.iron.constraint.numeric.Negative
 import io.github.iltotore.iron.scalacheck.numeric.intervalArbitrary
 
 /** Tests for positive integer refinement type */
@@ -93,7 +88,6 @@ class TestNonnegativeInt
   }
 
   test("NonnegativeInt is a transparent type alias for Int :| Not[Negative]") {
-    import io.github.iltotore.iron.autoRefine
 
     assertCompiles {
       "val ironRef: Int :| Not[Negative] = 0; val aliased: NonnegativeInt = ironRef"
@@ -104,7 +98,6 @@ class TestNonnegativeInt
   }
 
   test("NonnegativeInt's predicate is Not[Negative], not GreaterEqual[0]") {
-    import io.github.iltotore.iron.{:|, autoRefine}
 
     /* With GreaterEqual[0] */
     assertCompiles { "val ironRef: Int :| GreaterEqual[0] = 0" }

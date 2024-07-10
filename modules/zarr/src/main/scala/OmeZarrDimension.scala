@@ -1,7 +1,7 @@
 package at.ac.oeaw.imba.gerlich.gerlib.zarr
 
 import scala.jdk.CollectionConverters.*
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 import cats.data.{NonEmptyList, ValidatedNel}
 import cats.syntax.all.*
 import mouse.boolean.*

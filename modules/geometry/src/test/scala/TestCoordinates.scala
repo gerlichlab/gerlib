@@ -4,7 +4,6 @@ import scala.util.{NotGiven, Random}
 import cats.Order
 import cats.syntax.order.*
 import org.scalacheck.{Arbitrary, Gen}
-import org.scalacheck.Arbitrary.arbitrary
 
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should

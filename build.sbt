@@ -99,6 +99,7 @@ lazy val compileSettings = Def.settings(
       "-source:future", // for tuples in for comprehension; see above link
       "-unchecked",
       "-Werror",
+      "-Wunused:all",
     ),
   Compile / console / scalacOptions -= "-Ywarn-unused:imports",
   Test / console / scalacOptions := (Compile / console / scalacOptions).value,
