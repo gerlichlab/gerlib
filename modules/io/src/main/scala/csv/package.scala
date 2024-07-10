@@ -1,53 +1,20 @@
 package at.ac.oeaw.imba.gerlich.gerlib.io
 
 import scala.util.NotGiven
+
 import cats.data.NonEmptyList
-import cats.effect.IO
 import cats.syntax.all.*
+import cats.effect.IO
 import fs2.*
-import fs2.io.file.{Files, Path as FS2Path}
 import fs2.data.*
 import fs2.data.csv.*
 import fs2.data.text.CharLikeChunks
+import fs2.io.file.{Files, Path as FS2Path}
 
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.*
-import at.ac.oeaw.imba.gerlich.gerlib.syntax.option.*
+import at.ac.oeaw.imba.gerlich.gerlib.syntax.option.* // for .extractValue
 
-/** Tools for working with files */
-object csv:
-
-  /* Coordinate decoders */
-  given cellDecoderForZCoordinate[A](using
-      dec: CellDecoder[A]
-  ): CellDecoder[ZCoordinate[A]] = dec.map(ZCoordinate.apply)
-
-  given cellDecoderForYCoordinate[A](using
-      dec: CellDecoder[A]
-  ): CellDecoder[YCoordinate[A]] = dec.map(YCoordinate.apply)
-
-  given cellDecoderForXCoordinate[A](using
-      dec: CellDecoder[A]
-  ): CellDecoder[XCoordinate[A]] = dec.map(XCoordinate.apply)
-
-  /** Use the contravariant nature of encoding to build an encoder for a
-    * coordinate.
-    *
-    * Simply encode the coordinate the same way as its raw, unwrapped,
-    * underlying value would be encoded in CSV.
-    *
-    * @tparam A
-    *   The wrapped/underlying coordinate value type
-    * @tparam C
-    *   The coordinate (sub)type constructor
-    * @param enc
-    *   The [[fs2.data.csv.CellEncoder]] instance for the raw, underlying value
-    *   which is wrapped as a coordinate
-    */
-  given cellEncoderForCoordinate[A, C[A] <: Coordinate[A]: [C[A]] =>> NotGiven[
-    C[A] =:= Coordinate[A]
-  ]](using enc: CellEncoder[A]): CellEncoder[C[A]] =
-    enc.contramap(_.get)
-
+package object csv:
   /** Wrap the given parse attempt function in a [[fs2.data.csv.CellEncoder]],
     * then map over it with the given builder.
     *
@@ -67,14 +34,6 @@ object csv:
   ]](
       parse: String => Either[String, C[A]]
   ): CellDecoder[C[A]] = liftToCellDecoder(parse)
-
-  /** Wrap the given parsing function as a CSV cell/field encoder, turning the
-    * message into an error in fail case.
-    */
-  def liftToCellDecoder[A](parse: String => Either[String, A]): CellDecoder[A] =
-    CellDecoder.instance { (s: String) =>
-      parse(s).leftMap(msg => DecoderError(msg))
-    }
 
   /** Combine two decoders and a builder to get a decoder for the target output
     * type.
@@ -149,6 +108,14 @@ object csv:
     override def apply(elem: T): RowF[Some, String] =
       RowF(NonEmptyList.one(enc(elem)), Some(NonEmptyList.one(key)))
 
+  /** Wrap the given parsing function as a CSV cell/field encoder, turning the
+    * message into an error in fail case.
+    */
+  def liftToCellDecoder[A](parse: String => Either[String, A]): CellDecoder[A] =
+    CellDecoder.instance { (s: String) =>
+      parse(s).leftMap(msg => DecoderError(msg))
+    }
+
   /** Attempt to read the given file as a list of case class instances. */
   def readCsvToCaseClasses[A](
       path: FS2Path
@@ -183,4 +150,3 @@ object csv:
     _.through(encodeUsingFirstHeaders(fullRows = true))
       .through(fs2.text.utf8.encode)
       .through(Files[IO].writeAll(path))
-end csv

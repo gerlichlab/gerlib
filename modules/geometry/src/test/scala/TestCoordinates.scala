@@ -64,20 +64,24 @@ class TestCoordinates
   }
 
   test(
-    "Coordinate to order cannot be of different underlying value types, even if of the same wrapper type."
+    "Coordinates to order cannot have different underlying value types, even if of the same wrapper type."
   ) {
     /* Positive (no-error) pretests / controls */
     assertCompiles("XCoordinate(1.0) < XCoordinate(2.0)")
     assertCompiles("YCoordinate(-1.0) >= YCoordinate(2.0)")
     assertCompiles("ZCoordinate(1.0) <= ZCoordinate(2.0)")
 
-    // This compiles because of the compiler's left-to-right type inference.
-    pendingUntilFixed { assertTypeError("YCoordinate(-1.0) < YCoordinate(2)") }
-
     /* Negative (error) cases */
     assertTypeError("XCoordinate(1) <= XCoordinate(2.0)")
     assertTypeError("YCoordinate(0) < YCoordinate(3.0)")
     assertTypeError("ZCoordinate(1) < ZCoordinate(2.0)")
+  }
+
+  test(
+    "Coordinate to order cannot have different underlying value types, even if of the same wrapper type -- SPECIAL CASE"
+  ) {
+    // This compiles because of the compiler's left-to-right type inference.
+    pendingUntilFixed { assertTypeError("YCoordinate(-1.0) < YCoordinate(2)") }
   }
 
   test(
