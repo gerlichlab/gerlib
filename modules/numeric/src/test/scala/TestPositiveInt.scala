@@ -1,5 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib.numeric
 
+import scala.annotation.nowarn
 import scala.util.Try
 import cats.syntax.all.*
 import org.scalacheck.{Arbitrary, Gen}
@@ -86,12 +87,13 @@ class TestPositiveInt
   }
 
   test("PositiveInt is a transparent type alias for Int :| Positive") {
-
+    import io.github.iltotore.iron.{:|, autoRefine} // scalafix:ok
+    import io.github.iltotore.iron.constraint.numeric.Positive // scalafix:ok
     assertCompiles {
       "val ironRef: Int :| Positive = 1; val aliased: PositiveInt = ironRef"
     }
     assertCompiles {
       "val aliased: PositiveInt = PositiveInt(1); val ironRef: Int :| Positive = aliased"
     }
-  }
+  }: @nowarn
 end TestPositiveInt
