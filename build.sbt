@@ -40,7 +40,7 @@ lazy val cell = defineModule("cell")(project)
 lazy val geometry = defineModule("geometry")(project)
 
 lazy val io = defineModule("io")(project)
-  .dependsOn(geometry, pan)
+  .dependsOn(cell, geometry, imaging, pan)
   .settings(
     libraryDependencies ++= Seq(
       fs2Csv, 
