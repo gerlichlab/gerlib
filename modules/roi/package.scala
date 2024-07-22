@@ -17,6 +17,8 @@ import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarr.IndexMapping
 import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarrIndex.OmeZarrBlockSize
 import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarrIndex.OmeZarrStandardCoordinate
 import at.ac.oeaw.imba.gerlich.gerlib.zarr.ZarrArrayExtras.*
+import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingTimepoint
+import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingChannel
 
 /** Types and tools for working with regions of interest (ROIs) */
 package object roi:
@@ -76,8 +78,8 @@ package object roi:
       indexMapping: IndexMapping,
       diameter: RoiDiameter
   ): (
-      OmeZarrIndex.Time,
-      OmeZarrIndex.Channel,
+      ImagingTimepoint,
+      ImagingChannel,
       Centroid[NonnegativeReal]
   ) => Either[NonEmptyList[String], Array[Int]] =
     (time, channel, centroid) => {
@@ -115,8 +117,8 @@ package object roi:
       depth: D,
       diameter: RoiDiameter
   ): (
-      OmeZarrIndex.Time,
-      OmeZarrIndex.Channel,
+      ImagingTimepoint,
+      ImagingChannel,
       Centroid[NonnegativeReal]
   ) => Either[NonEmptyList[String], Multiarray[D, Int]] =
     import PivotSize.given

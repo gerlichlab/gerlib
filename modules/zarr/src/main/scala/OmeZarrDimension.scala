@@ -9,6 +9,7 @@ import mouse.boolean.*
 import com.bc.zarr.ZarrGroup
 
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.NonnegativeInt
+import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarrIndex.toRawIndex
 import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarrIndex.OmeZarrBlockSize
 import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarrIndex.OmeZarrStandardCoordinate
 
@@ -107,19 +108,19 @@ object OmeZarr:
   ):
     def buildOriginIndex(coordinate: OmeZarrStandardCoordinate): Array[Int] =
       Array(
-        timeIndex -> coordinate.getTime.asInt,
-        channelIndex -> coordinate.getChannel.asInt,
-        zIndex -> coordinate.getZ.asInt,
-        yIndex -> coordinate.getY.asInt,
-        xIndex -> coordinate.getX.asInt
+        timeIndex -> coordinate.getTime.toRawIndex,
+        channelIndex -> coordinate.getChannel.toRawIndex,
+        zIndex -> coordinate.getZ.toRawIndex,
+        yIndex -> coordinate.getY.toRawIndex,
+        xIndex -> coordinate.getX.toRawIndex
       ).sortBy(_._1).map(_._2)
 
     def buildSizeIndex(coordinate: OmeZarrBlockSize): Array[Int] = Array(
-      timeIndex -> coordinate.getTimeLength.asInt,
-      channelIndex -> coordinate.getChannelLength.asInt,
-      zIndex -> coordinate.getZLength.asInt,
-      yIndex -> coordinate.getYLength.asInt,
-      xIndex -> coordinate.getXLength.asInt
+      timeIndex -> coordinate.getTimeLength.toRawIndex,
+      channelIndex -> coordinate.getChannelLength.toRawIndex,
+      zIndex -> coordinate.getZLength.toRawIndex,
+      yIndex -> coordinate.getYLength.toRawIndex,
+      xIndex -> coordinate.getXLength.toRawIndex
     ).sortBy(_._1).map(_._2)
 
   private val timeName = "time"

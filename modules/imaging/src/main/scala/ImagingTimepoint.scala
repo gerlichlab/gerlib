@@ -10,7 +10,8 @@ import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
 /** Semantic wrapper around value representing 0-based imaging timepoint */
-final case class ImagingTimepoint(get: NonnegativeInt) derives Order
+final case class ImagingTimepoint(private[gerlib] get: NonnegativeInt)
+    derives Order
 
 /** Helpers for working with imaging timepoints */
 object ImagingTimepoint:
