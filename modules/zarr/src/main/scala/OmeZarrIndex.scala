@@ -9,21 +9,12 @@ import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 /** Helpers for working with indexing into ZARR */
 object OmeZarrIndex:
   extension (
-      i: Time | Channel | Z | Y | X | LengthTime | LengthChannel | LengthZ |
-        LengthY | LengthX
-  ) def asInt: Int = i
+      i: Z | Y | X | LengthTime | LengthChannel | LengthZ | LengthY | LengthX
+  ) private[zarr] def toRawIndex: Int = i
 
-  /** Index into time dimension of ZARR array */
-  opaque type Time = NonnegativeInt
+  extension (i: ImagingChannel) private[zarr] def toRawIndex: Int = i.get
 
-  object Time:
-    def apply(t: ImagingTimepoint): OmeZarrIndex.Time = t.get
-
-  /** Index into channel dimension of ZARR array */
-  opaque type Channel = NonnegativeInt
-
-  object Channel:
-    def apply(c: ImagingChannel): OmeZarrIndex.Channel = c.get
+  extension (i: ImagingTimepoint) private[zarr] def toRawIndex: Int = i.get
 
   /** Index into z dimension of ZARR array */
   opaque type Z = NonnegativeInt
@@ -48,8 +39,8 @@ object OmeZarrIndex:
 
   /** Index of "point" in standard OME-ZARR coordinate space */
   final case class OmeZarrStandardCoordinate(
-      getTime: Time,
-      getChannel: Channel,
+      getTime: ImagingTimepoint,
+      getChannel: ImagingChannel,
       getZ: Z,
       getY: Y,
       getX: X
