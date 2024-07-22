@@ -5,6 +5,7 @@ import fs2.data.csv.*
 
 import at.ac.oeaw.imba.gerlich.gerlib.cell.*
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.*
+import at.ac.oeaw.imba.gerlich.gerlib.imaging.instances.all.given
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
 trait InstancesForImaging:
