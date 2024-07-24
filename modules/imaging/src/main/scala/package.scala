@@ -3,7 +3,7 @@ package at.ac.oeaw.imba.gerlich.gerlib
 import cats.*
 import cats.derived.*
 
-import io.github.iltotore.iron.:|
+import io.github.iltotore.iron.{ :|, refineEither }
 import io.github.iltotore.iron.constraint.any.{Not, StrictEqual}
 import io.github.iltotore.iron.constraint.char.{Digit, Letter}
 import io.github.iltotore.iron.constraint.collection.{Empty, ForAll}
@@ -46,6 +46,21 @@ package object imaging:
   /** The name of a position / field of view is a string whose characters all
     * fulfill the constraint.
     */
-  type PositionName = String :| PositionNameConstraint
+  opaque type PositionName = String :| PositionNameConstraint
+
+  /** Put instances here since the refinement is opaque, so underlying String won't be visible elsewhere. */
+  object PositionName:
+    /** Refine through [[scala.util.Either]] as the monadic type. */
+    def parse: String => Either[String, PositionName] = _.refineEither
+
+    /** Ordering is by natural (lexicographical) text ordering */
+    given Order[PositionName] = Order.by{ s => s: String }
+
+    /** Show the value as its simple text representation. */
+    given Show[PositionName] = Show.show{ s => s: String }
+
+    /** Show the value as its simple text representation. */
+    given SimpleShow[PositionName] = SimpleShow.instance{ s => s: String }
+  end PositionName
 
 end imaging

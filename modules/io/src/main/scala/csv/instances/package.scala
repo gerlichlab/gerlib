@@ -7,4 +7,5 @@ package object instances:
       extends InstancesForCell,
         InstancesForGeometry,
         InstancesForImaging,
-        InstancesForNumeric
+        InstancesForNumeric,
+        InstancesForRoi
