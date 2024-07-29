@@ -8,9 +8,14 @@ object Dependencies {
         def getModuleID(name: String): ModuleID = getModuleID(Some(name))
         private def getModuleID(name: Option[String]): ModuleID = 
             groupId %% ("iron" ++ name.fold("")("-" ++ _)) % version
-        private val rootName = "iron"
         private val groupId = "io.github.iltotore"
         private val version = "2.6.0"
+    }
+
+    /** Build ModuleID for a com.lihaoyi JSON-related project. */
+    object HaoyiJson {
+        def getModuleId(name: String): ModuleID = "com.lihaoyi" %% name % latestVersion
+        private def latestVersion = "4.0.0"
     }
 
     /* Versions */
@@ -20,6 +25,8 @@ object Dependencies {
     lazy val catsCore = "org.typelevel" %% "cats-core" % "2.12.0"
     lazy val kittens = "org.typelevel" %% "kittens" % "3.3.0"
     lazy val mouse = "org.typelevel" %% "mouse" % "1.3.1"
+    lazy val uJson = HaoyiJson.getModuleId("ujson")
+    lazy val uPickle = HaoyiJson.getModuleId("upickle")
     
     /* numeric dependencies */
     lazy val iron = Iron.moduleId
@@ -29,7 +36,7 @@ object Dependencies {
     /* IO dependencies */
     lazy val fs2Csv = "org.gnieh" %% "fs2-data-csv" % "1.11.0"
     lazy val fs2IO = "co.fs2" %% "fs2-io" % "3.10.2"
-    lazy val os = "com.lihaoyi" %% "os-lib" % "0.10.2"
+    lazy val os = "com.lihaoyi" %% "os-lib" % "0.10.3"
 
     /** ZARR dependencies */
     lazy val jzarr = "dev.zarr" % "jzarr" % "0.4.2"

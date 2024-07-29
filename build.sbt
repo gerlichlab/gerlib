@@ -71,6 +71,12 @@ lazy val io = defineModule("io")(project)
 
 lazy val imaging = defineModule("imaging")(project)
   .dependsOn(numeric)
+  .settings(
+    libraryDependencies ++= Seq(
+      uJson, 
+      uPickle,
+    )
+  )
 
 lazy val numeric = defineModule("numeric")(project)
   .dependsOn(pan)
