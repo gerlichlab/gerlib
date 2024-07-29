@@ -8,8 +8,16 @@ import at.ac.oeaw.imba.gerlich.gerlib.imaging.*
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.instances.all.given
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
-/** Typeclass instances for types in the [[at.ac.oeaw.imba.gerlich.gerlib.imaging]] package */
+/** Typeclass instances for types in the
+  * [[at.ac.oeaw.imba.gerlich.gerlib.imaging]] package
+  */
 trait InstancesForImaging:
+  /** Decode a field-of-view-like by first trying by integer, then by name. */
+  given CellDecoder[FieldOfViewLike] = liftToCellDecoder(FieldOfViewLike.parse)
+
+  given CellEncoder[FieldOfViewLike] with
+    override def apply(fovLike: FieldOfViewLike): String = fovLike.show_
+
   /** Decode a CSV field/cell by using the companion object's parse function. */
   given CellDecoder[FieldOfView] = liftToCellDecoder(FieldOfView.parse)
 
@@ -23,7 +31,7 @@ trait InstancesForImaging:
   /** For CSV write, show the FOV just by the numeric value. */
   given CellEncoder[PositionName] with
     override def apply(cell: PositionName): String = cell.show_
-  
+
   /** Decode a CSV field/cell by using the companion object's parse function. */
   given CellDecoder[ImagingChannel] = liftToCellDecoder(ImagingChannel.parse)
 
@@ -32,7 +40,9 @@ trait InstancesForImaging:
     override def apply(cell: ImagingChannel): String = cell.show_
 
   /** Decode a CSV field/cell by using the companion object's parse function. */
-  given CellDecoder[ImagingTimepoint] = liftToCellDecoder(ImagingTimepoint.parse)
+  given CellDecoder[ImagingTimepoint] = liftToCellDecoder(
+    ImagingTimepoint.parse
+  )
 
   /** For CSV write, show the timepoint just by the numeric value. */
   given CellEncoder[ImagingTimepoint] with
@@ -42,13 +52,17 @@ trait InstancesForImaging:
 object InstancesForImaging:
   private def nuclearDesignationKey: String = "nuclusNumber"
 
-  /** Get a "row" decoder that operates on a single item, to combine with other(s). */
+  /** Get a "row" decoder that operates on a single item, to combine with
+    * other(s).
+    */
   def singletonRowDecoderForNuclearDesignation(using
       CellDecoder[NuclearDesignation]
   ): CsvRowDecoder[NuclearDesignation, String] =
     getCsvRowDecoderForSingleton(nuclearDesignationKey)
 
-  /** Get a "row" encoder that operates on a single item, to combine with other(s). */
+  /** Get a "row" encoder that operates on a single item, to combine with
+    * other(s).
+    */
   def singletonRowEncoderForNuclearDesignation(using
       CellEncoder[NuclearDesignation]
   ): CsvRowEncoder[NuclearDesignation, String] =

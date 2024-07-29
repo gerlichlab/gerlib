@@ -2,8 +2,9 @@ package at.ac.oeaw.imba.gerlich.gerlib
 
 import cats.*
 import cats.derived.*
+import cats.syntax.all.*
 
-import io.github.iltotore.iron.{ :|, refineEither }
+import io.github.iltotore.iron.{:|, refineEither}
 import io.github.iltotore.iron.constraint.any.{Not, StrictEqual}
 import io.github.iltotore.iron.constraint.char.{Digit, Letter}
 import io.github.iltotore.iron.constraint.collection.{Empty, ForAll}
@@ -13,23 +14,28 @@ import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
 
 /** Tools and types related to imaging */
 package object imaging:
-  /** A field of view is a value of one of a relatively small set of types. */
-  type FieldOfViewLike = PositionName | FieldOfView
+  private type Parser[Result] = String => Either[String, Result]
 
-  /** Typeclass for which an instance provides a way to get a FOV-like value
-    * from a value of another type
-    */
-  trait AdmitsFieldOfView[A, B <: FieldOfViewLike]:
-    def getFieldOfView: A => B
+  /** A field of view is a value of one of a relatively small set of types. */
+  sealed trait FieldOfViewLike
+
+  /** Helpers for working with FOV-like values */
+  object FieldOfViewLike:
+    def parse: Parser[FieldOfViewLike] = 
+      s => FieldOfView.parse(s).leftFlatMap{
+        e1 => PositionName.parse(s).leftMap{
+          e2 => s"Could not parse FOV-like. Message 1: $e1. Message 2: $e2"
+        }
+      }
 
   /** Type wrapper around 0-based index of field of view (FOV) */
   final case class FieldOfView(private[imaging] get: NonnegativeInt)
-      derives Order
+      extends FieldOfViewLike derives Order
 
   /** Helpers for working with fields of view */
   object FieldOfView:
     /** Wrap the given value as a field of view, if it's valid as one. */
-    def parse: String => Either[String, FieldOfView] =
+    def parse: Parser[FieldOfView] = 
       parseThroughNonnegativeInt("FieldOfView")(FieldOfView.apply)
   end FieldOfView
 
@@ -46,21 +52,26 @@ package object imaging:
   /** The name of a position / field of view is a string whose characters all
     * fulfill the constraint.
     */
-  opaque type PositionName = String :| PositionNameConstraint
+  final case class PositionName(
+      private[imaging] get: String :| PositionNameConstraint
+  ) extends FieldOfViewLike
 
-  /** Put instances here since the refinement is opaque, so underlying String won't be visible elsewhere. */
+  /** Put instances here since the refinement is opaque, so underlying String
+    * won't be visible elsewhere.
+    */
   object PositionName:
     /** Refine through [[scala.util.Either]] as the monadic type. */
-    def parse: String => Either[String, PositionName] = _.refineEither
+    def parse: Parser[PositionName] = 
+      _.refineEither[PositionNameConstraint].map(PositionName.apply)
 
     /** Ordering is by natural (lexicographical) text ordering */
-    given Order[PositionName] = Order.by{ s => s: String }
+    given Order[PositionName] = Order.by(_.get: String)
 
     /** Show the value as its simple text representation. */
-    given Show[PositionName] = Show.show{ s => s: String }
+    given Show[PositionName] = Show.show(_.get: String)
 
     /** Show the value as its simple text representation. */
-    given SimpleShow[PositionName] = SimpleShow.instance{ s => s: String }
+    given SimpleShow[PositionName] = SimpleShow.instance(_.get: String)
   end PositionName
 
 end imaging

@@ -11,7 +11,6 @@ import at.ac.oeaw.imba.gerlich.gerlib.roi.*
 import at.ac.oeaw.imba.gerlich.gerlib.roi.measurement.*
 
 trait InstancesForRoi:
-  private type Header = String
 
   /** The keys / column names of input files which correspond to the fields of
     * the detected spot case class
@@ -57,18 +56,18 @@ trait InstancesForRoi:
   ): CellEncoder[MeanIntensity] = enc.contramap(_.toDouble)
 
   /** Parse the detected spot from CSV field-by-field. */
-  given csvRowDecoderForDetectedSpot[C: CellDecoder](using
-      CellDecoder[FieldOfView],
+  given csvRowDecoderForDetectedSpot[C](using
+      CellDecoder[FieldOfViewLike],
       CellDecoder[ImagingTimepoint],
       CellDecoder[ImagingChannel],
       CellDecoder[ZCoordinate[C]],
       CellDecoder[YCoordinate[C]],
       CellDecoder[XCoordinate[C]]
-  ): CsvRowDecoder[DetectedSpot[C], Header] with
+  ): CsvRowDecoder[DetectedSpot[C], String] with
     override def apply(
-        row: RowF[Some, Header]
+        row: RowF[Some, String]
     ): DecoderResult[DetectedSpot[C]] =
-      val fovNel = row.as[FieldOfView](Key.FieldOfView.get).toValidatedNel
+      val fovNel = row.as[FieldOfViewLike](Key.FieldOfView.get).toValidatedNel
       val timeNel = row.as[ImagingTimepoint](Key.Timepoint.get).toValidatedNel
       val channelNel = row.as[ImagingChannel](Key.Channel.get).toValidatedNel
       val zNel = row.as[ZCoordinate[C]](Key.CenterZ.get).toValidatedNel
@@ -95,25 +94,21 @@ trait InstancesForRoi:
     * defined in this object.
     */
   given csvRowEncoderForDetectedSpot[C: CellEncoder](using
-      CellEncoder[FieldOfView],
-      CellEncoder[ImagingTimepoint],
-      CellEncoder[ImagingChannel],
-      CellEncoder[ZCoordinate[C]],
-      CellEncoder[YCoordinate[C]],
-      CellEncoder[XCoordinate[C]]
-  ): CsvRowEncoder[DetectedSpot[C], Header] with
-    override def apply(elem: DetectedSpot[C]): RowF[Some, Header] =
+      encFov: CellEncoder[FieldOfViewLike],
+      encTime: CellEncoder[ImagingTimepoint],
+      encCh: CellEncoder[ImagingChannel],
+      encZ: CellEncoder[ZCoordinate[C]],
+      encY: CellEncoder[YCoordinate[C]],
+      encX: CellEncoder[XCoordinate[C]]
+  ): CsvRowEncoder[DetectedSpot[C], String] with
+    override def apply(elem: DetectedSpot[C]): RowF[Some, String] =
       val kvs = NonEmptyList.of(
-        Key.FieldOfView.get -> summon[CellEncoder[FieldOfView]](
-          elem.fieldOfView
-        ),
-        Key.Timepoint.get -> summon[CellEncoder[ImagingTimepoint]](
-          elem.timepoint
-        ),
-        Key.Channel.get -> summon[CellEncoder[ImagingChannel]](elem.channel),
-        Key.CenterZ.get -> summon[CellEncoder[ZCoordinate[C]]](elem.centerZ),
-        Key.CenterY.get -> summon[CellEncoder[YCoordinate[C]]](elem.centerY),
-        Key.CenterX.get -> summon[CellEncoder[XCoordinate[C]]](elem.centerX),
+        Key.FieldOfView.get -> encFov(elem.fieldOfView),
+        Key.Timepoint.get -> encTime(elem.timepoint),
+        Key.Channel.get -> encCh(elem.channel),
+        Key.CenterZ.get -> encZ(elem.centerZ),
+        Key.CenterY.get -> encY(elem.centerY),
+        Key.CenterX.get -> encX(elem.centerX),
         Key.Area.get -> summon[CellEncoder[Area]](elem.area),
         Key.Intensity.get -> cellEncoderForMeanIntensity(
           elem.intensity
