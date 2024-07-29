@@ -8,7 +8,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.roi.measurement.{Area, MeanIntensity}
   * spot
   */
 final case class DetectedSpot[C](
-    fieldOfView: FieldOfView,
+    fieldOfView: FieldOfViewLike,
     timepoint: ImagingTimepoint,
     channel: ImagingChannel,
     centerZ: ZCoordinate[C],

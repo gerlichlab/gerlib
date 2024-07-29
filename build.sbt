@@ -115,6 +115,7 @@ lazy val compileSettings = Def.settings(
       "utf8",
       "-feature",
       "-language:existentials",
+      "-explain",
       // https://contributors.scala-lang.org/t/for-comprehension-requires-withfilter-to-destructure-tuples/5953
       "-source:future", // for tuples in for comprehension; see above link
       "-unchecked",

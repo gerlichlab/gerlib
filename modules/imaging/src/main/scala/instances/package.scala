@@ -4,7 +4,6 @@ package object instances:
   object all extends AllInstances
 
   trait AllInstances
-      extends FieldOfViewInstances,
+      extends FieldOfViewLikeInstances,
         ImagingChannelInstances,
-        ImagingTimepointInstances,
-        PositionNameInstances
+        ImagingTimepointInstances
