@@ -4,11 +4,15 @@ package instances
 import cats.*
 import cats.syntax.all.*
 import io.github.iltotore.iron.cats.given
+
 import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
+import at.ac.oeaw.imba.gerlich.gerlib.json.JsonValueWriter
 
 trait NonnegativeRealInstances:
   given orderForNonnegativeReal: Order[NonnegativeReal] =
     summon[Order[NonnegativeReal]]
+  given JsonValueWriter[NonnegativeReal, ujson.Num] with
+    override def apply(x: NonnegativeReal): ujson.Num = ujson.Num(x)
   given showForNonnegativeReal(using ev: Show[Double]): Show[NonnegativeReal] =
     ev.contramap(identity)
   given simpleShowForNonnegativeReal(using

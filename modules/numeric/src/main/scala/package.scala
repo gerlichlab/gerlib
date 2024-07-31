@@ -122,8 +122,18 @@ package object numeric:
   /** Helpers for working with nonnegative integers */
   object NonnegativeInt extends RefinementBuilder[Int, Nonnegative]:
     override protected def parseRaw: String => Either[String, Int] = readAsInt
+
     def indexed[A](as: List[A]): List[(A, NonnegativeInt)] =
       as.zipWithIndex.map { (a, i) => a -> unsafe(i) }
+
+    // Add a pair of nonnegative numbers, ensuring that the result stays as a nonnegative.
+    extension (n: NonnegativeInt)
+      infix def add(m: NonnegativeInt): NonnegativeInt =
+        NonnegativeInt.either(n + m) match {
+          case Left(msg) =>
+            throw new ArithmeticException(s"Uh-Oh! $n + $m = ${n + m}; $msg")
+          case Right(result) => result
+        }
   end NonnegativeInt
 
   /** Nonnegative real number */
