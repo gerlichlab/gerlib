@@ -44,7 +44,7 @@ ThisBuild / assemblyMergeStrategy := {
 
 lazy val root = project
   .in(file("."))
-  .aggregate(cell, geometry, imaging, io, numeric, pan, roi, testing, zarr)
+  .aggregate(cell, geometry, imaging, io, json, numeric, pan, roi, testing, zarr)
   .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings)
   .settings(noPublishSettings)
@@ -70,7 +70,15 @@ lazy val io = defineModule("io")(project)
   )
 
 lazy val imaging = defineModule("imaging")(project)
-  .dependsOn(numeric)
+  .dependsOn(json, numeric)
+  .settings(
+    libraryDependencies ++= Seq(
+      uJson, 
+      uPickle,
+    )
+  )
+
+lazy val json = defineModule("json")(project)
   .settings(
     libraryDependencies ++= Seq(
       uJson, 
@@ -79,7 +87,7 @@ lazy val imaging = defineModule("imaging")(project)
   )
 
 lazy val numeric = defineModule("numeric")(project)
-  .dependsOn(pan)
+  .dependsOn(json, pan)
   .settings(
     libraryDependencies ++= Seq(
       iron, 

@@ -36,17 +36,20 @@ object ImagingTimepoint:
       t2: ImagingTimepoint
   ): Either[String, ImagingTimepoint] = shift(t1)(t2.get)
 
-  /** Attempt to create a new imaging timepoint by shifting one by the given
-    * increment.
+  /** Lift the given integer to nonnegative, then wrap as an imaging timepoint.
     */
-  def unsafeShift(t0: ImagingTimepoint)(delta: Int): ImagingTimepoint = 
-    unsafeLift(t0.get + delta)
-  
-  /** Attempt to create a new imaging timepoint by shifting one by the given
-    * increment.
-    */
-  def unsafeShift(t1: ImagingTimepoint)(t2: ImagingTimepoint): ImagingTimepoint = 
-    unsafeShift(t1)(t2.get)
-  
-  def unsafeLift = ImagingTimepoint.apply `compose` NonnegativeInt.unsafe
+  def unsafeLift = NonnegativeInt.unsafe `andThen` ImagingTimepoint.apply
+
+  extension (t: ImagingTimepoint)
+    /** Attempt to create a new imaging timepoint by shifting one by the given
+      * increment.
+      */
+    def unsafeShift(delta: ImagingTimepoint): ImagingTimepoint = unsafeShift(
+      delta.get
+    )
+
+    /** Attempt to create a new imaging timepoint by shifting one by the given
+      * increment.
+      */
+    def unsafeShift(delta: Int): ImagingTimepoint = unsafeLift(t.get + delta)
 end ImagingTimepoint

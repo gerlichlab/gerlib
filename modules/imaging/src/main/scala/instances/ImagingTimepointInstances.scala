@@ -3,6 +3,7 @@ package instances
 
 import cats.syntax.all.*
 import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
+import at.ac.oeaw.imba.gerlich.gerlib.json.*
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.NonnegativeInt
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
 
@@ -11,3 +12,6 @@ trait ImagingTimepointInstances:
   /** Simply show a timepoint by its underlying integer value. */
   given SimpleShow[ImagingTimepoint] =
     summon[SimpleShow[NonnegativeInt]].contramap(_.get)
+
+  given JsonValueWriter[ImagingTimepoint, ujson.Num] with
+    override def apply(t: ImagingTimepoint): ujson.Num = ujson.Num(t.get)
