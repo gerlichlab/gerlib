@@ -21,12 +21,13 @@ package object imaging:
 
   /** Helpers for working with FOV-like values */
   object FieldOfViewLike:
-    def parse: Parser[FieldOfViewLike] = 
-      s => FieldOfView.parse(s).leftFlatMap{
-        e1 => PositionName.parse(s).leftMap{
-          e2 => s"Could not parse FOV-like. Message 1: $e1. Message 2: $e2"
+    def parse: Parser[FieldOfViewLike] =
+      s =>
+        FieldOfView.parse(s).leftFlatMap { e1 =>
+          PositionName.parse(s).leftMap { e2 =>
+            s"Could not parse FOV-like. Message 1: $e1. Message 2: $e2"
+          }
         }
-      }
 
   /** Type wrapper around 0-based index of field of view (FOV) */
   final case class FieldOfView(private[imaging] get: NonnegativeInt)
@@ -35,7 +36,7 @@ package object imaging:
   /** Helpers for working with fields of view */
   object FieldOfView:
     /** Wrap the given value as a field of view, if it's valid as one. */
-    def parse: Parser[FieldOfView] = 
+    def parse: Parser[FieldOfView] =
       parseThroughNonnegativeInt("FieldOfView")(FieldOfView.apply)
   end FieldOfView
 
@@ -61,7 +62,7 @@ package object imaging:
     */
   object PositionName:
     /** Refine through [[scala.util.Either]] as the monadic type. */
-    def parse: Parser[PositionName] = 
+    def parse: Parser[PositionName] =
       _.refineEither[PositionNameConstraint].map(PositionName.apply)
 
     /** Ordering is by natural (lexicographical) text ordering */
