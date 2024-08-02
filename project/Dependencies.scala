@@ -34,7 +34,7 @@ object Dependencies {
     lazy val ironScalacheck = Iron.getModuleID("scalacheck")
 
     /* IO dependencies */
-    lazy val fs2Csv = "org.gnieh" %% "fs2-data-csv" % "1.11.0"
+    lazy val fs2Csv = "org.gnieh" %% "fs2-data-csv" % "1.11.1"
     lazy val fs2IO = "co.fs2" %% "fs2-io" % "3.10.2"
     lazy val os = "com.lihaoyi" %% "os-lib" % "0.10.3"
 
