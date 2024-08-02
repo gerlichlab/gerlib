@@ -4,7 +4,8 @@ import cats.*
 import cats.derived.*
 import cats.syntax.all.*
 
-import io.github.iltotore.iron.{:|, refineEither}
+import io.github.iltotore.iron.{:|, refineEither, refineUnsafe}
+import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.any.{Not, StrictEqual}
 import io.github.iltotore.iron.constraint.char.{Digit, Letter}
 import io.github.iltotore.iron.constraint.collection.{Empty, ForAll}
@@ -40,11 +41,12 @@ package object imaging:
       parseThroughNonnegativeInt("FieldOfView")(FieldOfView.apply)
   end FieldOfView
 
+  private[gerlib] type PositionNamePunctuation = StrictEqual['.'] | StrictEqual['-'] | StrictEqual['_']
+
   /** A position name character must be alphanumeric, a hyphen, or an
     * underscore.
     */
-  private type ValidPositionNameCharacter = Digit | Letter | StrictEqual["_"] |
-    StrictEqual["-"]
+  private[gerlib] type ValidPositionNameCharacter = Digit | Letter | PositionNamePunctuation
 
   /** A position name must be nonempty and contain only certain characters. */
   private type PositionNameConstraint = Not[Empty] &
@@ -55,24 +57,21 @@ package object imaging:
     */
   final case class PositionName(
       private[imaging] get: String :| PositionNameConstraint
-  ) extends FieldOfViewLike
+  ) extends FieldOfViewLike derives Order
 
   /** Put instances here since the refinement is opaque, so underlying String
     * won't be visible elsewhere.
     */
   object PositionName:
+    /** Inline variant when argument is inlineable */
+    inline def apply(inline get: String :| PositionNameConstraint): PositionName = new PositionName(get)
+
     /** Refine through [[scala.util.Either]] as the monadic type. */
     def parse: Parser[PositionName] =
       _.refineEither[PositionNameConstraint].map(PositionName.apply)
 
-    /** Ordering is by natural (lexicographical) text ordering */
-    given Order[PositionName] = Order.by(_.get: String)
-
-    /** Show the value as its simple text representation. */
-    given Show[PositionName] = Show.show(_.get: String)
-
-    /** Show the value as its simple text representation. */
-    given SimpleShow[PositionName] = SimpleShow.instance(_.get: String)
+    /** Refine the string, then wrap it. */
+    def unsafe = (s: String) => PositionName(s.refineUnsafe[PositionNameConstraint])
   end PositionName
 
 end imaging
