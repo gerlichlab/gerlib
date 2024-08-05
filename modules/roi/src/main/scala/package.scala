@@ -10,15 +10,16 @@ import mouse.boolean.*
 import com.bc.zarr.ZarrArray
 
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.Point3D
+import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingTimepoint
+import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingChannel
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.extrema.*
+import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarrIndex
 import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarr.IndexMapping
 import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarrIndex.OmeZarrBlockSize
 import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarrIndex.OmeZarrStandardCoordinate
 import at.ac.oeaw.imba.gerlich.gerlib.zarr.ZarrArrayExtras.*
-import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingTimepoint
-import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingChannel
 
 /** Types and tools for working with regions of interest (ROIs) */
 package object roi:
@@ -149,7 +150,7 @@ package object roi:
           Multiarray
             .maybe(depth)(rawResult)
             .toValidNel(
-              s"Cannot refine array of length ${rawResult.length} as pivoting every ${depth.show} elements"
+              s"Cannot refine array of length ${rawResult.length} as pivoting every ${depth.show_} elements"
             )
             .toEither
       }
