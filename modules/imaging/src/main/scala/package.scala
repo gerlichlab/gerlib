@@ -41,16 +41,18 @@ package object imaging:
       parseThroughNonnegativeInt("FieldOfView")(FieldOfView.apply)
   end FieldOfView
 
-  private[gerlib] type PositionNamePunctuation = StrictEqual['.'] | StrictEqual['-'] | StrictEqual['_']
+  private[gerlib] type PositionNamePunctuation = StrictEqual['.'] |
+    StrictEqual['-'] | StrictEqual['_']
 
   /** A position name character must be alphanumeric, a hyphen, or an
     * underscore.
     */
-  private[gerlib] type ValidPositionNameCharacter = Digit | Letter | PositionNamePunctuation
+  private[gerlib] type PositionNameCharacterConstraint = Digit | Letter |
+    PositionNamePunctuation
 
   /** A position name must be nonempty and contain only certain characters. */
   private type PositionNameConstraint = Not[Empty] &
-    ForAll[ValidPositionNameCharacter]
+    ForAll[PositionNameCharacterConstraint]
 
   /** The name of a position / field of view is a string whose characters all
     * fulfill the constraint.
@@ -64,14 +66,17 @@ package object imaging:
     */
   object PositionName:
     /** Inline variant when argument is inlineable */
-    inline def apply(inline get: String :| PositionNameConstraint): PositionName = new PositionName(get)
+    inline def apply(
+        inline get: String :| PositionNameConstraint
+    ): PositionName = new PositionName(get)
 
     /** Refine through [[scala.util.Either]] as the monadic type. */
     def parse: Parser[PositionName] =
       _.refineEither[PositionNameConstraint].map(PositionName.apply)
 
     /** Refine the string, then wrap it. */
-    def unsafe = (s: String) => PositionName(s.refineUnsafe[PositionNameConstraint])
+    def unsafe = (s: String) =>
+      PositionName(s.refineUnsafe[PositionNameConstraint])
   end PositionName
 
 end imaging

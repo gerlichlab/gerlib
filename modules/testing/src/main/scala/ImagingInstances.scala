@@ -20,7 +20,7 @@ trait ImagingInstances extends CatsScalacheckInstances:
   ): Arbitrary[FieldOfView] = arbNN.map(FieldOfView.apply)
 
   /** Generate always the hyphen, allowed as one of the position name characters. */
-  private def genPositionNamePunctuation: Gen[Char :| ValidPositionNameCharacter] = 
+  private def genPositionNamePunctuation: Gen[Char :| PositionNameCharacterConstraint] = 
     import io.github.iltotore.iron.autoRefine
     Gen.oneOf('.', '-', '_')
 
@@ -29,7 +29,7 @@ trait ImagingInstances extends CatsScalacheckInstances:
       arbLetter: Arbitrary[Char :| Letter],
       arbDigit: Arbitrary[Char :| Digit]
   ): Arbitrary[PositionName] =
-    type GoodChar = Char :| ValidPositionNameCharacter
+    type GoodChar = Char :| PositionNameCharacterConstraint
     def validLetter: Gen[GoodChar] = Gen.oneOf(
       arbLetter.arbitrary.map(_.asInstanceOf[GoodChar]),
       arbDigit.arbitrary.map(_.asInstanceOf[GoodChar]),
