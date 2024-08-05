@@ -73,6 +73,8 @@ lazy val imaging = defineModule("imaging")(project)
   .dependsOn(json, numeric)
   .settings(
     libraryDependencies ++= Seq(
+      iron % Test,
+      ironScalacheck % Test,
       uJson, 
       uPickle,
     )
