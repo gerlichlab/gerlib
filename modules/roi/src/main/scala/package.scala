@@ -25,28 +25,49 @@ package object roi:
   /** Centroid of a region of interest */
   opaque type Centroid[C] = Point3D[C]
 
+  /** Helpers for working with {@code Centroid} values. */
   object Centroid:
+    /** Semantically designate the given value as a centroid. */
     def fromPoint[C](pt: Point3D[C]): Centroid[C] =
       (pt: Centroid[C])
 
+  /** A specific pivot size (1D array -> 2D array) is a specific positive
+    * integer.
+    */
   opaque type PivotSize = PositiveInt & Singleton
 
+  /** Helpers for working with (array) pivot size abstraction */
   object PivotSize:
-    given showForPivotSize[D <: PivotSize]: Show[D] = Show.fromToString[D]
+    /** Simply show the pivot size by its {@code toString} representation. */
+    given simpleShowForPivotSize[D <: PivotSize]: SimpleShow[D] =
+      SimpleShow.fromToString[D]
 
+    /** Designate, semantically, the given value as an array pivot size. */
     def apply(n: PositiveInt): PivotSize = (n: PivotSize)
 
     extension (dividend: Int)
+      /** Get the remainder of the syntax-enriched value divided by the given
+        * pivot.
+        */
       infix def mod(pivot: PivotSize): Int = dividend % pivot
 
+      /** Test whether the syntax-enriched value is evenly divisible by the
+        * given pivot.
+        */
+      infix def isDivisibleBy(pivot: PivotSize): Boolean = mod(pivot) === 0
+
+  /** A multi(dimensional)array is defined by an element type and a pivot size
+    * (think: number of "columns", or number of values per "row").
+    */
   opaque type Multiarray[D <: PivotSize, E] <: Array[E] = Array[E]
 
+  /** Helpers for working with {@code Multiarray} values */
   object Multiarray:
     import PivotSize.*
     def maybe[D <: PivotSize, E](pivot: PivotSize)(
         arr: Array[E]
     ): Option[Multiarray[D, E]] =
-      ((arr.length `mod` pivot) === 0).option { arr: Multiarray[D, E] }
+      arr.length.isDivisibleBy(pivot).option { arr: Multiarray[D, E] }
 
   /** Typelevel refinement of positive integer as valid ROI diameter (must be
     * even)
