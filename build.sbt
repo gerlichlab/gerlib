@@ -58,6 +58,7 @@ lazy val cell = defineModule("cell")(project)
   .dependsOn(numeric)
 
 lazy val geometry = defineModule("geometry")(project)
+  .dependsOn(numeric)
 
 lazy val io = defineModule("io")(project)
   .dependsOn(cell, geometry, imaging, pan, roi)

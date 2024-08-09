@@ -70,4 +70,42 @@ object ColumnNames:
 
   /** Key for the mean pixel intensity value within a detected spot */
   val IntensityColumnName = ColumnName[MeanIntensity]("intensity_mean")
+
+  /* Related to bounding box */
+
+  /** Camel case column name for lower bound of z interval for a bounding box */
+  def zLoColumnNameCamel[C] = ColumnName[ZCoordinate[C]]("zMin")
+
+  /** Camel case column name for upper bound of z interval for a bounding box */
+  def zHiColumnNameCamel[C] = ColumnName[ZCoordinate[C]]("zMax")
+
+  /** Camel case column name for lower bound of y interval for a bounding box */
+  def yLoColumnNameCamel[C] = ColumnName[YCoordinate[C]]("yMin")
+
+  /** Camel case column name for upper bound of y interval for a bounding box */
+  def yHiColumnNameCamel[C] = ColumnName[YCoordinate[C]]("yMax")
+
+  /** Camel case column name for lower bound of x interval for a bounding box */
+  def xLoColumnNameCamel[C] = ColumnName[XCoordinate[C]]("xMin")
+
+  /** Camel case column name for upper bound of x interval for a bounding box */
+  def xHiColumnNameCamel[C] = ColumnName[XCoordinate[C]]("xMax")
+
+  /** Snake case column name for lower bound of z interval for a bounding box */
+  def zLoColumnNameSnake[C] = ColumnName[ZCoordinate[C]]("z_min")
+
+  /** Snake case column name for upper bound of z interval for a bounding box */
+  def zHiColumnNameSnake[C] = ColumnName[ZCoordinate[C]]("z_max")
+
+  /** Snake case column name for lower bound of y interval for a bounding box */
+  def yLoColumnNameSnake[C] = ColumnName[YCoordinate[C]]("y_min")
+
+  /** Snake case column name for upper bound of y interval for a bounding box */
+  def yHiColumnNameSnake[C] = ColumnName[YCoordinate[C]]("y_max")
+
+  /** Snake case column name for lower bound of x interval for a bounding box */
+  def xLoColumnNameSnake[C] = ColumnName[XCoordinate[C]]("x_min")
+
+  /** Snake case column name for upper bound of x interval for a bounding box */
+  def xHiColumnNameSnake[C] = ColumnName[XCoordinate[C]]("x_max")
 end ColumnNames
