@@ -47,23 +47,3 @@ trait InstancesForImaging:
   /** For CSV write, show the timepoint just by the numeric value. */
   given CellEncoder[ImagingTimepoint] with
     override def apply(cell: ImagingTimepoint): String = cell.show_
-
-/** Helpers related to defiving [[fs2.data.csv]]-related typeclass instances */
-object InstancesForImaging:
-  private def nuclearDesignationKey: String = "nuclusNumber"
-
-  /** Get a "row" decoder that operates on a single item, to combine with
-    * other(s).
-    */
-  def singletonRowDecoderForNuclearDesignation(using
-      CellDecoder[NuclearDesignation]
-  ): CsvRowDecoder[NuclearDesignation, String] =
-    getCsvRowDecoderForSingleton(nuclearDesignationKey)
-
-  /** Get a "row" encoder that operates on a single item, to combine with
-    * other(s).
-    */
-  def singletonRowEncoderForNuclearDesignation(using
-      CellEncoder[NuclearDesignation]
-  ): CsvRowEncoder[NuclearDesignation, String] =
-    getCsvRowEncoderForSingleton(nuclearDesignationKey)

@@ -93,11 +93,11 @@ package object csv:
   /** Turn the implicit/given cell decoder into a row decoder by parsing a row's
     * value at the given field/key.
     */
-  def getCsvRowDecoderForSingleton[T](key: String)(using
+  def getCsvRowDecoderForSingleton[T](key: ColumnName[T])(using
       CellDecoder[T]
   ): CsvRowDecoder[T, String] = new:
     override def apply(row: RowF[Some, String]): DecoderResult[T] =
-      row.as[T](key)
+      row.as[T](key.value)
 
   /** Turn the implicit/given cell encoder into a row encoder by giving the
     * field the assigned name (`key`).
