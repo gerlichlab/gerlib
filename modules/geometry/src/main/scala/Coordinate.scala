@@ -26,9 +26,9 @@ object Coordinate:
   /** Use the [[cats.Order]] instance for the underlying type to order a
     * particular coordinate subtype.
     */
-  given orderForCoordinate[A: Order, C[A] <: Coordinate[A]: [C[A]] =>> NotGiven[
-    C[A] =:= Coordinate[A]
-  ]]: Order[C[A]] =
+  given orderForCoordinate[A: Order, C <: Coordinate[A]: [C] =>> NotGiven[
+    C =:= Coordinate[A]
+  ]]: Order[C] =
     Order.by {
       case XCoordinate(value) => value
       case YCoordinate(value) => value
