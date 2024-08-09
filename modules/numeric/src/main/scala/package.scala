@@ -129,7 +129,7 @@ package object numeric:
     // Add a pair of nonnegative numbers, ensuring that the result stays as a nonnegative.
     extension (n: NonnegativeInt)
       infix def add(m: NonnegativeInt): NonnegativeInt =
-        NonnegativeInt.either(n + m) match {
+        either(n + m) match {
           case Left(msg) =>
             throw new ArithmeticException(s"Uh-Oh! $n + $m = ${n + m}; $msg")
           case Right(result) => result
