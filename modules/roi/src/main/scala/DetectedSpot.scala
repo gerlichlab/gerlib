@@ -11,7 +11,7 @@ final case class DetectedSpot[C](
     fieldOfView: FieldOfViewLike,
     timepoint: ImagingTimepoint,
     channel: ImagingChannel,
-    centroid: Centroid[C], 
+    centroid: Centroid[C],
     area: Area,
     intensity: MeanIntensity
 ):

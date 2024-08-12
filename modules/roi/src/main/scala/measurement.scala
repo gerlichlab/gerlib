@@ -9,8 +9,16 @@ package object measurement:
   /** Area of a region of interest */
   opaque type Area = PositiveReal
 
+  /** Helpers for working with geometric area */
   object Area:
-    extension (a: Area) def toDouble: Double = a
+    extension (a: Area) private[gerlib] def toDouble: Double = a
+
+    /** Semantically designate the raw numeric value as an area. */
+    def apply(a: PositiveReal): Area = a: Area
+
+    /** Attempt to semantically designate the raw numeric value as an area. */
+    def fromDouble(x: Double): Either[String, Area] =
+      PositiveReal.either(x).map(apply)
 
     /** Use normal numeric ordering for ROI area values. */
     given orderForArea(using ordPosNum: Order[PositiveReal]): Order[Area] =
@@ -25,7 +33,7 @@ package object measurement:
 
   /** Helpers for working with ROI mean intensity measurement */
   object MeanIntensity:
-    extension (i: MeanIntensity) def toDouble: Double = i
+    extension (i: MeanIntensity) private[gerlib] def toDouble: Double = i
 
     /** Use normal numeric ordering for ROI mean intensity values. */
     given orderForMeanIntensity(using
