@@ -35,6 +35,13 @@ package object measurement:
   object MeanIntensity:
     extension (i: MeanIntensity) private[gerlib] def toDouble: Double = i
 
+    /** Semantically designate the raw numeric value as an area. */
+    def apply(i: NonnegativeReal): MeanIntensity = i: MeanIntensity
+
+    /** Attempt to semantically designate the raw numeric value as an area. */
+    def fromDouble(x: Double): Either[String, MeanIntensity] =
+      NonnegativeReal.either(x).map(apply)
+
     /** Use normal numeric ordering for ROI mean intensity values. */
     given orderForMeanIntensity(using
         ordNonNegNum: Order[NonnegativeReal]
