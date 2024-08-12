@@ -11,17 +11,13 @@ final case class DetectedSpot[C](
     fieldOfView: FieldOfViewLike,
     timepoint: ImagingTimepoint,
     channel: ImagingChannel,
-    centerZ: ZCoordinate[C],
-    centerY: YCoordinate[C],
-    centerX: XCoordinate[C],
+    centroid: Centroid[C], 
     area: Area,
     intensity: MeanIntensity
 ):
-  /** Bundle the spatial information of this spot instance into a centroid
-    * value.
-    */
-  def centroid: Centroid[C] =
-    Centroid.fromPoint(Point3D(centerX, centerY, centerZ))
+  def centerZ: ZCoordinate[C] = centroid.z
+  def centerY: YCoordinate[C] = centroid.y
+  def centerX: XCoordinate[C] = centroid.x
 
   /** Return the imaging experiment context in which this spot was detected.
     */

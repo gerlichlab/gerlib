@@ -9,7 +9,7 @@ import cats.syntax.all.*
 import mouse.boolean.*
 import com.bc.zarr.ZarrArray
 
-import at.ac.oeaw.imba.gerlich.gerlib.geometry.Point3D
+import at.ac.oeaw.imba.gerlich.gerlib.geometry.*
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingTimepoint
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingChannel
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
@@ -31,6 +31,14 @@ package object roi:
     /** Semantically designate the given value as a centroid. */
     def fromPoint[C](pt: Point3D[C]): Centroid[C] =
       (pt: Centroid[C])
+    extension [C](c: Centroid[C])
+      /* Provide access to the centroid components. */
+      /** Access x-component of centroid. */
+      private[gerlib] def x: XCoordinate[C] = c.x
+      /** Access y-component of centroid. */
+      private[gerlib] def y: YCoordinate[C] = c.y
+      /** Access z-component of centroid. */
+      private[gerlib] def z: ZCoordinate[C] = c.z
 
   /** A specific pivot size (1D array -> 2D array) is a specific positive
     * integer.
