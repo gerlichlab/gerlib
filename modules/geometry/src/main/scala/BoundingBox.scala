@@ -42,10 +42,21 @@ object BoundingBox:
     require(lo < hi, s"Lower bound not less than upper bound: ($lo, $hi)")
   end Interval
 
+  /** Helpers for working with the notion of intervals */
   object Interval:
+    /** Safely construct the instance, checking that the bounds are coherent. */
     def fromTuple[A: Order, C <: Coordinate[A]: [C] =>> NotGiven[
       C =:= Coordinate[A]
-    ]](t: (C, C)): Either[String, Interval[A, C]] =
-      Try { new Interval(t._1, t._2) }.toEither
+    ]](endpoint: (C, C)): Either[String, Interval[A, C]] =
+      Try { new Interval(endpoint._1, endpoint._2) }.toEither
         .leftMap { e => s"Failed to create interval: ${e.getMessage}" }
+
+    /** Construct the instance, throwing an exception if the bounds are
+      * incoherent.
+      */
+    def unsafeFromTuple[A: Order, C <: Coordinate[A]: [C] =>> NotGiven[
+      C =:= Coordinate[A]
+    ]](endpoints: (C, C)): Interval[A, C] =
+      new Interval(endpoints._1, endpoints._2)
+  end Interval
 end BoundingBox
