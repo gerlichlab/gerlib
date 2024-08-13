@@ -20,6 +20,12 @@ trait InstancesForRoi:
   // Fix the header type slot to be String.
   private type CsvRow = RowF[Some, String]
 
+  private type NamedFieldReader[T] = (ColumnNameLike[T], CellDecoder[T])
+
+  extension [T](reader: NamedFieldReader[T])
+    def validatedNel(row: RowF[Some, String]): ValidatedNel[String, T] =
+      reader._1.from(row)(using reader._2)
+
   given cellDecoderForArea: CellDecoder[Area] =
     liftToCellDecoder(Area.parse)
 
@@ -34,31 +40,27 @@ trait InstancesForRoi:
       enc: CellEncoder[Double]
   ): CellEncoder[MeanIntensity] = enc.contramap(_.toDouble)
 
-  /** Parse the detected spot from CSV field-by-field. */
-  given csvRowDecoderForDetectedSpot[C](using
-      CellDecoder[FieldOfViewLike],
-      CellDecoder[ImagingTimepoint],
-      CellDecoder[ImagingChannel],
-      CellDecoder[ZCoordinate[C]],
-      CellDecoder[YCoordinate[C]],
-      CellDecoder[XCoordinate[C]]
+  given csvRowDecoderForDetectedSpotFromNamedFieldReaders[C](using
+      fovReader: NamedFieldReader[FieldOfViewLike],
+      timeReader: NamedFieldReader[ImagingTimepoint],
+      channelReader: NamedFieldReader[ImagingChannel],
+      zReader: NamedFieldReader[ZCoordinate[C]],
+      yReader: NamedFieldReader[YCoordinate[C]],
+      xReader: NamedFieldReader[XCoordinate[C]],
+      areaReader: NamedFieldReader[Area],
+      intensityReader: NamedFieldReader[MeanIntensity]
   ): CsvRowDecoder[DetectedSpot[C], String] with
     override def apply(
         row: RowF[Some, String]
     ): DecoderResult[DetectedSpot[C]] =
-      val fovNel = FieldOfViewColumnName.from(row)
-      val timeNel = TimepointColumnName.from(row)
-      val channelNel = ChannelColumnName.from(row)
-      val zNel = zCenterColumnName[C].from(row)
-      val yNel = yCenterColumnName[C].from(row)
-      val xNel = xCenterColumnName[C].from(row)
-      val areaNel = AreaColumnName.from(row)
-
-      // Disambiguate b/w NonnegativeReal and MeanIntensity, which are the same here in this scope.
-      given decMeanIntensity: CellDecoder[MeanIntensity] =
-        cellDecoderForMeanIntensity
-
-      val intensityNel = IntensityColumnName.from(row)
+      val fovNel = fovReader.validatedNel(row)
+      val timeNel = timeReader.validatedNel(row)
+      val channelNel = channelReader.validatedNel(row)
+      val zNel = zReader.validatedNel(row)
+      val yNel = yReader.validatedNel(row)
+      val xNel = xReader.validatedNel(row)
+      val areaNel = areaReader.validatedNel(row)
+      val intensityNel = intensityReader.validatedNel(row)
       (fovNel, timeNel, channelNel, zNel, yNel, xNel, areaNel, intensityNel)
         .mapN { (fov, time, channel, z, y, x, area, intensity) =>
           val center = Centroid.fromPoint(Point3D(x, y, z))
@@ -67,9 +69,32 @@ trait InstancesForRoi:
         .toEither
         .leftMap { es =>
           DecoderError(
-            s"${es.size} error(s) decoding detected spot from row ($row): ${es.mkString_("; ")}"
+            s"${es.size} error(s) decoding detected spot: ${es.mkString_("; ")}"
           )
         }
+
+  /** Parse the detected spot from CSV field-by-field. */
+  given csvRowDecoderForDetectedSpot[C](using
+      decFov: CellDecoder[FieldOfViewLike],
+      decTime: CellDecoder[ImagingTimepoint],
+      decChannel: CellDecoder[ImagingChannel],
+      decZ: CellDecoder[ZCoordinate[C]],
+      decY: CellDecoder[YCoordinate[C]],
+      decX: CellDecoder[XCoordinate[C]]
+  ): CsvRowDecoder[DetectedSpot[C], String] with
+    override def apply(
+        row: RowF[Some, String]
+    ): DecoderResult[DetectedSpot[C]] =
+      csvRowDecoderForDetectedSpotFromNamedFieldReaders(using
+        FieldOfViewColumnName -> decFov,
+        TimepointColumnName -> decTime,
+        ChannelColumnName -> decChannel,
+        zCenterColumnName[C] -> decZ,
+        yCenterColumnName[C] -> decY,
+        xCenterColumnName[C] -> decX,
+        AreaColumnName -> summon[CellDecoder[Area]],
+        IntensityColumnName -> cellDecoderForMeanIntensity
+      )(row)
 
   /** Encode the given spot field-by-field, using the column/key/field names
     * defined in this object.
