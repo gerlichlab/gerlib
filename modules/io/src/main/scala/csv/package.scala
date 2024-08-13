@@ -135,15 +135,15 @@ package object csv:
   /** Get a writer for case class instances of the given type, writing to the
     * given file.
     */
-  def writeCaseClassToCsv[A](path: os.Path)(using
+  def writeCaseClassesToCsv[A](path: os.Path)(using
       CsvRowEncoder[A, String]
   ): Pipe[IO, A, Nothing] =
-    writeCaseClassToCsv(FS2Path.fromNioPath(path.toNIO))
+    writeCaseClassesToCsv(FS2Path.fromNioPath(path.toNIO))
 
   /** Get a writer for case class instances of the given type, writing to the
     * given file.
     */
-  def writeCaseClassToCsv[A](path: FS2Path)(using
+  def writeCaseClassesToCsv[A](path: FS2Path)(using
       CsvRowEncoder[A, String]
   ): Pipe[IO, A, Nothing] =
     // Adapted from typelevel examples: https://typelevel.org/toolkit/examples.html
