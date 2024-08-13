@@ -74,26 +74,35 @@ trait InstancesForRoi:
         }
 
   /** Parse the detected spot from CSV field-by-field. */
-  given csvRowDecoderForDetectedSpot[C](using
+  def getCsvRowDecoderForDetectedSpot[C](
+      fovCol: ColumnNameLike[FieldOfViewLike] = FieldOfViewColumnName,
+      timeCol: ColumnNameLike[ImagingTimepoint] = TimepointColumnName,
+      channelCol: ColumnNameLike[ImagingChannel] = ChannelColumnName,
+      zCol: ColumnNameLike[ZCoordinate[C]] = zCenterColumnName[C],
+      yCol: ColumnNameLike[YCoordinate[C]] = yCenterColumnName[C],
+      xCol: ColumnNameLike[XCoordinate[C]] = xCenterColumnName[C],
+      areaCol: ColumnNameLike[Area] = AreaColumnName,
+      intensityCol: ColumnNameLike[MeanIntensity] = IntensityColumnName
+  )(using
       decFov: CellDecoder[FieldOfViewLike],
       decTime: CellDecoder[ImagingTimepoint],
       decChannel: CellDecoder[ImagingChannel],
       decZ: CellDecoder[ZCoordinate[C]],
       decY: CellDecoder[YCoordinate[C]],
       decX: CellDecoder[XCoordinate[C]]
-  ): CsvRowDecoder[DetectedSpot[C], String] with
+  ): CsvRowDecoder[DetectedSpot[C], String] = new:
     override def apply(
         row: RowF[Some, String]
     ): DecoderResult[DetectedSpot[C]] =
       csvRowDecoderForDetectedSpotFromNamedFieldReaders(using
-        FieldOfViewColumnName -> decFov,
-        TimepointColumnName -> decTime,
-        ChannelColumnName -> decChannel,
-        zCenterColumnName[C] -> decZ,
-        yCenterColumnName[C] -> decY,
-        xCenterColumnName[C] -> decX,
-        AreaColumnName -> summon[CellDecoder[Area]],
-        IntensityColumnName -> cellDecoderForMeanIntensity
+        fovCol -> decFov,
+        timeCol -> decTime,
+        channelCol -> decChannel,
+        zCol -> decZ,
+        yCol -> decY,
+        xCol -> decX,
+        areaCol -> summon[CellDecoder[Area]],
+        intensityCol -> cellDecoderForMeanIntensity
       )(row)
 
   /** Encode the given spot field-by-field, using the column/key/field names
