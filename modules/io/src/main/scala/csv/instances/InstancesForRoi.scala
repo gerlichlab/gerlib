@@ -116,7 +116,7 @@ trait InstancesForRoi:
         intensityCol -> cellDecoderForMeanIntensity
       )(row)
 
-  given defaultCsvRowEncoderForDetectedSpot[C: CellEncoder](using
+  given defaultCsvRowEncoderForDetectedSpot[C](using
       CellEncoder[FieldOfViewLike],
       CellEncoder[ImagingTimepoint],
       CellEncoder[ImagingChannel],
@@ -128,7 +128,7 @@ trait InstancesForRoi:
   /** Encode the given spot field-by-field, using the column/key/field names
     * defined in this object.
     */
-  def getCsvRowEncoderForDetectedSpot[C: CellEncoder](
+  def getCsvRowEncoderForDetectedSpot[C](
       fovCol: ColumnNameLike[FieldOfViewLike] = FieldOfViewColumnName,
       timeCol: ColumnNameLike[ImagingTimepoint] = TimepointColumnName,
       channelCol: ColumnNameLike[ImagingChannel] = ChannelColumnName,
