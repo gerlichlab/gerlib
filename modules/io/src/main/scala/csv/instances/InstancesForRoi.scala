@@ -23,7 +23,7 @@ trait InstancesForRoi:
   private type NamedFieldReader[T] = (ColumnNameLike[T], CellDecoder[T])
 
   extension [T](reader: NamedFieldReader[T])
-    def validatedNel(row: RowF[Some, String]): ValidatedNel[String, T] =
+    def validatedNel(row: CsvRow): ValidatedNel[String, T] =
       reader._1.from(row)(using reader._2)
 
   given cellDecoderForArea: CellDecoder[Area] =
@@ -51,7 +51,7 @@ trait InstancesForRoi:
       intensityReader: NamedFieldReader[MeanIntensity]
   ): CsvRowDecoder[DetectedSpot[C], String] with
     override def apply(
-        row: RowF[Some, String]
+        row: CsvRow
     ): DecoderResult[DetectedSpot[C]] =
       val fovNel = fovReader.validatedNel(row)
       val timeNel = timeReader.validatedNel(row)
@@ -103,7 +103,7 @@ trait InstancesForRoi:
       decX: CellDecoder[XCoordinate[C]]
   ): CsvRowDecoder[DetectedSpot[C], String] = new:
     override def apply(
-        row: RowF[Some, String]
+        row: CsvRow
     ): DecoderResult[DetectedSpot[C]] =
       csvRowDecoderForDetectedSpotFromNamedFieldReaders(using
         fovCol -> decFov,
@@ -145,7 +145,7 @@ trait InstancesForRoi:
       encY: CellEncoder[YCoordinate[C]],
       encX: CellEncoder[XCoordinate[C]]
   ): CsvRowEncoder[DetectedSpot[C], String] = new:
-    override def apply(elem: DetectedSpot[C]): RowF[Some, String] =
+    override def apply(elem: DetectedSpot[C]): CsvRow =
       val kvs = NonEmptyList.of(
         fovCol -> encFov(elem.fieldOfView),
         timeCol -> encTime(elem.timepoint),
