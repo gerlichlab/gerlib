@@ -116,6 +116,15 @@ trait InstancesForRoi:
         intensityCol -> cellDecoderForMeanIntensity
       )(row)
 
+  given defaultCsvRowEncoderForDetectedSpot[C: CellEncoder](using
+      CellEncoder[FieldOfViewLike],
+      CellEncoder[ImagingTimepoint],
+      CellEncoder[ImagingChannel],
+      CellEncoder[ZCoordinate[C]],
+      CellEncoder[YCoordinate[C]],
+      CellEncoder[XCoordinate[C]]
+  ): CsvRowEncoder[DetectedSpot[C], String] = getCsvRowEncoderForDetectedSpot()
+
   /** Encode the given spot field-by-field, using the column/key/field names
     * defined in this object.
     */
