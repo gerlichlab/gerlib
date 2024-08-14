@@ -178,6 +178,23 @@ trait InstancesForRoi:
       )
       buildBox(zNels, yNels, xNels).leftMap(row.buildDecoderError)
 
+  given csvRowEncoderForBoundingBox[C](using
+      encZ: CellEncoder[ZCoordinate[C]],
+      encY: CellEncoder[YCoordinate[C]],
+      encX: CellEncoder[XCoordinate[C]]
+  ): CsvRowEncoder[BoundingBox[C], String] = new:
+    override def apply(box: BoundingBox[C]): CsvRow =
+      val kvs: NonEmptyList[(ColumnName[?], String)] = NonEmptyList.of(
+        zLoColumnNameCamel -> encZ(box.sideZ.lo),
+        zHiColumnNameCamel -> encZ(box.sideZ.hi),
+        yLoColumnNameCamel -> encY(box.sideY.lo),
+        yHiColumnNameCamel -> encY(box.sideY.hi),
+        xLoColumnNameCamel -> encX(box.sideX.lo),
+        xHiColumnNameCamel -> encX(box.sideX.hi)
+      )
+      val (names, values) = kvs.unzip
+      RowF(values, Some(names.map(_.value)))
+
   /** Result of an attempt to parse a pair of interval endpoints */
   private type MaybeEndpoints[A, C <: Coordinate[A]] =
     (ValidatedNel[String, C], ValidatedNel[String, C])
