@@ -24,7 +24,7 @@ object Dependencies {
     /* Core dependencies */
     lazy val catsCore = "org.typelevel" %% "cats-core" % "2.12.0"
     lazy val kittens = "org.typelevel" %% "kittens" % "3.3.0"
-    lazy val mouse = "org.typelevel" %% "mouse" % "1.3.1"
+    lazy val mouse = "org.typelevel" %% "mouse" % "1.3.2"
     lazy val uJson = HaoyiJson.getModuleId("ujson")
     lazy val uPickle = HaoyiJson.getModuleId("upickle")
     
