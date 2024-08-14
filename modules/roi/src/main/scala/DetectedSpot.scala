@@ -8,19 +8,20 @@ import at.ac.oeaw.imba.gerlich.gerlib.roi.measurement.{Area, MeanIntensity}
   * spot
   */
 final case class DetectedSpot[C](
-    fieldOfView: FieldOfViewLike,
-    timepoint: ImagingTimepoint,
-    channel: ImagingChannel,
+    context: ImagingContext,
     centroid: Centroid[C],
     area: Area,
     intensity: MeanIntensity
 ):
-  def centerZ: ZCoordinate[C] = centroid.z
-  def centerY: YCoordinate[C] = centroid.y
-  def centerX: XCoordinate[C] = centroid.x
+  def fieldOfView: FieldOfViewLike = context.fieldOfView
 
-  /** Return the imaging experiment context in which this spot was detected.
-    */
-  def context: ImagingContext =
-    ImagingContext(fieldOfView, timepoint, channel)
+  def timepoint: ImagingTimepoint = context.timepoint
+
+  def channel: ImagingChannel = context.channel
+
+  def centerZ: ZCoordinate[C] = centroid.z
+
+  def centerY: YCoordinate[C] = centroid.y
+
+  def centerX: XCoordinate[C] = centroid.x
 end DetectedSpot

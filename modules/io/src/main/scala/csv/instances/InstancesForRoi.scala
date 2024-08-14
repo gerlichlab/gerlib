@@ -64,7 +64,12 @@ trait InstancesForRoi:
       (fovNel, timeNel, channelNel, zNel, yNel, xNel, areaNel, intensityNel)
         .mapN { (fov, time, channel, z, y, x, area, intensity) =>
           val center = Centroid.fromPoint(Point3D(x, y, z))
-          DetectedSpot(fov, time, channel, center, area, intensity)
+          DetectedSpot(
+            ImagingContext(fov, time, channel),
+            center,
+            area,
+            intensity
+          )
         }
         .toEither
         .leftMap { es =>
