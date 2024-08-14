@@ -73,6 +73,17 @@ trait InstancesForRoi:
           )
         }
 
+  /** The default given instance uses all the default column names. */
+  given defaultCsvRowDecoderForDetectedSpot[C](using
+      CellDecoder[FieldOfViewLike],
+      CellDecoder[ImagingTimepoint],
+      CellDecoder[ImagingChannel],
+      CellDecoder[ZCoordinate[C]],
+      CellDecoder[YCoordinate[C]],
+      CellDecoder[XCoordinate[C]]
+  ): CsvRowDecoder[DetectedSpot[C], String] =
+    getCsvRowDecoderForDetectedSpot()
+
   /** Parse the detected spot from CSV field-by-field. */
   def getCsvRowDecoderForDetectedSpot[C](
       fovCol: ColumnNameLike[FieldOfViewLike] = FieldOfViewColumnName,
@@ -108,33 +119,40 @@ trait InstancesForRoi:
   /** Encode the given spot field-by-field, using the column/key/field names
     * defined in this object.
     */
-  given csvRowEncoderForDetectedSpot[C: CellEncoder](using
+  def getCsvRowEncoderForDetectedSpot[C: CellEncoder](
+      fovCol: ColumnNameLike[FieldOfViewLike] = FieldOfViewColumnName,
+      timeCol: ColumnNameLike[ImagingTimepoint] = TimepointColumnName,
+      channelCol: ColumnNameLike[ImagingChannel] = ChannelColumnName,
+      zCol: ColumnNameLike[ZCoordinate[C]] = zCenterColumnName[C],
+      yCol: ColumnNameLike[YCoordinate[C]] = yCenterColumnName[C],
+      xCol: ColumnNameLike[XCoordinate[C]] = xCenterColumnName[C],
+      areaCol: ColumnNameLike[Area] = AreaColumnName,
+      intensityCol: ColumnNameLike[MeanIntensity] = IntensityColumnName
+  )(using
       encFov: CellEncoder[FieldOfViewLike],
       encTime: CellEncoder[ImagingTimepoint],
       encCh: CellEncoder[ImagingChannel],
       encZ: CellEncoder[ZCoordinate[C]],
       encY: CellEncoder[YCoordinate[C]],
       encX: CellEncoder[XCoordinate[C]]
-  ): CsvRowEncoder[DetectedSpot[C], String] with
+  ): CsvRowEncoder[DetectedSpot[C], String] = new:
     override def apply(elem: DetectedSpot[C]): RowF[Some, String] =
       val kvs = NonEmptyList.of(
-        FieldOfViewColumnName -> encFov(elem.fieldOfView),
-        TimepointColumnName -> encTime(elem.timepoint),
-        ChannelColumnName -> encCh(elem.channel),
-        zCenterColumnName[C] -> encZ(elem.centerZ),
-        yCenterColumnName[C] -> encY(elem.centerY),
-        xCenterColumnName[C] -> encX(elem.centerX),
-        AreaColumnName -> summon[CellEncoder[Area]](elem.area),
-        IntensityColumnName -> cellEncoderForMeanIntensity(
-          elem.intensity
-        )
+        fovCol -> encFov(elem.fieldOfView),
+        timeCol -> encTime(elem.timepoint),
+        channelCol -> encCh(elem.channel),
+        zCol -> encZ(elem.centerZ),
+        yCol -> encY(elem.centerY),
+        xCol -> encX(elem.centerX),
+        areaCol -> summon[CellEncoder[Area]](elem.area),
+        intensityCol -> cellEncoderForMeanIntensity(elem.intensity)
       )
       val (headers, textFields) = kvs.unzip
       RowF(textFields, Some(headers.map(_.value)))
 
   /** Decoder for bounding box records from CSV with new headers */
-  def newCsvRowDecoderForBoundingBox[C: CellDecoder: Order]
-      : CsvRowDecoder[BoundingBox[C], String] = new:
+  given csvRowDecoderForBoundingBox[C: CellDecoder: Order]
+      : CsvRowDecoder[BoundingBox[C], String] with
     /** Parse each interval endpoint, then make assemble the intervals. */
     override def apply(row: CsvRow): DecoderResult[BoundingBox[C]] =
       val zNels = row.getPair[C, ZCoordinate[C]](
@@ -148,25 +166,6 @@ trait InstancesForRoi:
       val xNels = row.getPair[C, XCoordinate[C]](
         xLoColumnNameCamel[C],
         xHiColumnNameCamel[C]
-      )
-      buildBox(zNels, yNels, xNels).leftMap(row.buildDecoderError)
-
-  /** Decoder for bounding box records from CSV with old headers */
-  def oldCsvRowDecoderForBoundingBox[C: CellDecoder: Order]
-      : CsvRowDecoder[BoundingBox[C], String] = new:
-    /** Parse each interval endpoint, then make assemble the intervals. */
-    override def apply(row: CsvRow): DecoderResult[BoundingBox[C]] =
-      val zNels = row.getPair[C, ZCoordinate[C]](
-        zLoColumnNameSnake[C],
-        zHiColumnNameSnake[C]
-      )
-      val yNels = row.getPair[C, YCoordinate[C]](
-        yLoColumnNameSnake[C],
-        yHiColumnNameSnake[C]
-      )
-      val xNels = row.getPair[C, XCoordinate[C]](
-        xLoColumnNameSnake[C],
-        xHiColumnNameSnake[C]
       )
       buildBox(zNels, yNels, xNels).leftMap(row.buildDecoderError)
 
