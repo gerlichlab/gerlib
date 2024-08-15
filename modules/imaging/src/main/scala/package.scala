@@ -36,6 +36,9 @@ package object imaging:
 
   /** Helpers for working with fields of view */
   object FieldOfView:
+    def fromInt: Int => Either[String, FieldOfView] =
+      NonnegativeInt.either.map(_.map(FieldOfView.apply))
+
     /** Wrap the given value as a field of view, if it's valid as one. */
     def parse: Parser[FieldOfView] =
       parseThroughNonnegativeInt("FieldOfView")(FieldOfView.apply)
