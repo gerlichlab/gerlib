@@ -17,6 +17,9 @@ class TestImagingInstances
     extends AnyFunSuite,
       ScalaCheckPropertyChecks,
       should.Matchers:
+
+  def doubleQuote = (s: String) => "\"" ++ s ++ "\""
+
   given Arbitrary[PositionName] =
     import io.github.iltotore.iron.autoRefine
     type GoodChar = Char :| PositionNameCharacterConstraint
@@ -29,9 +32,15 @@ class TestImagingInstances
     Arbitrary {
       Gen
         .nonEmptyListOf(genPosNameChar)
-        .map(_.mkString(""))
+        .map(chars => doubleQuote(chars.mkString("")))
         .map(PositionName.unsafe)
     }
+
+  test("PositionName is shown with its underling value double-quoted.") {
+    forAll { (posName: PositionName) =>
+      posName.show_ shouldEqual doubleQuote(posName.get)
+    }
+  }
 
   test(
     "PositionName roundtrips: posName.show_ `andThen` PositionName.unsafe is identity."
