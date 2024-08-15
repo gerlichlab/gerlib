@@ -108,8 +108,9 @@ lazy val roi = defineModule("roi")(project)
 lazy val testing = defineModule("testing", false)(project)
   .dependsOn(geometry, imaging, io, numeric)
   .settings(libraryDependencies ++= Seq(
-    scalacheck, 
     ironScalacheck,
+    scalacheck, 
+    scalatest % Test,
   ))
 
 lazy val zarr = defineModule("zarr")(project)

@@ -62,4 +62,11 @@ trait ImagingInstances extends CatsScalacheckInstances:
   given arbitraryForImagingTimepoint(using
       arbNN: Arbitrary[NonnegativeInt]
   ): Arbitrary[ImagingTimepoint] = arbNN.map(ImagingTimepoint.apply)
+
+  given arbitraryForImagingContext(using
+      arbFov: Arbitrary[FieldOfViewLike],
+      arbTime: Arbitrary[ImagingTimepoint],
+      arbChannel: Arbitrary[ImagingChannel]
+  ): Arbitrary[ImagingContext] =
+    (arbFov, arbTime, arbChannel).mapN(ImagingContext.apply)
 end ImagingInstances
