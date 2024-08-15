@@ -3,8 +3,9 @@ package at.ac.oeaw.imba.gerlich.gerlib
 import cats.*
 import cats.derived.*
 import cats.syntax.all.*
+import mouse.boolean.*
 
-import io.github.iltotore.iron.{:|, refineEither, refineUnsafe}
+import io.github.iltotore.iron.{:|, refineEither}
 import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.any.{Not, StrictEqual}
 import io.github.iltotore.iron.constraint.char.{Digit, Letter}
@@ -74,12 +75,22 @@ package object imaging:
     ): PositionName = new PositionName(get)
 
     /** Refine through [[scala.util.Either]] as the monadic type. */
-    def parse: Parser[PositionName] =
-      _.refineEither[PositionNameConstraint].map(PositionName.apply)
+    def parse: Parser[PositionName] = (s: String) =>
+      partialDigest(s)
+        .flatMap(_.refineEither[PositionNameConstraint])
+        .map(PositionName.apply)
 
     /** Refine the string, then wrap it. */
     def unsafe = (s: String) =>
-      PositionName(s.refineUnsafe[PositionNameConstraint])
+      parse(s).fold(msg => throw IllegalArgumentException(msg), identity)
+
+    /** Check that a string has double-quotes around it, then remove them. */
+    private def partialDigest(s: String): Either[String, String] =
+      val doubleQuote = "\""
+      (s.startsWith(doubleQuote) && s.endsWith(doubleQuote)).either(
+        s"String given as position name isn't flanked by double quotation marks",
+        s.stripPrefix(doubleQuote).stripSuffix(doubleQuote)
+      )
   end PositionName
 
 end imaging

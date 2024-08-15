@@ -19,7 +19,7 @@ trait FieldOfViewLikeInstances:
     summon[SimpleShow[NonnegativeInt]].contramap(_.get)
 
   /** Simply show a position name by the underlying value. */
-  given SimpleShow[PositionName] = SimpleShow.instance(_.get)
+  given SimpleShow[PositionName] = SimpleShow.instance("\"" ++ _.get ++ "\"")
 
   /** Simply show a general field-of-view-like by distinguishing among the
     * subtypes and choosing the appropriate instance.
