@@ -1,10 +1,11 @@
 package at.ac.oeaw.imba.gerlich.gerlib.testing
+package instances
 
 import cats.syntax.all.*
 import org.scalacheck.*
 
 import at.ac.oeaw.imba.gerlich.gerlib.io.csv.*
-import at.ac.oeaw.imba.gerlich.gerlib.testing.catsScalacheck.given
+import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.catsScalacheck.given
 
 /** Testing-related typeclass instances for CSV-related data types */
 trait CsvInstances:
