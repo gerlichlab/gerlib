@@ -1,5 +1,5 @@
-package at.ac.oeaw.imba.gerlich.gerlib
-package testing
+package at.ac.oeaw.imba.gerlich.gerlib.testing
+package instances
 
 import scala.util.NotGiven
 import cats.Order
@@ -12,7 +12,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.numeric.NonnegativeReal
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.PositiveReal
 import at.ac.oeaw.imba.gerlich.gerlib.roi.DetectedSpot
 import at.ac.oeaw.imba.gerlich.gerlib.roi.measurement.{Area, MeanIntensity}
-import at.ac.oeaw.imba.gerlich.gerlib.testing.catsScalacheck.given
+import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.catsScalacheck.given
 
 /** Testing-related typeclass instances for ROI-related data types */
 trait RoiInstances:

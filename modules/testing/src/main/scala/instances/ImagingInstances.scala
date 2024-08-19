@@ -1,4 +1,5 @@
 package at.ac.oeaw.imba.gerlich.gerlib.testing
+package instances
 
 import cats.data.NonEmptyList
 import cats.syntax.all.*
