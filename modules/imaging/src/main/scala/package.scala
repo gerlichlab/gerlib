@@ -3,7 +3,6 @@ package at.ac.oeaw.imba.gerlich.gerlib
 import cats.*
 import cats.derived.*
 import cats.syntax.all.*
-import mouse.boolean.*
 
 import io.github.iltotore.iron.{:|, refineEither}
 import io.github.iltotore.iron.cats.given
@@ -54,8 +53,11 @@ package object imaging:
   private[gerlib] type PositionNameCharacterConstraint = Digit | Letter |
     PositionNamePunctuation
 
-  /** A position name must be nonempty and contain only certain characters. */
-  private type PositionNameConstraint = Not[Empty] &
+  /** A position name must be nonempty and contain only certain characters;
+    * furthermore, it must not start with a hyphen for potential ambiguity with
+    * a negative number.
+    */
+  private type PositionNameConstraint = Not[Empty] & Not[ForAll[Digit]] &
     ForAll[PositionNameCharacterConstraint]
 
   /** The name of a position / field of view is a string whose characters all
@@ -75,22 +77,18 @@ package object imaging:
     ): PositionName = new PositionName(get)
 
     /** Refine through [[scala.util.Either]] as the monadic type. */
-    def parse: Parser[PositionName] = (s: String) =>
-      partialDigest(s)
-        .flatMap(_.refineEither[PositionNameConstraint])
-        .map(PositionName.apply)
+    def parse: Parser[PositionName] =
+      (s: String) =>
+        s
+          .refineEither[PositionNameConstraint]
+          .bimap(
+            msg => s"Could not refine string ($s) as position name: $msg",
+            PositionName.apply
+          )
 
     /** Refine the string, then wrap it. */
     def unsafe = (s: String) =>
       parse(s).fold(msg => throw IllegalArgumentException(msg), identity)
-
-    /** Check that a string has double-quotes around it, then remove them. */
-    private def partialDigest(s: String): Either[String, String] =
-      val doubleQuote = "\""
-      (s.startsWith(doubleQuote) && s.endsWith(doubleQuote)).either(
-        s"String given as position name isn't flanked by double quotation marks",
-        s.stripPrefix(doubleQuote).stripSuffix(doubleQuote)
-      )
   end PositionName
 
 end imaging

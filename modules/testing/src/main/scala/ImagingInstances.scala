@@ -1,5 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib.testing
 
+import cats.data.NonEmptyList
 import cats.syntax.all.*
 import org.scalacheck.*
 
@@ -9,6 +10,7 @@ import io.github.iltotore.iron.constraint.char.{Digit, Letter}
 
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.*
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
+import at.ac.oeaw.imba.gerlich.gerlib.testing.syntax.scalacheck.*
 
 /** Scalacheck typeclass instances for some of the imaging datatypes */
 trait ImagingInstances extends CatsScalacheckInstances:
@@ -32,14 +34,18 @@ trait ImagingInstances extends CatsScalacheckInstances:
       arbLetter: Arbitrary[Char :| Letter],
       arbDigit: Arbitrary[Char :| Digit]
   ): Arbitrary[PositionName] =
+    import io.github.iltotore.iron.cats.given
     type GoodChar = Char :| PositionNameCharacterConstraint
-    def validLetter: Gen[GoodChar] = Gen.oneOf(
-      arbLetter.arbitrary.map(_.asInstanceOf[GoodChar]),
-      arbDigit.arbitrary.map(_.asInstanceOf[GoodChar]),
-      genPositionNamePunctuation
-    )
-    Arbitrary { Gen.nonEmptyListOf(validLetter) }
-      .map(_.mkString(""))
+    given Arbitrary[GoodChar] = Gen
+      .oneOf(
+        arbLetter.arbitrary.map(_.asInstanceOf[GoodChar]),
+        arbDigit.arbitrary.map(_.asInstanceOf[GoodChar]),
+        genPositionNamePunctuation
+      )
+      .toArbitrary
+    summon[Arbitrary[NonEmptyList[GoodChar]]]
+      .suchThat(_.exists(_.isLetter))
+      .map(_.mkString_(""))
       .map(PositionName.unsafe)
 
   /** Simply choose from one of the given instances. */
