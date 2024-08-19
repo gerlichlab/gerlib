@@ -14,20 +14,29 @@ trait InstancesForImaging:
   /** Decode a field-of-view-like by first trying by integer, then by name. */
   given CellDecoder[FieldOfViewLike] = liftToCellDecoder(FieldOfViewLike.parse)
 
+  /* NB: CellEncoder is invariant, so we have this in addition to encoders for subtypes. */
   given CellEncoder[FieldOfViewLike] with
     override def apply(fovLike: FieldOfViewLike): String = fovLike.show_
 
   /** Decode a CSV field/cell by using the companion object's parse function. */
   given CellDecoder[FieldOfView] = liftToCellDecoder(FieldOfView.parse)
 
-  /** For CSV write, show the FOV just by the numeric value. */
+  /** For CSV write, show the FOV just by the numeric value.
+    *
+    * NB: CellEncoder is invariant, so we have this subtype instance in addition
+    * to the instance for the parent.
+    */
   given CellEncoder[FieldOfView] with
     override def apply(cell: FieldOfView): String = cell.show_
 
   /** Decode a CSV field/cell by using the companion object's parse function. */
   given CellDecoder[PositionName] = liftToCellDecoder(PositionName.parse)
 
-  /** For CSV write, show the FOV just by the numeric value. */
+  /** For CSV write, show the FOV just by the numeric value.
+    *
+    * NB: CellEncoder is invariant, so we have this subtype instance in addition
+    * to the instance for the parent.
+    */
   given CellEncoder[PositionName] with
     override def apply(cell: PositionName): String = cell.show_
 
