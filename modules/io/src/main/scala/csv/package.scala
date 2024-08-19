@@ -102,6 +102,14 @@ package object csv:
   /** Turn the implicit/given cell encoder into a row encoder by giving the
     * field the assigned name (`key`).
     */
+  def getCsvRowEncoderForSingleton[T: CellEncoder](
+      key: ColumnName[T]
+  ): CsvRowEncoder[T, String] =
+    getCsvRowEncoderForSingleton(key.value)
+
+  /** Turn the implicit/given cell encoder into a row encoder by giving the
+    * field the assigned name (`key`).
+    */
   def getCsvRowEncoderForSingleton[T](key: String)(using
       enc: CellEncoder[T]
   ): CsvRowEncoder[T, String] = new:
