@@ -88,7 +88,7 @@ package object csv:
         val part2 = encI2(getI2(elem))
         val vs = part1.values ::: part2.values
         val hs = Some(part1.headers.extractValue ::: part2.headers.extractValue)
-        RowF(vs, hs)
+        RowF(values = vs, headers = hs)
 
   /** Turn the implicit/given cell decoder into a row decoder by parsing a row's
     * value at the given field/key.
@@ -114,7 +114,10 @@ package object csv:
       enc: CellEncoder[T]
   ): CsvRowEncoder[T, String] = new:
     override def apply(elem: T): RowF[Some, String] =
-      RowF(NonEmptyList.one(enc(elem)), Some(NonEmptyList.one(key)))
+      RowF(
+        values = NonEmptyList.one(enc(elem)),
+        headers = Some(NonEmptyList.one(key))
+      )
 
   /** Wrap the given parsing function as a CSV cell/field encoder, turning the
     * message into an error in fail case.
