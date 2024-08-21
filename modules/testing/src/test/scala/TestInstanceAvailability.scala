@@ -12,10 +12,10 @@ class TestInstanceAvailability extends AnyFunSuite:
       "import io.github.iltotore.iron.scalacheck.all.given; summon[Arbitrary[FieldOfViewLike]]"
     }
     assertTypeError {
-      "import at.ac.oeaw.imba.gerlich.gerlib.testing.all.given; summon[Arbitrary[FieldOfViewLike]]"
+      "import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.all.given; summon[Arbitrary[FieldOfViewLike]]"
     }
     assertCompiles {
-      "import io.github.iltotore.iron.scalacheck.all.given; import at.ac.oeaw.imba.gerlich.gerlib.testing.all.given; summon[Arbitrary[FieldOfViewLike]]"
+      "import io.github.iltotore.iron.scalacheck.all.given; import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.all.given; summon[Arbitrary[FieldOfViewLike]]"
     }
   }
 
@@ -26,7 +26,7 @@ class TestInstanceAvailability extends AnyFunSuite:
       "import io.github.iltotore.iron.scalacheck.all.given; summon[Arbitrary[ImagingTimepoint]]"
     }
     assertCompiles {
-      "import at.ac.oeaw.imba.gerlich.gerlib.testing.all.given; summon[Arbitrary[ImagingTimepoint]]"
+      "import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.all.given; summon[Arbitrary[ImagingTimepoint]]"
     }
   }
 
@@ -37,7 +37,7 @@ class TestInstanceAvailability extends AnyFunSuite:
       "import io.github.iltotore.iron.scalacheck.all.given; summon[Arbitrary[ImagingChannel]]"
     }
     assertCompiles {
-      "import at.ac.oeaw.imba.gerlich.gerlib.testing.all.given; summon[Arbitrary[ImagingChannel]]"
+      "import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.all.given; summon[Arbitrary[ImagingChannel]]"
     }
   }
 
@@ -48,10 +48,10 @@ class TestInstanceAvailability extends AnyFunSuite:
       "import io.github.iltotore.iron.scalacheck.all.given; summon[Arbitrary[ImagingContext]]"
     }
     assertTypeError {
-      "import at.ac.oeaw.imba.gerlich.gerlib.testing.all.given; summon[Arbitrary[ImagingContext]]"
+      "import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.all.given; summon[Arbitrary[ImagingContext]]"
     }
     assertCompiles {
-      "import io.github.iltotore.iron.scalacheck.all.given; import at.ac.oeaw.imba.gerlich.gerlib.testing.all.given; summon[Arbitrary[ImagingContext]]"
+      "import io.github.iltotore.iron.scalacheck.all.given; import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.all.given; summon[Arbitrary[ImagingContext]]"
     }
   }
 
@@ -62,7 +62,7 @@ class TestInstanceAvailability extends AnyFunSuite:
       "import io.github.iltotore.iron.scalacheck.all.given; summon[Arbitrary[Area]]"
     }
     assertCompiles {
-      "import at.ac.oeaw.imba.gerlich.gerlib.testing.all.given; summon[Arbitrary[Area]]"
+      "import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.all.given; summon[Arbitrary[Area]]"
     }
   }
 
@@ -73,7 +73,7 @@ class TestInstanceAvailability extends AnyFunSuite:
       "import io.github.iltotore.iron.scalacheck.all.given; summon[Arbitrary[MeanIntensity]]"
     }
     assertCompiles {
-      "import at.ac.oeaw.imba.gerlich.gerlib.testing.all.given; summon[Arbitrary[MeanIntensity]]"
+      "import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.all.given; summon[Arbitrary[MeanIntensity]]"
     }
   }
 
@@ -84,10 +84,10 @@ class TestInstanceAvailability extends AnyFunSuite:
       "import io.github.iltotore.iron.scalacheck.all.given; summon[Arbitrary[DetectedSpot[Double]]]"
     }
     assertTypeError {
-      "import at.ac.oeaw.imba.gerlich.gerlib.testing.all.given; summon[Arbitrary[DetectedSpot[Double]]]"
+      "import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.all.given; summon[Arbitrary[DetectedSpot[Double]]]"
     }
     assertCompiles {
-      "import io.github.iltotore.iron.scalacheck.all.given; import at.ac.oeaw.imba.gerlich.gerlib.testing.all.given; summon[Arbitrary[DetectedSpot[Double]]]"
+      "import io.github.iltotore.iron.scalacheck.all.given; import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.all.given; summon[Arbitrary[DetectedSpot[Double]]]"
     }
   }
 end TestInstanceAvailability
