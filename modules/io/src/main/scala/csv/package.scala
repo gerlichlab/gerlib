@@ -11,8 +11,9 @@ import fs2.data.csv.*
 import fs2.data.text.CharLikeChunks
 import fs2.io.file.{Files, Path as FS2Path}
 
+import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.*
-import at.ac.oeaw.imba.gerlich.gerlib.syntax.option.* // for .extractValue
+import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.* // for .extractValue
 
 package object csv:
   /** Wrap the given parse attempt function in a [[fs2.data.csv.CellEncoder]],
@@ -161,3 +162,10 @@ package object csv:
     _.through(encodeUsingFirstHeaders(fullRows = true))
       .through(fs2.text.utf8.encode)
       .through(Files[IO].writeAll(path))
+
+  extension (Enc: CellEncoder.type)
+    /** Add a {@code .fromSimpleShow} on [[fs2.data.csv.CellEncoder]] companion
+      * object.
+      */
+    def fromSimpleShow[A: SimpleShow]: CellEncoder[A] =
+      CellEncoder.instance(_.show_)

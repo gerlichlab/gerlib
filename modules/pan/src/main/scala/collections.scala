@@ -4,6 +4,10 @@ import cats.syntax.all.*
 
 /** Tools for working with collections */
 object collections:
+  extension [A](bag: Set[A])
+    /** Negation of inclusion/membership test result */
+    def excludes(a: A): Boolean = !bag.contains(a)
+
   /** Partition a collection of objects into {@code n} distinct parts (subsets).
     *
     * WARNING: not very performant, so use only with small input collections.
