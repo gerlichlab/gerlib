@@ -1,7 +1,7 @@
 import Dependencies.*
 
 /* Core settings */
-ThisBuild / scalaVersion := "3.4.2"
+ThisBuild / scalaVersion := "3.4.3"
 val groupId = "com.github.gerlichlab"
 val projectName = "gerlib"
 val rootPkg = s"at.ac.oeaw.imba.gerlich.$projectName"
