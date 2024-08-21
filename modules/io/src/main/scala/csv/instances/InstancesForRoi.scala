@@ -162,7 +162,7 @@ trait InstancesForRoi:
         intensityCol -> cellEncoderForMeanIntensity(elem.intensity)
       )
       val (headers, textFields) = kvs.unzip
-      RowF(textFields, Some(headers.map(_.value)))
+      RowF(values = textFields, headers = Some(headers.map(_.value)))
 
   /** Decoder for bounding box records from CSV with new headers */
   given csvRowDecoderForBoundingBox[C: CellDecoder: Order]
@@ -198,7 +198,7 @@ trait InstancesForRoi:
         xHiColumnNameCamel -> encX(box.sideX.hi)
       )
       val (names, values) = kvs.unzip
-      RowF(values, Some(names.map(_.value)))
+      RowF(values = values, headers = Some(names.map(_.value)))
 
   /** Result of an attempt to parse a pair of interval endpoints */
   private type MaybeEndpoints[A, C <: Coordinate[A]] =
