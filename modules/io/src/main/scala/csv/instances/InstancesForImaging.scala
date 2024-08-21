@@ -15,8 +15,8 @@ trait InstancesForImaging:
   given CellDecoder[FieldOfViewLike] = liftToCellDecoder(FieldOfViewLike.parse)
 
   /* NB: CellEncoder is invariant, so we have this in addition to encoders for subtypes. */
-  given CellEncoder[FieldOfViewLike] with
-    override def apply(fovLike: FieldOfViewLike): String = fovLike.show_
+  given CellEncoder[FieldOfViewLike] =
+    CellEncoder.fromSimpleShow[FieldOfViewLike]
 
   /** Decode a CSV field/cell by using the companion object's parse function. */
   given CellDecoder[FieldOfView] = liftToCellDecoder(FieldOfView.parse)
@@ -37,15 +37,13 @@ trait InstancesForImaging:
     * NB: CellEncoder is invariant, so we have this subtype instance in addition
     * to the instance for the parent.
     */
-  given CellEncoder[PositionName] with
-    override def apply(cell: PositionName): String = cell.show_
+  given CellEncoder[PositionName] = CellEncoder.fromSimpleShow[PositionName]
 
   /** Decode a CSV field/cell by using the companion object's parse function. */
   given CellDecoder[ImagingChannel] = liftToCellDecoder(ImagingChannel.parse)
 
   /** For CSV write, show the channel just by the numeric value. */
-  given CellEncoder[ImagingChannel] with
-    override def apply(cell: ImagingChannel): String = cell.show_
+  given CellEncoder[ImagingChannel] = CellEncoder.fromSimpleShow[ImagingChannel]
 
   /** Decode a CSV field/cell by using the companion object's parse function. */
   given CellDecoder[ImagingTimepoint] = liftToCellDecoder(
@@ -53,5 +51,5 @@ trait InstancesForImaging:
   )
 
   /** For CSV write, show the timepoint just by the numeric value. */
-  given CellEncoder[ImagingTimepoint] with
-    override def apply(cell: ImagingTimepoint): String = cell.show_
+  given CellEncoder[ImagingTimepoint] =
+    CellEncoder.fromSimpleShow[ImagingTimepoint]
