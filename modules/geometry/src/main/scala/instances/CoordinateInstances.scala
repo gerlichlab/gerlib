@@ -8,7 +8,7 @@ import cats.syntax.all.*
 
 /** Typeclass instances for coordinate data types */
 trait CoordinateInstances:
-  def instance[A: Monoid, C <: Coordinate[A]: [C] =>> NotGiven[
+  private def instance[A: Monoid, C <: Coordinate[A]: [C] =>> NotGiven[
     C =:= Coordinate[A]
   ]](lift: A => C): Monoid[C] = new:
     override def empty: C = lift(summon[Monoid[A]].empty)

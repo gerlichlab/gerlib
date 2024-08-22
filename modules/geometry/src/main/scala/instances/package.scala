@@ -8,5 +8,5 @@ package object instances:
   object all extends AllGeometryInstances
 
   /** Aggregation of all the geometry-related data types' typeclass instances */
-  trait AllGeometryInstances extends CoordinateInstances
+  trait AllGeometryInstances extends CoordinateInstances, PointInstances
 end instances
