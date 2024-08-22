@@ -1,7 +1,7 @@
 import Dependencies.*
 
 /* Core settings */
-ThisBuild / scalaVersion := "3.4.3"
+ThisBuild / scalaVersion := "3.5.0"
 val groupId = "com.github.gerlichlab"
 val projectName = "gerlib"
 val rootPkg = s"at.ac.oeaw.imba.gerlich.$projectName"
@@ -82,6 +82,7 @@ lazy val imaging = defineModule("imaging")(project)
   )
 
 lazy val json = defineModule("json")(project)
+  .dependsOn(geometry, numeric)
   .settings(
     libraryDependencies ++= Seq(
       uJson, 
@@ -90,7 +91,7 @@ lazy val json = defineModule("json")(project)
   )
 
 lazy val numeric = defineModule("numeric")(project)
-  .dependsOn(json, pan)
+  .dependsOn(pan)
   .settings(
     libraryDependencies ++= Seq(
       iron, 
