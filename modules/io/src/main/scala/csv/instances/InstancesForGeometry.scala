@@ -37,4 +37,4 @@ trait InstancesForGeometry:
   given cellEncoderForCoordinate[A, C[A] <: Coordinate[A]: [C[A]] =>> NotGiven[
     C[A] =:= Coordinate[A]
   ]](using enc: CellEncoder[A]): CellEncoder[C[A]] =
-    enc.contramap(_.get)
+    enc.contramap(_.value)
