@@ -154,7 +154,7 @@ package object roi:
     import at.ac.oeaw.imba.gerlich.gerlib.numeric.Subtraction.*
     val halfWidth: Double = 0.5 * diameter
     val zNel = {
-      val rawCoord: Double = centroid.z.get `minus` halfWidth
+      val rawCoord: Double = centroid.z.value `minus` halfWidth
       OmeZarrIndex.Z
         .fromDouble(rawCoord)
         .toValidNel(
@@ -162,7 +162,7 @@ package object roi:
         )
     }
     val yNel = {
-      val rawCoord = centroid.y.get `minus` halfWidth
+      val rawCoord = centroid.y.value `minus` halfWidth
       OmeZarrIndex.Y
         .fromDouble(rawCoord)
         .toValidNel(
@@ -170,7 +170,7 @@ package object roi:
         )
     }
     val xNel = {
-      val rawCoord = centroid.x.get `minus` halfWidth
+      val rawCoord = centroid.x.value `minus` halfWidth
       OmeZarrIndex.X
         .fromDouble(rawCoord)
         .toValidNel(
