@@ -6,6 +6,9 @@ import scala.util.NotGiven
 import cats.*
 import cats.syntax.all.*
 
+import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
+import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
+
 /** Typeclass instances for coordinate data types */
 trait CoordinateInstances:
   private def instance[A: Monoid, C <: Coordinate[A]: [C] =>> NotGiven[
@@ -25,4 +28,9 @@ trait CoordinateInstances:
   given monoidForZ[A: Monoid]: Monoid[ZCoordinate[A]] = instance(
     ZCoordinate.apply
   )
+
+  given simpleShowForCoordinate[A: SimpleShow, C <: Coordinate[
+    A
+  ]: [C] =>> NotGiven[C =:= Coordinate[A]]]: SimpleShow[C] =
+    SimpleShow.instance { c => c.value.show_ }
 end CoordinateInstances

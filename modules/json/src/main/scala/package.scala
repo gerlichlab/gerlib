@@ -5,5 +5,5 @@ package object json:
   object syntax:
     extension [I](i: I)
       /** Represent the syntax-enriched value as a [[ujson.Value]] value. */
-      def asJson(using write: JsonValueWriter[I, ujson.Value]): ujson.Value =
+      def asJson[O <: ujson.Value](using write: JsonValueWriter[I, O]): O =
         write(i)

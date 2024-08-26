@@ -4,6 +4,9 @@ package instances
 /** {@code SimpleShow} instances for core/builtin Scala types */
 trait SimpleShowInstances:
 
+  /** Simply print the numeric value as-is. */
+  given SimpleShow[Double] = SimpleShow.fromToString
+
   /** Show the integer by its {@code toString} representation. */
   given SimpleShow[Int] = SimpleShow.fromToString
 
