@@ -1,5 +1,4 @@
-package at.ac.oeaw.imba.gerlich.gerlib
-package json
+package at.ac.oeaw.imba.gerlich.gerlib.json
 
 import cats.*
 
@@ -22,13 +21,4 @@ object JsonValueWriter:
         f: B => A
     ): JsonValueWriter[B, O] = new:
       override def apply(i: B): O = writeA(f(i))
-
-  given JsonValueWriter[Int, ujson.Num] with
-    override def apply(a: Int): ujson.Num = ujson.Num(a)
-
-  given JsonValueWriter[Boolean, ujson.Bool] with
-    override def apply(a: Boolean): ujson.Bool = ujson.Bool(a)
-
-  given JsonValueWriter[String, ujson.Str] with
-    override def apply(a: String): ujson.Str = ujson.Str(a)
 end JsonValueWriter
