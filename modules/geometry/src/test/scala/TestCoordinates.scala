@@ -1,14 +1,17 @@
 package at.ac.oeaw.imba.gerlich.gerlib.geometry
 
 import scala.util.{NotGiven, Random}
+
 import cats.Order
 import cats.syntax.order.*
-import org.scalacheck.{Arbitrary, Gen}
 
+import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 import org.scalatest.prop.Configuration.PropertyCheckConfiguration
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+
+import at.ac.oeaw.imba.gerlich.gerlib.geometry.instances.coordinate.given
 
 /** Tests for the geometric coordinate abstractions */
 class TestCoordinates

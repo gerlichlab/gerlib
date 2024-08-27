@@ -5,6 +5,7 @@ import scala.util.{NotGiven, Try}
 import cats.*
 import cats.syntax.all.*
 
+import at.ac.oeaw.imba.gerlich.gerlib.geometry.instances.coordinate.given
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 
 /** Bundle the 3 intervals that define a rectangular prism in 3D. */

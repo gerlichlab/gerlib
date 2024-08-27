@@ -17,7 +17,4 @@ trait JsonInstancesForNumeric:
 
   given JsonValueWriter[Int, ujson.Num] =
     JsonValueWriter.instance(z => ujson.Num.apply(z.toDouble))
-
-  given JsonValueWriter[String, ujson.Str] =
-    JsonValueWriter.instance(ujson.Str.apply)
 end JsonInstancesForNumeric

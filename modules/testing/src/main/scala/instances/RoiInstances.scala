@@ -7,6 +7,7 @@ import cats.syntax.all.*
 
 import org.scalacheck.*
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.*
+import at.ac.oeaw.imba.gerlich.gerlib.geometry.instances.coordinate.given
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingContext
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.NonnegativeReal
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.PositiveReal
