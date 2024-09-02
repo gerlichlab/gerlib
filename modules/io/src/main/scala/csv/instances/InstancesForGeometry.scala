@@ -2,9 +2,12 @@ package at.ac.oeaw.imba.gerlich.gerlib.io.csv
 package instances
 
 import scala.util.NotGiven
+import cats.syntax.all.*
 import fs2.data.csv.*
 
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.*
+import at.ac.oeaw.imba.gerlich.gerlib.geometry.Centroid.asPoint
+import at.ac.oeaw.imba.gerlich.gerlib.io.csv.instances.encoding.given
 
 trait InstancesForGeometry:
   /* Coordinate decoders */
@@ -38,3 +41,13 @@ trait InstancesForGeometry:
     C[A] =:= Coordinate[A]
   ]](using enc: CellEncoder[A]): CellEncoder[C[A]] =
     enc.contramap(_.value)
+
+  given csvRowEncoderForCentroid[C](using
+      CellEncoder[C]
+  ): CsvRowEncoder[Centroid[C], String] = new:
+    override def apply(elem: Centroid[C]): RowF[Some, String] =
+      val pt = elem.asPoint
+      val z = ColumnNames.zCenterColumnName[C].write(pt.z)
+      val y = ColumnNames.yCenterColumnName[C].write(pt.y)
+      val x = ColumnNames.xCenterColumnName[C].write(pt.x)
+      z |+| y |+| x

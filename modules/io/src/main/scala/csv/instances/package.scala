@@ -5,6 +5,7 @@ package object instances:
 
   trait AllInstances
       extends InstancesForCell,
+        InstancesForEncoding,
         InstancesForGeometry,
         InstancesForImaging,
         InstancesForNumeric,

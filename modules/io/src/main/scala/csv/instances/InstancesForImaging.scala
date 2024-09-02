@@ -1,10 +1,12 @@
 package at.ac.oeaw.imba.gerlich.gerlib.io.csv
 package instances
 
+import cats.syntax.all.*
 import fs2.data.csv.*
 
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.*
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.instances.all.given
+import at.ac.oeaw.imba.gerlich.gerlib.io.csv.instances.all.given
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
 /** Typeclass instances for types in the
@@ -53,3 +55,14 @@ trait InstancesForImaging:
   /** For CSV write, show the timepoint just by the numeric value. */
   given CellEncoder[ImagingTimepoint] =
     CellEncoder.fromSimpleShow[ImagingTimepoint]
+
+  given csvRowEncoderForImagingContext(using
+      encFov: CellEncoder[FieldOfViewLike],
+      envTime: CellEncoder[ImagingTimepoint],
+      encChannel: CellEncoder[ImagingChannel]
+  ): CsvRowEncoder[ImagingContext, String] = new:
+    override def apply(elem: ImagingContext): RowF[Some, String] =
+      val fovRow = ColumnNames.FieldOfViewColumnName.write(elem.fieldOfView)
+      val timeRow = ColumnNames.TimepointColumnName.write(elem.timepoint)
+      val channelRow = ColumnNames.ChannelColumnName.write(elem.channel)
+      fovRow |+| timeRow |+| channelRow
