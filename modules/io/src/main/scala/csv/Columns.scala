@@ -22,10 +22,14 @@ trait ColumnNameLike[A]:
   def value: String
 
   /** Try to read a value of type {@code A} from value at key {@code value}. */
-  def from(row: RowF[Some, String])(using
+  def from(row: NamedRow)(using
       CellDecoder[A]
   ): ValidatedNel[String, A] =
     row.as[A](value).leftMap(_.getMessage).toValidatedNel
+
+  /** Write the given value as a CSV row. */
+  def write(a: A)(using CellEncoder[A]): NamedRow =
+    getCsvRowEncoderForSingleton(this)(a)
 end ColumnNameLike
 
 /** The name of a column from which an {@code A} is extracted.

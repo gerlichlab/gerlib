@@ -2,6 +2,7 @@ package at.ac.oeaw.imba.gerlich.gerlib.io
 
 import scala.util.NotGiven
 
+import cats.*
 import cats.data.NonEmptyList
 import cats.syntax.all.*
 import cats.effect.IO
@@ -15,7 +16,26 @@ import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.*
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.* // for .extractValue
 
+/** Tools and types for working with comma-separated value representation of
+  * data
+  */
 package object csv:
+  /** CSV row with keyed fields */
+  type KeyedRow[K] = RowF[Some, K]
+
+  /** CSV row with keyed fields, where each key is a string (name) */
+  type NamedRow = KeyedRow[String]
+
+  /** Helpers for working with rows with field/column names */
+  object NamedRow:
+    /** Build a row with empty/null line number. */
+    def apply(
+        headers: Some[NonEmptyList[String]],
+        values: NonEmptyList[String]
+    ): NamedRow =
+      RowF(values, headers, None)
+  end NamedRow
+
   /** Wrap the given parse attempt function in a [[fs2.data.csv.CellEncoder]],
     * then map over it with the given builder.
     *
@@ -81,15 +101,14 @@ package object csv:
       getI2: O => I2
   )(using
       encI1: CsvRowEncoder[I1, Head],
-      encI2: CsvRowEncoder[I2, Head]
+      encI2: CsvRowEncoder[I2, Head],
+      ev: Semigroup[RowF[Some, Head]]
   ): CsvRowEncoder[O, Head] =
     new:
       override def apply(elem: O): RowF[Some, Head] =
         val part1 = encI1(getI1(elem))
         val part2 = encI2(getI2(elem))
-        val vs = part1.values ::: part2.values
-        val hs = Some(part1.headers.extractValue ::: part2.headers.extractValue)
-        RowF(values = vs, headers = hs)
+        part1 |+| part2
 
   /** Turn the implicit/given cell decoder into a row decoder by parsing a row's
     * value at the given field/key.
