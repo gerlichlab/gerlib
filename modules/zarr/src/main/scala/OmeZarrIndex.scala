@@ -1,6 +1,5 @@
 package at.ac.oeaw.imba.gerlich.gerlib.zarr
 
-import cats.*
 import cats.syntax.all.*
 
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.*
