@@ -42,6 +42,24 @@ trait InstancesForGeometry:
   ]](using enc: CellEncoder[A]): CellEncoder[C[A]] =
     enc.contramap(_.value)
 
+  given defaultCsvRowDecoderForCentroid[C](using
+      CellDecoder[XCoordinate[C]],
+      CellDecoder[YCoordinate[C]],
+      CellDecoder[ZCoordinate[C]]
+  ): CsvRowDecoder[Centroid[C], String] = new:
+    override def apply(row: RowF[Some, String]): DecoderResult[Centroid[C]] =
+      val xNel = ColumnNames.xCenterColumnName[C].from(row)
+      val yNel = ColumnNames.yCenterColumnName[C].from(row)
+      val zNel = ColumnNames.zCenterColumnName[C].from(row)
+      (xNel, yNel, zNel)
+        .mapN { (x, y, z) => Centroid.fromPoint(Point3D(x, y, z)) }
+        .toEither
+        .leftMap { messages =>
+          DecoderError(
+            s"Cannot decode imaging context because of ${messages.length} error(s): ${messages.mkString_("; ")}"
+          )
+        }
+
   given csvRowEncoderForCentroid[C](using
       CellEncoder[C]
   ): CsvRowEncoder[Centroid[C], String] = new:
