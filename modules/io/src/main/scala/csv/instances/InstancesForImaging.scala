@@ -56,6 +56,24 @@ trait InstancesForImaging:
   given CellEncoder[ImagingTimepoint] =
     CellEncoder.fromSimpleShow[ImagingTimepoint]
 
+  given defaultCsvRowDecoderForImagingContext(using
+      CellDecoder[FieldOfViewLike],
+      CellDecoder[ImagingTimepoint],
+      CellDecoder[ImagingChannel]
+  ): CsvRowDecoder[ImagingContext, String] = new:
+    override def apply(row: RowF[Some, String]): DecoderResult[ImagingContext] =
+      val fovNel = ColumnNames.FieldOfViewColumnName.from(row)
+      val timeNel = ColumnNames.TimepointColumnName.from(row)
+      val channelNel = ColumnNames.ChannelColumnName.from(row)
+      (fovNel, timeNel, channelNel)
+        .mapN(ImagingContext.apply)
+        .toEither
+        .leftMap { messages =>
+          DecoderError(
+            s"Cannot decode imaging context because of ${messages.length} error(s): ${messages.mkString_("; ")}"
+          )
+        }
+
   given csvRowEncoderForImagingContext(using
       encFov: CellEncoder[FieldOfViewLike],
       envTime: CellEncoder[ImagingTimepoint],

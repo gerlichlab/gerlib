@@ -28,4 +28,10 @@ package object geometry:
       /** Access z-component of centroid. */
       private[gerlib] def z: ZCoordinate[C] = c.z
   end Centroid
+
+  type AxisX = EuclideanAxis.X.type
+
+  type AxisY = EuclideanAxis.Y.type
+
+  type AxisZ = EuclideanAxis.Z.type
 end geometry
