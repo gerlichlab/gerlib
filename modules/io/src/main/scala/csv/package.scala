@@ -56,6 +56,13 @@ package object csv:
       parse: String => Either[String, C[A]]
   ): CellDecoder[C[A]] = liftToCellDecoder(parse)
 
+  /** Combine two decoders to get a decoder for the tupled. */
+  def getCsvRowDecoderForTuple2[A, B, Head](using
+      CsvRowDecoder[A, Head],
+      CsvRowDecoder[B, Head]
+  ): CsvRowDecoder[(A, B), Head] =
+    getCsvRowDecoderForProduct2((a: A, b: B) => a -> b)
+
   /** Combine two decoders and a builder to get a decoder for the target output
     * type.
     */
