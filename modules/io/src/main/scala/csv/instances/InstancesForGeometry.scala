@@ -9,6 +9,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.geometry.*
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.Centroid.asPoint
 import at.ac.oeaw.imba.gerlich.gerlib.io.csv.instances.encoding.given
 
+/** Typeclass instances for geometry-related data types */
 trait InstancesForGeometry:
   /* Coordinate decoders */
   given cellDecoderForZCoordinate[A](using
