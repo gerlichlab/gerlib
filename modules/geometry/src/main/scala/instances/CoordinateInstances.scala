@@ -11,21 +11,22 @@ import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
 /** Typeclass instances for coordinate data types */
 trait CoordinateInstances:
-  private def instance[A: Monoid, C <: Coordinate[A]: [C] =>> NotGiven[
+  private def monoidInstance[A: Monoid, C <: Coordinate[A]: [C] =>> NotGiven[
     C =:= Coordinate[A]
-  ]](lift: A => C): Monoid[C] = new:
-    override def empty: C = lift(summon[Monoid[A]].empty)
-    override def combine(a: C, b: C): C = lift(a.value |+| b.value)
+  ]](lift: A => C): Monoid[C] = Monoid.instance(
+    lift(summon[Monoid[A]].empty),
+    (c1, c2) => lift(c1.value |+| c2.value)
+  )
 
-  given monoidForX[A: Monoid]: Monoid[XCoordinate[A]] = instance(
+  given monoidForX[A: Monoid]: Monoid[XCoordinate[A]] = monoidInstance(
     XCoordinate.apply
   )
 
-  given monoidForY[A: Monoid]: Monoid[YCoordinate[A]] = instance(
+  given monoidForY[A: Monoid]: Monoid[YCoordinate[A]] = monoidInstance(
     YCoordinate.apply
   )
 
-  given monoidForZ[A: Monoid]: Monoid[ZCoordinate[A]] = instance(
+  given monoidForZ[A: Monoid]: Monoid[ZCoordinate[A]] = monoidInstance(
     ZCoordinate.apply
   )
 
