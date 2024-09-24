@@ -3,6 +3,7 @@ package geometry
 
 import scala.util.{NotGiven, Try}
 import cats.*
+import cats.data.EitherNel
 import cats.syntax.all.*
 
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.instances.coordinate.given
@@ -27,8 +28,22 @@ object BoundingBox:
         (loX, loY, loZ, hiX, hiY, hiZ)
     }
 
-  /** A margin for an expansion (e.g. an interval) around a point */
-  final case class Margin(get: NonnegativeReal) extends AnyVal
+  def around[A: Numeric](point: Point3D[A]): Dimensions => BoundingBox[Double] =
+    import scala.math.Numeric.Implicits.infixNumericOps
+    dims =>
+      val sideX = Interval(
+        XCoordinate(point.x.value.toDouble - 0.5 * dims.x.value),
+        XCoordinate(point.x.value.toDouble + 0.5 * dims.x.value)
+      )
+      val sideY = Interval(
+        YCoordinate(point.y.value.toDouble - 0.5 * dims.y.value),
+        YCoordinate(point.y.value.toDouble + 0.5 * dims.y.value)
+      )
+      val sideZ = Interval(
+        ZCoordinate(point.z.value.toDouble - 0.5 * dims.z.value),
+        ZCoordinate(point.z.value.toDouble + 0.5 * dims.z.value)
+      )
+      BoundingBox(sideX, sideY, sideZ)
 
   /** An 1D interval is defined by its endpoints.
     *
@@ -41,7 +56,36 @@ object BoundingBox:
     C =:= Coordinate[A]
   ]](lo: C, hi: C):
     require(lo < hi, s"Lower bound not less than upper bound: ($lo, $hi)")
+    def tryGetLength(using Numeric[A]): Either[String, NonnegativeReal] =
+      import scala.math.Numeric.Implicits.infixNumericOps
+      NonnegativeReal.either((hi.value - lo.value).toDouble)
   end Interval
+
+  /** The dimensions of a bounding box */
+  final case class Dimensions(
+      x: XCoordinate[PositiveReal],
+      y: YCoordinate[PositiveReal],
+      z: ZCoordinate[PositiveReal]
+  )
+
+  /** Helpers for working with the notion of dimensions of a bounding box */
+  object Dimensions:
+    def tryFromBox[A: Numeric](
+        box: BoundingBox[A]
+    ): EitherNel[String, Dimensions] =
+      val xNel = box.sideX.tryGetLength
+        .flatMap(PositiveReal.either)
+        .map(XCoordinate.apply)
+        .toValidatedNel
+      val yNel = box.sideY.tryGetLength
+        .flatMap(PositiveReal.either)
+        .map(YCoordinate.apply)
+        .toValidatedNel
+      val zNel = box.sideZ.tryGetLength
+        .flatMap(PositiveReal.either)
+        .map(ZCoordinate.apply)
+        .toValidatedNel
+      (xNel, yNel, zNel).mapN(Dimensions.apply).toEither
 
   /** Helpers for working with the notion of intervals */
   object Interval:
