@@ -112,6 +112,7 @@ lazy val testing = defineModule("testing", false)(project)
     ironScalacheck,
     scalacheck, 
     scalatest % Test,
+    scalatestScalacheck % Test,
   ))
 
 lazy val zarr = defineModule("zarr")(project)
