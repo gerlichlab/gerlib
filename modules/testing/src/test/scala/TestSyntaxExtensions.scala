@@ -23,7 +23,7 @@ class TestSyntaxExtensions
   test(
     "Arbitrary.oneOf produces values of each type, in plausible relative proportions."
   ) {
-    given Arbitrary[Boolean | Int] = Arbitrary.oneOf[Boolean, Int]
+    /* Establish the interval for plausible counts based on Normal approximation to the Binomial. */
     val n = 10000
     val (lowerBound, upperBound) =
       val zStar = 3.719016
@@ -31,6 +31,11 @@ class TestSyntaxExtensions
       val sd = scala.math.sqrt(n * p * p)
       val exp = n * p
       (-zStar * sd + exp, zStar * sd + exp)
+    
+    // the instance under test
+    given Arbitrary[Boolean | Int] = Arbitrary.oneOf[Boolean, Int]
+    
+    // Use the instance under test to generate the values, then count by type.
     forAll(Gen.listOfN(n, arbitrary[Boolean | Int])) { values =>
       val (bools, ints): (List[Boolean], List[Int]) =
         Alternative[List].separate(
