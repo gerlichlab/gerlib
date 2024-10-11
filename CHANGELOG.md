@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 * `Area` and `MeanIntensity` data types, in a new subpackage--`measurement`--of the `roi` module.
+* Many new data types and typeclass instances.
 
 ## [v0.1.0] - 2024-07-10
 

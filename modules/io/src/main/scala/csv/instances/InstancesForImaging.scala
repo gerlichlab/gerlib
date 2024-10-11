@@ -56,31 +56,13 @@ trait InstancesForImaging:
   given CellEncoder[ImagingTimepoint] =
     CellEncoder.fromSimpleShow[ImagingTimepoint]
 
-  given defaultCsvRowDecoderForImagingContext(using
-      CellDecoder[FieldOfViewLike],
-      CellDecoder[ImagingTimepoint],
-      CellDecoder[ImagingChannel]
-  ): CsvRowDecoder[ImagingContext, String] = new:
-    override def apply(row: RowF[Some, String]): DecoderResult[ImagingContext] =
-      val fovNel = ColumnNames.FieldOfViewColumnName.from(row)
-      val timeNel = ColumnNames.TimepointColumnName.from(row)
-      val channelNel = ColumnNames.ChannelColumnName.from(row)
-      (fovNel, timeNel, channelNel)
-        .mapN(ImagingContext.apply)
-        .toEither
-        .leftMap { messages =>
-          DecoderError(
-            s"Cannot decode imaging context because of ${messages.length} error(s): ${messages.mkString_("; ")}"
-          )
-        }
-
   given csvRowEncoderForImagingContext(using
       encFov: CellEncoder[FieldOfViewLike],
       envTime: CellEncoder[ImagingTimepoint],
-      encChannel: CellEncoder[ImagingChannel]
+      encChannel: CsvRowEncoder[ImagingChannel, String]
   ): CsvRowEncoder[ImagingContext, String] = new:
     override def apply(elem: ImagingContext): RowF[Some, String] =
       val fovRow = ColumnNames.FieldOfViewColumnName.write(elem.fieldOfView)
       val timeRow = ColumnNames.TimepointColumnName.write(elem.timepoint)
-      val channelRow = ColumnNames.ChannelColumnName.write(elem.channel)
+      val channelRow = encChannel(elem.channel)
       fovRow |+| timeRow |+| channelRow

@@ -160,10 +160,10 @@ object OmeZarr:
           .one(s"Expected 5 dimensions but got ${indexedDims.length}")
           .asLeft
       else
-        val tNel = getUniqueIndexFor("time")(
+        val tNel = getUniqueIndexFor(timeName)(
           _.isInstanceOf[TimepointDimension]
         )(indexedDims).toValidatedNel
-        val cNel = getUniqueIndexFor("channel")(
+        val cNel = getUniqueIndexFor(channelName)(
           _.isInstanceOf[ChannelDimension]
         )(indexedDims).toValidatedNel
         val zNel = getUniqueIndexFor("z")(_.isInstanceOf[ZDimension])(

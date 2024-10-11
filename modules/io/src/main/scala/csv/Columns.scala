@@ -54,7 +54,7 @@ object ColumnNames:
   val TimepointColumnName = ColumnName[ImagingTimepoint]("timepoint")
 
   /** Key for field of imaging channel */
-  val ChannelColumnName = ColumnName[ImagingChannel]("roiChannel")
+  val SpotChannelColumnName = ColumnName[ImagingChannel]("spotChannel")
 
   /** Key for z-coordinate of spot centroid */
   def zCenterColumnName[C] = ColumnName[ZCoordinate[C]]("zc")

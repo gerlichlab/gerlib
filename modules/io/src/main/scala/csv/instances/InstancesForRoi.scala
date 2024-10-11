@@ -93,7 +93,7 @@ trait InstancesForRoi:
   def getCsvRowDecoderForDetectedSpot[C](
       fovCol: ColumnNameLike[FieldOfViewLike] = FieldOfViewColumnName,
       timeCol: ColumnNameLike[ImagingTimepoint] = TimepointColumnName,
-      channelCol: ColumnNameLike[ImagingChannel] = ChannelColumnName,
+      channelCol: ColumnNameLike[ImagingChannel] = SpotChannelColumnName,
       zCol: ColumnNameLike[ZCoordinate[C]] = zCenterColumnName[C],
       yCol: ColumnNameLike[YCoordinate[C]] = yCenterColumnName[C],
       xCol: ColumnNameLike[XCoordinate[C]] = xCenterColumnName[C],
@@ -136,7 +136,7 @@ trait InstancesForRoi:
   def getCsvRowEncoderForDetectedSpot[C](
       fovCol: ColumnNameLike[FieldOfViewLike] = FieldOfViewColumnName,
       timeCol: ColumnNameLike[ImagingTimepoint] = TimepointColumnName,
-      channelCol: ColumnNameLike[ImagingChannel] = ChannelColumnName,
+      channelCol: ColumnNameLike[ImagingChannel] = SpotChannelColumnName,
       zCol: ColumnNameLike[ZCoordinate[C]] = zCenterColumnName[C],
       yCol: ColumnNameLike[YCoordinate[C]] = yCenterColumnName[C],
       xCol: ColumnNameLike[XCoordinate[C]] = xCenterColumnName[C],
