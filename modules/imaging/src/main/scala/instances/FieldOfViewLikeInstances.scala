@@ -4,6 +4,7 @@ package instances
 import cats.syntax.all.*
 
 import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
+import at.ac.oeaw.imba.gerlich.gerlib.json.JsonValueWriter
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.NonnegativeInt
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
@@ -12,6 +13,10 @@ import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
   * view
   */
 trait FieldOfViewLikeInstances:
+  given JsonValueWriter[PositionName, ujson.Str] with
+    override def apply(posName: PositionName): ujson.Str =
+      ujson.Str(posName.get)
+
   /** Simply show a field of view by the text representation of the underlying
     * integer value.
     */
