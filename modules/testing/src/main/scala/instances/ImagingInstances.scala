@@ -1,7 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib.testing
 package instances
 
-import cats.data.NonEmptyList
 import cats.syntax.all.*
 import org.scalacheck.*
 
@@ -11,7 +10,6 @@ import io.github.iltotore.iron.constraint.char.{Digit, Letter}
 
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.*
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
-import at.ac.oeaw.imba.gerlich.gerlib.testing.syntax.scalacheck.*
 
 /** Scalacheck typeclass instances for some of the imaging datatypes */
 trait ImagingInstances extends CatsScalacheckInstances:
@@ -22,32 +20,43 @@ trait ImagingInstances extends CatsScalacheckInstances:
       arbNN: Arbitrary[NonnegativeInt]
   ): Arbitrary[FieldOfView] = arbNN.map(FieldOfView.apply)
 
-  /** Generate always the hyphen, allowed as one of the position name
-    * characters.
-    */
-  private def genPositionNamePunctuation
-      : Gen[Char :| PositionNameCharacterConstraint] =
-    import io.github.iltotore.iron.autoRefine
-    Gen.oneOf('.', '-', '_')
-
-  /** Choose each character from among the valid pool, then concatenate. */
+  /** Use the given instances of letter or digit generators as the base. */
   given arbitraryForPositionName(using
-      arbLetter: Arbitrary[Char :| Letter],
-      arbDigit: Arbitrary[Char :| Digit]
+      Arbitrary[Char :| Letter],
+      Arbitrary[Char :| Digit]
   ): Arbitrary[PositionName] =
-    import io.github.iltotore.iron.cats.given
+    import io.github.iltotore.iron.autoRefine
     type GoodChar = Char :| PositionNameCharacterConstraint
-    given Arbitrary[GoodChar] = Gen
-      .oneOf(
-        arbLetter.arbitrary.map(_.asInstanceOf[GoodChar]),
-        arbDigit.arbitrary.map(_.asInstanceOf[GoodChar]),
-        genPositionNamePunctuation
-      )
-      .toArbitrary
-    summon[Arbitrary[NonEmptyList[GoodChar]]]
-      .suchThat(_.exists(_.isLetter))
-      .map(_.mkString_(""))
-      .map(PositionName.unsafe)
+    val goodPunctuation: Set[GoodChar] = Set('-', '.', '_')
+    def genPunct: Gen[GoodChar] = Gen.oneOf(goodPunctuation)
+    def genPosNameChar: Gen[GoodChar] = Gen.oneOf(
+      Arbitrary.arbitrary[Char :| Letter].map(_.asInstanceOf[GoodChar]),
+      Arbitrary.arbitrary[Char :| Digit].map(_.asInstanceOf[GoodChar]),
+      genPunct
+    )
+    Arbitrary {
+      Gen
+        .nonEmptyListOf(genPosNameChar)
+        .map(chars => chars.mkString(""))
+        .suchThat { s =>
+          s.toList.filter(_.isLetter) match {
+            case Nil =>
+              !(
+                // Check that the string doesn't encode an integer or decimal.
+                !raw"-?[0-9]+".r.matches(s) ||
+                  !raw"-?[0-9]+\\.?[0-9]*".r.matches(s)
+              )
+            case 'E' :: Nil =>
+              !(
+                // Check that the string isn't a scientific notation.
+                raw"-?[0-9]\\.[0-9]+E-?[0-9]{1,3}".r.matches(s) ||
+                  raw"-?[0-9]E-?[0-9]{1,3}".r.matches(s)
+              )
+            case _ => true
+          }
+        }
+        .map(PositionName.unsafe)
+    }
 
   /** Simply choose from one of the given instances. */
   given arbitraryForFieldOfViewLike(using

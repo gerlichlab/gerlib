@@ -67,8 +67,12 @@ package object imaging:
     */
   private type PositionNameConstraint = Not[Empty] &
     ForAll[PositionNameCharacterConstraint] &
-    Not[Match["-?[0-9]+\\.?[0-9]*"]] & // Exclude orginary numbers.
-    Not[Match["-?[0-9]\\.?[0-9]+E-?[0-9]{1,3}"]] // Exclude scientific notation.
+    Not[Match["-?[0-9]+"]] & // Exclude integers.
+    Not[Match["-?[0-9]+\\.[0-9]+"]] & // Exclude decimals.
+    Not[
+      Match["-?[0-9]\\.[0-9]+E-?[0-9]{1,3}"]
+    ] & // Exclude decimal scientific notation.
+    Not[Match["-?[0-9]E-?[0-9]{1,3}"]] // Exclude integer scientific notation.
 
   /** The name of a position / field of view is a string whose characters all
     * fulfill the constraint.
