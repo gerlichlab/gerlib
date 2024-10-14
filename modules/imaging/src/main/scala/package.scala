@@ -9,6 +9,7 @@ import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.any.{Not, StrictEqual}
 import io.github.iltotore.iron.constraint.char.{Digit, Letter}
 import io.github.iltotore.iron.constraint.collection.{Empty, ForAll}
+import io.github.iltotore.iron.constraint.string.Match
 
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
@@ -62,10 +63,12 @@ package object imaging:
 
   /** A position name must be nonempty and contain only certain characters;
     * furthermore, it must not start with a hyphen for potential ambiguity with
-    * a negative number.
+    * a negative number. We also exclude a number in scientific notation.
     */
-  private type PositionNameConstraint = Not[Empty] & Not[ForAll[Digit]] &
-    ForAll[PositionNameCharacterConstraint]
+  private type PositionNameConstraint = Not[Empty] &
+    ForAll[PositionNameCharacterConstraint] &
+    Not[Match["-?[0-9]+\\.?[0-9]*"]] & // Exclude orginary numbers.
+    Not[Match["-?[0-9]\\.?[0-9]+E-?[0-9]{1,3}"]] // Exclude scientific notation.
 
   /** The name of a position / field of view is a string whose characters all
     * fulfill the constraint.

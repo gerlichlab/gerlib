@@ -20,6 +20,11 @@ class TestImagingInstances
       ScalaCheckPropertyChecks,
       should.Matchers:
 
+  override implicit val generatorDrivenConfig: PropertyCheckConfiguration =
+    // Boost up the minimum number of successes since the tests are fast, but the
+    // space of cases is complex.
+    PropertyCheckConfiguration(minSuccessful = 10000)
+
   given Arbitrary[PositionName] =
     import io.github.iltotore.iron.autoRefine
     type GoodChar = Char :| PositionNameCharacterConstraint

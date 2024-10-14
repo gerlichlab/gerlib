@@ -1,7 +1,7 @@
 package at.ac.oeaw.imba.gerlich.gerlib
 package imaging
 
-import org.scalacheck.Gen
+import org.scalacheck.{Gen, Shrink}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
@@ -47,6 +47,56 @@ class TestFieldOfViewLike
       FieldOfViewLike.parse(oldRawFov.show_) match {
         case Left(msg) => fail(s"Expected successful parse but got error: $msg")
         case Right(observed) => observed shouldEqual expected
+      }
+    }
+  }
+
+  test("PositionName cannot be parsed from an integer.") {
+    given noShrink[A]: Shrink[A] = Shrink.shrinkAny[A]
+
+    forAll { (z: Int) =>
+      val input = z.toString
+      PositionName.parse(input) match {
+        case Left(msg) =>
+          msg.startsWith(s"Could not refine string ($input)") shouldBe true
+        case Right(name) =>
+          fail(
+            s"Expected PositionName.parse to fail on input '${input}', but it succeessfully yielded ${name}"
+          )
+      }
+    }
+  }
+
+  test("PositionName cannot be parsed from any real number.") {
+    forAll { (x: Double) =>
+      val input = x.toString
+      PositionName.parse(input) match {
+        case Left(msg) =>
+          msg.startsWith(s"Could not refine string ($input)") shouldBe true
+        case Right(name) =>
+          fail(
+            s"Expected PositionName.parse to fail on input '${input}', but it succeessfully yielded ${name}"
+          )
+      }
+    }
+  }
+
+  test(
+    "Regression: PositionName will NOT be parsed from an exponent-like (scientific notation) string."
+  ) {
+    given noShrink[A]: Shrink[A] = Shrink.shrinkAny[A]
+    def chooseBase =
+      Gen.oneOf(Gen.choose(-9.999, -1.001), Gen.choose(1.001, 9.999))
+    def chooseExponent = Gen.oneOf(Gen.choose(-308, -1), Gen.choose(1, 308))
+    forAll(chooseBase, chooseExponent) { (base, exponent) =>
+      val input = s"${base}E${exponent}"
+      PositionName.parse(input) match {
+        case Left(msg) =>
+          msg.startsWith(s"Could not refine string ($input)") shouldBe true
+        case Right(name) =>
+          fail(
+            s"Expected PositionName.parse to fail on input '${input}', but it succeessfully yielded ${name}"
+          )
       }
     }
   }
