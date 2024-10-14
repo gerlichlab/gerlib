@@ -11,10 +11,7 @@ import io.github.iltotore.iron.scalacheck.char.given
 import io.github.iltotore.iron.scalacheck.numeric.intervalArbitrary
 
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.instances.fieldOfViewLike.given
-import at.ac.oeaw.imba.gerlich.gerlib.numeric.{
-  Nonnegative, 
-  NonnegativeInt, 
-}
+import at.ac.oeaw.imba.gerlich.gerlib.numeric.{Nonnegative, NonnegativeInt}
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
 /** Tests for imaging-related types' typeclass instances */
@@ -54,16 +51,17 @@ class TestImagingInstances
     }
   }
 
-  test("FieldOfView is written as simple integer through its JsonValueWriter instance.") {
+  test(
+    "FieldOfView is written as simple integer through its JsonValueWriter instance."
+  ) {
     import upickle.default.*
     import at.ac.oeaw.imba.gerlich.gerlib.json.syntax.*
 
-    given Arbitrary[FieldOfView] = Arbitrary{
-      intervalArbitrary[Int, Nonnegative](0, Int.MaxValue)
-        .arbitrary
+    given Arbitrary[FieldOfView] = Arbitrary {
+      intervalArbitrary[Int, Nonnegative](0, Int.MaxValue).arbitrary
         .map(FieldOfView.apply)
     }
-    
+
     forAll { (fov: FieldOfView) => write(fov.asJson) shouldEqual s"${fov.get}" }
   }
 end TestImagingInstances
