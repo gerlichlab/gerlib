@@ -36,12 +36,19 @@ package object imaging:
 
   /** Helpers for working with fields of view */
   object FieldOfView:
+    /** Safely try to lift ordinary integer into field of view wrapper. */
     def fromInt: Int => Either[String, FieldOfView] =
       NonnegativeInt.either.map(_.map(FieldOfView.apply))
 
     /** Wrap the given value as a field of view, if it's valid as one. */
     def parse: Parser[FieldOfView] =
       parseThroughNonnegativeInt("FieldOfView")(FieldOfView.apply)
+
+    /** Lift an ordinary integer into field of view wrapper, erroring if
+      * invalid.
+      */
+    def unsafeLift: Int => FieldOfView =
+      NonnegativeInt.unsafe `andThen` FieldOfView.apply
   end FieldOfView
 
   private[gerlib] type PositionNamePunctuation = StrictEqual['.'] |
