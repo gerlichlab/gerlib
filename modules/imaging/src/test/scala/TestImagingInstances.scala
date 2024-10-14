@@ -26,9 +26,11 @@ class TestImagingInstances
     PropertyCheckConfiguration(minSuccessful = 10000)
 
   given Arbitrary[PositionName] =
-    import io.github.iltotore.iron.autoRefine
     type GoodChar = Char :| PositionNameCharacterConstraint
-    val goodPunctuation: Set[GoodChar] = Set('-', '.', '_')
+    val goodPunctuation: Set[GoodChar] = {
+      import io.github.iltotore.iron.autoRefine
+      Set('-', '.', '_')
+    }
     def genPunct: Gen[GoodChar] = Gen.oneOf(goodPunctuation)
     def genPosNameChar: Gen[GoodChar] = Gen.oneOf(
       Arbitrary.arbitrary[Char :| Letter].map(_.asInstanceOf[GoodChar]),
@@ -44,13 +46,13 @@ class TestImagingInstances
             case Nil =>
               !(
                 // Check that the string doesn't encode an integer or decimal.
-                !raw"-?[0-9]+".r.matches(s) ||
-                  !raw"-?[0-9]+\\.?[0-9]*".r.matches(s)
+                raw"-?[0-9]+".r.matches(s) ||
+                  raw"-?[0-9]+\.[0-9]+".r.matches(s)
               )
             case 'E' :: Nil =>
               !(
                 // Check that the string isn't a scientific notation.
-                raw"-?[0-9]\\.[0-9]+E-?[0-9]{1,3}".r.matches(s) ||
+                raw"-?[0-9]\.[0-9]+E-?[0-9]{1,3}".r.matches(s) ||
                   raw"-?[0-9]E-?[0-9]{1,3}".r.matches(s)
               )
             case _ => true
