@@ -40,7 +40,7 @@ trait NumericInstances:
   ): Arbitrary[V :| P] =
     intervalArbitrary[V, P](lo.value, hi.value)
 
-  given nonnegativeIntArbitray: Arbitrary[NonnegativeInt] =
+  given nonnegativeIntArbitrary: Arbitrary[NonnegativeInt] =
     intervalArbitrary[Int, Nonnegative](0, Int.MaxValue)
 
   given positiveIntArbitrary: Arbitrary[PositiveInt] =
