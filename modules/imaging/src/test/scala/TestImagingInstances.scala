@@ -8,8 +8,13 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import io.github.iltotore.iron.:|
 import io.github.iltotore.iron.constraint.char.*
 import io.github.iltotore.iron.scalacheck.char.given
+import io.github.iltotore.iron.scalacheck.numeric.intervalArbitrary
 
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.instances.fieldOfViewLike.given
+import at.ac.oeaw.imba.gerlich.gerlib.numeric.{
+  Nonnegative, 
+  NonnegativeInt, 
+}
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
 /** Tests for imaging-related types' typeclass instances */
@@ -47,5 +52,18 @@ class TestImagingInstances
     forAll { (posName: PositionName) =>
       posName shouldEqual PositionName.unsafe(posName.show_)
     }
+  }
+
+  test("FieldOfView is written as simple integer through its JsonValueWriter instance.") {
+    import upickle.default.*
+    import at.ac.oeaw.imba.gerlich.gerlib.json.syntax.*
+
+    given Arbitrary[FieldOfView] = Arbitrary{
+      intervalArbitrary[Int, Nonnegative](0, Int.MaxValue)
+        .arbitrary
+        .map(FieldOfView.apply)
+    }
+    
+    forAll { (fov: FieldOfView) => write(fov.asJson) shouldEqual s"${fov.get}" }
   }
 end TestImagingInstances

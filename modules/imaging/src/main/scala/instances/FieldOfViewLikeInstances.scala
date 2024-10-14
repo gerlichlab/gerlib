@@ -17,6 +17,10 @@ trait FieldOfViewLikeInstances:
     override def apply(posName: PositionName): ujson.Str =
       ujson.Str(posName.get)
 
+  given JsonValueWriter[FieldOfView, ujson.Num] with
+    override def apply(fov: FieldOfView): ujson.Num = 
+      ujson.Num(fov.get)
+
   /** Simply show a field of view by the text representation of the underlying
     * integer value.
     */
