@@ -27,6 +27,9 @@ trait ColumnNameLike[A]:
   ): ValidatedNel[String, A] =
     row.as[A](value).leftMap(_.getMessage).toValidatedNel
 
+  def toNamedEncoder(using CellEncoder[A]): CsvRowEncoder[A, String] =
+    getCsvRowEncoderForSingleton(this)
+
   /** Write the given value as a CSV row. */
   def write(a: A)(using CellEncoder[A]): NamedRow =
     getCsvRowEncoderForSingleton(this)(a)
