@@ -13,10 +13,7 @@ import io.github.iltotore.iron.constraint.numeric.Positive
 import io.github.iltotore.iron.scalacheck.numeric.intervalArbitrary
 
 /** Tests for positive integer refinement type */
-class TestPositiveInt
-    extends AnyFunSuite,
-      should.Matchers,
-      ScalaCheckPropertyChecks:
+class TestPositiveInt extends AnyFunSuite, should.Matchers, ScalaCheckPropertyChecks:
   override implicit val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 100)
 
@@ -46,11 +43,10 @@ class TestPositiveInt
 
   test("PositiveInt.maybe behaves correctly.") {
     forAll { (z: Int) =>
-      PositiveInt.maybe(z) match {
+      PositiveInt.maybe(z) match
         case None if z <= 0   => succeed
         case Some(n) if z > 0 => z shouldEqual n
-        case bad => fail(s"PositiveInt.maybe($z) gave bad result: $bad")
-      }
+        case bad              => fail(s"PositiveInt.maybe($z) gave bad result: $bad")
     }
   }
 
@@ -58,7 +54,8 @@ class TestPositiveInt
     type InOut = (String, Either[String, PositiveInt])
     def genInOutLegit: Gen[InOut] =
       intervalArbitrary[Int, Positive](1, Int.MaxValue).arbitrary
-        .map { n => n.toString -> n.asRight }
+        .map: n =>
+          n.toString -> n.asRight
     def genNegative: Gen[InOut] =
       Gen
         .choose(Int.MinValue, -1)
@@ -66,23 +63,28 @@ class TestPositiveInt
     def genRandom: Gen[InOut] =
       Arbitrary
         .arbitrary[String]
-        .filter { s => Try { s.toInt }.toOption.isEmpty }
-        .map { s => s -> s"Cannot read as integer: $s".asLeft }
+        .filter: s =>
+          Try:
+            s.toInt
+          .toOption.isEmpty
+        .map: s =>
+          s -> s"Cannot read as integer: $s".asLeft
     def genInOut: Gen[InOut] = Gen.oneOf(
       genInOutLegit,
       genNegative,
       genRandom
     )
-    forAll(genInOut) { (in, out) => NonnegativeInt.parse(in) shouldEqual out }
+    forAll(genInOut): (in, out) =>
+      NonnegativeInt.parse(in) shouldEqual out
   }
 
   test("PositiveInt.unsafe behaves in accordance with its safe counterpart.") {
     forAll { (z: Int) =>
-      PositiveInt.either(z) match {
+      PositiveInt.either(z) match
         case Left(_) =>
-          assertThrows[IllegalRefinement[Int]] { PositiveInt.unsafe(z) }
+          assertThrows[IllegalRefinement[Int]]:
+            PositiveInt.unsafe(z)
         case Right(n) => n shouldEqual PositiveInt.unsafe(z)
-      }
     }
   }
 

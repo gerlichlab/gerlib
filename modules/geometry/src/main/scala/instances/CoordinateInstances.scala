@@ -33,10 +33,11 @@ trait CoordinateInstances:
   given simpleShowForCoordinate[A: SimpleShow, C <: Coordinate[
     A
   ]: [C] =>> NotGiven[C =:= Coordinate[A]]]: SimpleShow[C] =
-    SimpleShow.instance { c => c.value.show_ }
+    SimpleShow.instance: c =>
+      c.value.show_
 
-  /** Use the [[cats.Order]] instance for the underlying type to order a
-    * particular coordinate subtype.
+  /** Use the [[cats.Order]] instance for the underlying type to order a particular coordinate
+    * subtype.
     */
   given orderForCoordinate[A: Order, C <: Coordinate[A]: [C] =>> NotGiven[
     C =:= Coordinate[A]

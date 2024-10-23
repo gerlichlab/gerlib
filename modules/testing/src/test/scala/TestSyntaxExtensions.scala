@@ -11,8 +11,7 @@ import org.scalatest.matchers.should
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import at.ac.oeaw.imba.gerlich.gerlib.testing.syntax.SyntaxForScalacheck
 
-/** Tests for for the syntax extensions we provide to Scalacheck instances and
-  * companion objects
+/** Tests for for the syntax extensions we provide to Scalacheck instances and companion objects
   */
 class TestSyntaxExtensions
     extends AnyFunSuite,

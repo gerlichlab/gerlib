@@ -18,4 +18,5 @@ trait InstancesForNumeric:
   given cellEncoderForNonnegativeReal(using
       enc: CellEncoder[Double]
   ): CellEncoder[NonnegativeReal] =
-    enc.contramap { (x: NonnegativeReal) => (x: Double) }
+    enc.contramap: (x: NonnegativeReal) =>
+      (x: Double)

@@ -35,14 +35,13 @@ package object numeric:
       def contramap[A, B](fa: IntLike[A])(f: B => A): IntLike[B] = new:
         def asInt: B => Int = f `andThen` fa.asInt
 
-  /** Error subtype for when refinement of a negative integer as nonnegative is
-    * attempted
+  /** Error subtype for when refinement of a negative integer as nonnegative is attempted
     *
     * @param getInt
     *   The integer to refine as nonnegative
     * @param context
-    *   The context (e.g., purpose) in which the refinement's being attempted;
-    *   this is used to craft a more informative error message
+    *   The context (e.g., purpose) in which the refinement's being attempted; this is used to craft
+    *   a more informative error message
     */
   final case class IllegalRefinement[A] private[numeric] (
       rawValue: A,
@@ -67,8 +66,8 @@ package object numeric:
     ): IllegalRefinement[A] =
       new IllegalRefinement(value, msg, ctx.some)
 
-  /** Enrich [[io.github.iltotore.iron.RefinedTypeOps]] with semantic context
-    * for error messages, and a parser.
+  /** Enrich [[io.github.iltotore.iron.RefinedTypeOps]] with semantic context for error messages,
+    * and a parser.
     *
     * @tparam V
     *   The type of value to refine with constraint/predicate
@@ -77,10 +76,9 @@ package object numeric:
     * @see
     *   [[io.github.iltotore.iron.RefinedTypeOps]]
     */
-  private sealed trait RefinementBuilder[V, P]
-      extends RefinedTypeOps.Transparent[V :| P]:
-    /** Compile-time refinement of a {@code V} acc. to predicate {@code P} ,
-      * with constructor-like syntax
+  private sealed trait RefinementBuilder[V, P] extends RefinedTypeOps.Transparent[V :| P]:
+    /** Compile-time refinement of a {@code V} acc. to predicate {@code P} , with constructor-like
+      * syntax
       *
       * @param v
       *   The value to test under predicate/constraint {@code P}
@@ -105,14 +103,14 @@ package object numeric:
     def parse: String => Either[String, V :| P] =
       parseRaw.map(_.flatMap(either))
 
-    /** Modify the parent trait's {@code either} member by injecting semantic
-      * context into fail message.
+    /** Modify the parent trait's {@code either} member by injecting semantic context into fail
+      * message.
       */
     final def unsafe: V => V :| P = v =>
       either(v).fold(msg => throw IllegalRefinement(v, msg), identity)
 
-  /** Alias to hide implementation choice of Not[Negative] vs. GreaterEqual[0]
-    * vs., e.g., Not[Less[0]]
+  /** Alias to hide implementation choice of Not[Negative] vs. GreaterEqual[0] vs., e.g.,
+    * Not[Less[0]]
     */
   private[gerlib] type Nonnegative = Not[Negative]
 
@@ -124,16 +122,16 @@ package object numeric:
     override protected def parseRaw: String => Either[String, Int] = readAsInt
 
     def indexed[A](as: List[A]): List[(A, NonnegativeInt)] =
-      as.zipWithIndex.map { (a, i) => a -> unsafe(i) }
+      as.zipWithIndex.map: (a, i) =>
+        a -> unsafe(i)
 
     // Add a pair of nonnegative numbers, ensuring that the result stays as a nonnegative.
     extension (n: NonnegativeInt)
       infix def add(m: NonnegativeInt): NonnegativeInt =
-        either(n + m) match {
+        either(n + m) match
           case Left(msg) =>
             throw new ArithmeticException(s"Uh-Oh! $n + $m = ${n + m}; $msg")
           case Right(result) => result
-        }
   end NonnegativeInt
 
   /** Nonnegative real number */
@@ -162,20 +160,23 @@ package object numeric:
       readAsDouble
   end PositiveReal
 
-  /** Attempt to parse the given text as integer, wrapping error message as a
-    * [[scala.util.Left]] for fail.
+  /** Attempt to parse the given text as integer, wrapping error message as a [[scala.util.Left]]
+    * for fail.
     */
   def readAsInt(s: String): Either[String, Int] =
-    Try { s.toInt }.toEither.leftMap(e => s"Cannot read as integer: $s")
+    Try:
+      s.toInt
+    .toEither.leftMap(e => s"Cannot read as integer: $s")
 
-  /** Attempt to parse the given text as decimal, wrapping error message as a
-    * [[scala.util.Left]] for fail.
+  /** Attempt to parse the given text as decimal, wrapping error message as a [[scala.util.Left]]
+    * for fail.
     */
   def readAsDouble(s: String): Either[String, Double] =
-    Try { s.toDouble }.toEither.leftMap(e => s"Cannot read as double: $s")
+    Try:
+      s.toDouble
+    .toEither.leftMap(e => s"Cannot read as double: $s")
 
-  /** Try to read a string into a target type, through nonnegative integer
-    * intermediate.
+  /** Try to read a string into a target type, through nonnegative integer intermediate.
     *
     * @tparam T
     *   The target type
@@ -184,8 +185,8 @@ package object numeric:
     * @param lift
     *   How to lift raw nonnegative integer into target type
     * @return
-    *   Either a [[scala.util.Left]]-wrapped error message, or a
-    *   [[scala.util.Right]]-wrapped parsed value
+    *   Either a [[scala.util.Left]]-wrapped error message, or a [[scala.util.Right]]-wrapped parsed
+    *   value
     */
   def parseThroughNonnegativeInt[T](aName: String)(
       lift: NonnegativeInt => T

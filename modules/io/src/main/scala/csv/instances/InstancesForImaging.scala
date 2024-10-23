@@ -9,8 +9,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.imaging.instances.all.given
 import at.ac.oeaw.imba.gerlich.gerlib.io.csv.instances.all.given
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
-/** Typeclass instances for types in the
-  * [[at.ac.oeaw.imba.gerlich.gerlib.imaging]] package
+/** Typeclass instances for types in the [[at.ac.oeaw.imba.gerlich.gerlib.imaging]] package
   */
 trait InstancesForImaging:
   /** Decode a field-of-view-like by first trying by integer, then by name. */
@@ -25,8 +24,8 @@ trait InstancesForImaging:
 
   /** For CSV write, show the FOV just by the numeric value.
     *
-    * NB: CellEncoder is invariant, so we have this subtype instance in addition
-    * to the instance for the parent.
+    * NB: CellEncoder is invariant, so we have this subtype instance in addition to the instance for
+    * the parent.
     */
   given CellEncoder[FieldOfView] with
     override def apply(cell: FieldOfView): String = cell.show_
@@ -36,8 +35,8 @@ trait InstancesForImaging:
 
   /** For CSV write, show the FOV just by the numeric value.
     *
-    * NB: CellEncoder is invariant, so we have this subtype instance in addition
-    * to the instance for the parent.
+    * NB: CellEncoder is invariant, so we have this subtype instance in addition to the instance for
+    * the parent.
     */
   given CellEncoder[PositionName] = CellEncoder.fromSimpleShow[PositionName]
 

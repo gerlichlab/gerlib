@@ -18,8 +18,7 @@ case object OutsideNucleus extends NuclearDesignation
 
 /** A natural number with which to label / identify a nucleus in a field of view
   */
-final case class NucleusNumber(get: PositiveInt) extends NuclearDesignation
-    derives Order
+final case class NucleusNumber(get: PositiveInt) extends NuclearDesignation derives Order
 
 object NucleusNumber:
   given SimpleShow[NucleusNumber] = SimpleShow.instance(_.get.show)
@@ -29,11 +28,10 @@ object NuclearDesignation:
   /** Order nuclear designation with non-nuclear first, then by number. */
   def orderWithNonNuclearFirst: Order[NuclearDesignation] = new:
     override def compare(a: NuclearDesignation, b: NuclearDesignation): Int =
-      (a, b) match {
+      (a, b) match
         case (OutsideNucleus, _)                    => -1
         case (NucleusNumber(_), OutsideNucleus)     => 1
         case (NucleusNumber(n1), NucleusNumber(n2)) => n1 - n2
-      }
 
   /** Attempt to read the given text as a nucleus number. */
   def parse(s: String): Either[String, NuclearDesignation] =
@@ -44,8 +42,7 @@ object NuclearDesignation:
     }
 
   given SimpleShow[NuclearDesignation] with
-    override def show_(nd: NuclearDesignation): String = nd match {
+    override def show_(nd: NuclearDesignation): String = nd match
       case OutsideNucleus    => "0"
       case nn: NucleusNumber => nn.show_
-    }
 end NuclearDesignation

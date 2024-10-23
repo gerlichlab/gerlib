@@ -15,24 +15,29 @@ import at.ac.oeaw.imba.gerlich.gerlib.testing.GeneratorBound.{
 
 /** Tools for writing property-based tests involving custom numeric types */
 trait NumericInstances:
-  /** Choose a nonnegative integer through the Choose[Int], then unsafely
-    * refine.
+  /** Choose a nonnegative integer through the Choose[Int], then unsafely refine.
     */
   given Gen.Choose[NonnegativeInt] with
     override def choose(
         min: NonnegativeInt,
         max: NonnegativeInt
     ): Gen[NonnegativeInt] =
-      Gen.choose[Int](min, max).map { NonnegativeInt.unsafe }
+      Gen
+        .choose[Int](min, max)
+        .map:
+          NonnegativeInt.unsafe
 
   /** Choose a positive integer through the Choose[Int], then unsafely refine.
     */
   given Gen.Choose[PositiveInt] with
     override def choose(min: PositiveInt, max: PositiveInt): Gen[PositiveInt] =
-      Gen.choose[Int](min, max).map { PositiveInt.unsafe }
+      Gen
+        .choose[Int](min, max)
+        .map:
+          PositiveInt.unsafe
 
-  /** [[org.scalacheck.Arbitrary]] instance for generating bounded numeric type,
-    * subject to the given bounds.
+  /** [[org.scalacheck.Arbitrary]] instance for generating bounded numeric type, subject to the
+    * given bounds.
     */
   given arbitraryForBounded[V: Gen.Choose: Numeric, P](using
       lo: LowerBound[V :| P],

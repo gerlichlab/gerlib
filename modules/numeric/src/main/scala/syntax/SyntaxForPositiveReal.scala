@@ -4,8 +4,6 @@ package syntax
 import io.github.iltotore.iron.refineUnsafe
 
 trait SyntaxForPositiveReal:
-  /** Enable the refinement of autoRefine in client code where the import's not
-    * present.
+  /** Enable the refinement of autoRefine in client code where the import's not present.
     */
-  extension (x: PositiveReal)
-    def asNonnegative: NonnegativeReal = x.refineUnsafe
+  extension (x: PositiveReal) def asNonnegative: NonnegativeReal = x.refineUnsafe

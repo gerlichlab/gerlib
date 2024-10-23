@@ -93,11 +93,13 @@ object BoundingBox:
     def fromTuple[A: Order, C <: Coordinate[A]: [C] =>> NotGiven[
       C =:= Coordinate[A]
     ]](endpoint: (C, C)): Either[String, Interval[A, C]] =
-      Try { new Interval(endpoint._1, endpoint._2) }.toEither
-        .leftMap { e => s"Failed to create interval: ${e.getMessage}" }
+      Try:
+        new Interval(endpoint._1, endpoint._2)
+      .toEither
+        .leftMap: e =>
+          s"Failed to create interval: ${e.getMessage}"
 
-    /** Construct the instance, throwing an exception if the bounds are
-      * incoherent.
+    /** Construct the instance, throwing an exception if the bounds are incoherent.
       */
     def unsafeFromTuple[A: Order, C <: Coordinate[A]: [C] =>> NotGiven[
       C =:= Coordinate[A]

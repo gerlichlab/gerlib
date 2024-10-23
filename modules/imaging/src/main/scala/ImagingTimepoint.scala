@@ -8,13 +8,11 @@ import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
 
 /** Semantic wrapper around value representing 0-based imaging timepoint */
-final case class ImagingTimepoint(private[gerlib] get: NonnegativeInt)
-    derives Order
+final case class ImagingTimepoint(private[gerlib] get: NonnegativeInt) derives Order
 
 /** Helpers for working with imaging timepoints */
 object ImagingTimepoint:
-  /** Attempt to create a timepoint from an integer, first refining through
-    * {@code NonnegativeInt} .
+  /** Attempt to create a timepoint from an integer, first refining through {@code NonnegativeInt} .
     */
   def fromInt: Int => Either[String, ImagingTimepoint] =
     NonnegativeInt.either.map(_.map(ImagingTimepoint.apply))
@@ -23,14 +21,12 @@ object ImagingTimepoint:
   def parse: String => Either[String, ImagingTimepoint] =
     parseThroughNonnegativeInt("ImagingTimepoint")(ImagingTimepoint.apply)
 
-  /** Attempt to create a new imaging timepoint by shifting one by the given
-    * increment.
+  /** Attempt to create a new imaging timepoint by shifting one by the given increment.
     */
   def shift(t: ImagingTimepoint)(delta: Int): Either[String, ImagingTimepoint] =
     fromInt(t.get + delta)
 
-  /** Attempt to create a new imaging timepoint by shifting one by the given
-    * increment.
+  /** Attempt to create a new imaging timepoint by shifting one by the given increment.
     */
   def shift(t1: ImagingTimepoint)(
       t2: ImagingTimepoint
@@ -41,15 +37,13 @@ object ImagingTimepoint:
   def unsafeLift = NonnegativeInt.unsafe `andThen` ImagingTimepoint.apply
 
   extension (t: ImagingTimepoint)
-    /** Attempt to create a new imaging timepoint by shifting one by the given
-      * increment.
+    /** Attempt to create a new imaging timepoint by shifting one by the given increment.
       */
     def unsafeShift(delta: ImagingTimepoint): ImagingTimepoint = unsafeShift(
       delta.get
     )
 
-    /** Attempt to create a new imaging timepoint by shifting one by the given
-      * increment.
+    /** Attempt to create a new imaging timepoint by shifting one by the given increment.
       */
     def unsafeShift(delta: Int): ImagingTimepoint = unsafeLift(t.get + delta)
 end ImagingTimepoint

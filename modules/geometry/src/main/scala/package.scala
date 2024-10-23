@@ -8,8 +8,7 @@ package object geometry:
   /** Helpers for working with {@code Centroid} values. */
   object Centroid:
     extension [C](c: Centroid[C])
-      /** Allow the centroid to be used as an ordinary point, but force
-        * awareness by the caller.
+      /** Allow the centroid to be used as an ordinary point, but force awareness by the caller.
         */
       def asPoint: Point3D[C] = c
 

@@ -20,24 +20,19 @@ class TestRoiDiameter
     forAll { (z: Int) =>
       val result = RoiDiameter.fromInt(z)
       val expect =
-        if (z <= 0) {
-          "Should be strictly positive".asLeft
-        } else if (z % 2 =!= 0) {
-          s"Can't use odd value as ROI diameter: $z".asLeft
-        } else {
-          z.asRight
-        }
+        if z <= 0 then "Should be strictly positive".asLeft
+        else if z % 2 =!= 0 then s"Can't use odd value as ROI diameter: $z".asLeft
+        else z.asRight
       result shouldEqual expect
     }
   }
 
   test("RoiDiameter.fromPositiveInteger is correct.") {
     forAll { (n: PositiveInt) =>
-      RoiDiameter.fromPositiveInteger(n) match {
+      RoiDiameter.fromPositiveInteger(n) match
         case None if (n % 2 =!= 0)    => succeed
         case Some(d) if (n % 2 === 0) => d shouldEqual n
-        case result => fail(s"RoiDiameter.fromPositiveInteger($n) --> $result")
-      }
+        case result                   => fail(s"RoiDiameter.fromPositiveInteger($n) --> $result")
     }
   }
 end TestRoiDiameter

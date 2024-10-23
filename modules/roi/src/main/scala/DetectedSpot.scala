@@ -4,8 +4,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.geometry.*
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.*
 import at.ac.oeaw.imba.gerlich.gerlib.roi.measurement.{Area, MeanIntensity}
 
-/** Bundle of imaging context, location, and measurements of a detected FISH
-  * spot
+/** Bundle of imaging context, location, and measurements of a detected FISH spot
   */
 final case class DetectedSpot[C](
     context: ImagingContext,

@@ -17,7 +17,9 @@ object ZarrArrayExtras:
     ): Either[String, Array[Int]] =
       val originIndex = indexMapping.buildOriginIndex(origin)
       val sizeIndex = indexMapping.buildSizeIndex(size)
-      Try { JzarrTools.readFrom(za, sizeIndex, originIndex) }.toEither
+      Try:
+        JzarrTools.readFrom(za, sizeIndex, originIndex)
+      .toEither
         .leftMap(e =>
           s"For index mapping $indexMapping and starting from $origin, failed to read block of size $size: ${e.getMessage}"
         )

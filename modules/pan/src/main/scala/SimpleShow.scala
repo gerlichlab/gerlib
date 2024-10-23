@@ -21,8 +21,7 @@ object SimpleShow:
   def instance[A](f: A => String): SimpleShow[A] = new:
     override def show_(t: A): String = f(t)
 
-  /** Use the given function to get a value for which an instance already is
-    * available.
+  /** Use the given function to get a value for which an instance already is available.
     */
   given Contravariant[SimpleShow] with
     override def contramap[A, B](fa: SimpleShow[A])(

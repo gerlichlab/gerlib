@@ -12,13 +12,9 @@ import at.ac.oeaw.imba.gerlich.gerlib.numeric.PositiveInt
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.all.given
 
 /** Tests for data type for nucleuar / non-nuclear attribution */
-class TestNuclearDesignation
-    extends AnyFunSuite,
-      ScalaCheckPropertyChecks,
-      should.Matchers:
-  given Arbitrary[PositiveInt] = Arbitrary {
+class TestNuclearDesignation extends AnyFunSuite, ScalaCheckPropertyChecks, should.Matchers:
+  given Arbitrary[PositiveInt] = Arbitrary:
     Gen.choose(1, Int.MaxValue).map(PositiveInt.unsafe)
-  }
 
   given arbitraryForNucNum(using
       Arbitrary[PositiveInt]
@@ -67,8 +63,7 @@ class TestNuclearDesignation
     }
   }
 
-  /** Convenience helper to fetch a particular ordering of nuclear designation
-    * values
+  /** Convenience helper to fetch a particular ordering of nuclear designation values
     */
   def getNonNucFirstOrder: Order[NuclearDesignation] =
     NuclearDesignation.orderWithNonNuclearFirst

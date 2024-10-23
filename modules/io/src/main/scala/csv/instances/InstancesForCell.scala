@@ -15,16 +15,14 @@ trait InstancesForCell:
     override def apply(cell: NuclearDesignation): String = cell.show_
 
   def getCsvRowDecoderForNuclearDesignation(
-      key: ColumnNameLike[NuclearDesignation] =
-        ColumnNames.NucleusDesignationColumnName
+      key: ColumnNameLike[NuclearDesignation] = ColumnNames.NucleusDesignationColumnName
   )(using
       CellDecoder[NuclearDesignation]
   ): CsvRowDecoder[NuclearDesignation, String] =
     getCsvRowDecoderForSingleton(key)
 
   def getCsvRowEncoderForNuclearDesignation(
-      key: ColumnNameLike[NuclearDesignation] =
-        ColumnNames.NucleusDesignationColumnName
+      key: ColumnNameLike[NuclearDesignation] = ColumnNames.NucleusDesignationColumnName
   )(using
       CellEncoder[NuclearDesignation]
   ): CsvRowEncoder[NuclearDesignation, String] =
