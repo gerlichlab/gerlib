@@ -23,8 +23,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.zarr.ZarrArrayExtras.*
 
 /** Types and tools for working with regions of interest (ROIs) */
 package object roi:
-  /** A specific pivot size (1D array -> 2D array) is a specific positive
-    * integer.
+  /** A specific pivot size (1D array -> 2D array) is a specific positive integer.
     */
   opaque type PivotSize = PositiveInt & Singleton
 
@@ -38,18 +37,16 @@ package object roi:
     def apply(n: PositiveInt): PivotSize = (n: PivotSize)
 
     extension (dividend: Int)
-      /** Get the remainder of the syntax-enriched value divided by the given
-        * pivot.
+      /** Get the remainder of the syntax-enriched value divided by the given pivot.
         */
       infix def mod(pivot: PivotSize): Int = dividend % pivot
 
-      /** Test whether the syntax-enriched value is evenly divisible by the
-        * given pivot.
+      /** Test whether the syntax-enriched value is evenly divisible by the given pivot.
         */
       infix def isDivisibleBy(pivot: PivotSize): Boolean = mod(pivot) === 0
 
-  /** A multi(dimensional)array is defined by an element type and a pivot size
-    * (think: number of "columns", or number of values per "row").
+  /** A multi(dimensional)array is defined by an element type and a pivot size (think: number of
+    * "columns", or number of values per "row").
     */
   opaque type Multiarray[D <: PivotSize, E] <: Array[E] = Array[E]
 
@@ -59,10 +56,12 @@ package object roi:
     def maybe[D <: PivotSize, E](pivot: PivotSize)(
         arr: Array[E]
     ): Option[Multiarray[D, E]] =
-      arr.length.isDivisibleBy(pivot).option { arr: Multiarray[D, E] }
+      arr.length
+        .isDivisibleBy(pivot)
+        .option:
+          arr: Multiarray[D, E]
 
-  /** Typelevel refinement of positive integer as valid ROI diameter (must be
-    * even)
+  /** Typelevel refinement of positive integer as valid ROI diameter (must be even)
     */
   opaque type RoiDiameter <: PositiveInt = PositiveInt
 
@@ -78,11 +77,11 @@ package object roi:
           )
         }
 
-    /** Try to lift the given positive integer into the ROI diameter type,
-      * refining it as even.
+    /** Try to lift the given positive integer into the ROI diameter type, refining it as even.
       */
     def fromPositiveInteger(n: PositiveInt): Option[RoiDiameter] =
-      (n % 2 === 0).option { n: RoiDiameter }
+      (n % 2 === 0).option:
+        n: RoiDiameter
     given showForRoiDiameter: Show[RoiDiameter] = Show.fromToString[RoiDiameter]
   end RoiDiameter
 
@@ -95,17 +94,17 @@ package object roi:
       ImagingChannel,
       Centroid[NonnegativeReal]
   ) => Either[NonEmptyList[String], Array[Int]] =
-    (time, channel, centroid) => {
+    (time, channel, centroid) =>
       val shape = za.getShape()
       0.5 * diameter
-      val zDepthNel = Try { shape(indexMapping.zIndex) }.toEither
+      val zDepthNel = Try:
+        shape(indexMapping.zIndex)
+      .toEither
         .leftMap(e => s"Failed to get Z axis raw length: ${e.getMessage}")
         .flatMap(z =>
           PositiveInt
             .either(z)
-            .leftMap(msg =>
-              s"Cannot refine Z axis raw length (${z.show}) as positive: $msg"
-            )
+            .leftMap(msg => s"Cannot refine Z axis raw length (${z.show}) as positive: $msg")
         )
         .toValidatedNel
       val zyxNel = getOriginZYX(centroid, diameter)
@@ -122,7 +121,6 @@ package object roi:
         za.read(indexMapping)(standardCoordinate, blockSize)
           .leftMap(NonEmptyList.one)
       }
-    }
 
   def readRoiData[D <: PivotSize](
       za: ZarrArray,
@@ -136,14 +134,13 @@ package object roi:
   ) => Either[NonEmptyList[String], Multiarray[D, Int]] =
     import PivotSize.given
     (time, channel, centroid) =>
-      readRoiData(za, indexMapping, diameter)(time, channel, centroid).flatMap {
-        rawResult =>
-          Multiarray
-            .maybe(depth)(rawResult)
-            .toValidNel(
-              s"Cannot refine array of length ${rawResult.length} as pivoting every ${depth.show_} elements"
-            )
-            .toEither
+      readRoiData(za, indexMapping, diameter)(time, channel, centroid).flatMap { rawResult =>
+        Multiarray
+          .maybe(depth)(rawResult)
+          .toValidNel(
+            s"Cannot refine array of length ${rawResult.length} as pivoting every ${depth.show_} elements"
+          )
+          .toEither
       }
 
   private def getOriginZYX(
@@ -153,38 +150,34 @@ package object roi:
     import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeReal.given // for Subtraction[NonnegativeReal, Double, Double]
     import at.ac.oeaw.imba.gerlich.gerlib.numeric.Subtraction.*
     val halfWidth: Double = 0.5 * diameter
-    val zNel = {
+    val zNel =
       val rawCoord: Double = centroid.z.value `minus` halfWidth
       OmeZarrIndex.Z
         .fromDouble(rawCoord)
         .toValidNel(
           s"Cannot refine z-component ($rawCoord) of origin as OME-ZARR index"
         )
-    }
-    val yNel = {
+    val yNel =
       val rawCoord = centroid.y.value `minus` halfWidth
       OmeZarrIndex.Y
         .fromDouble(rawCoord)
         .toValidNel(
           s"Cannot refine y-component ($rawCoord) of origin as OME-ZARR index"
         )
-    }
-    val xNel = {
+    val xNel =
       val rawCoord = centroid.x.value `minus` halfWidth
       OmeZarrIndex.X
         .fromDouble(rawCoord)
         .toValidNel(
           s"Cannot refine x-component ($rawCoord) of origin as OME-ZARR index"
         )
-    }
     (zNel, yNel, xNel).tupled
 
   def getMaxProjectionValues[D <: PivotSize, E: AdmitsMinimum: ClassTag: Order](
       d: D
-  )(arr: Multiarray[D, E]): Array[E] = {
+  )(arr: Multiarray[D, E]): Array[E] =
     given maxMonoid: MaximumSeekingMonoid[E] = MaximumSeekingMonoid.instance[E]
     getFlatProjection(d)(arr)
-  }
 
   private def getFlatProjection[D <: PivotSize, E: ClassTag: Monoid](
       d: D
@@ -194,9 +187,10 @@ package object roi:
       .view
       // Not using .combineAll here, since we're working in Array and the method's not available.
       // .mapValues(_.map(_._1).toList.combineAll)
-      .mapValues(_.foldLeft(Monoid[E].empty) { case (acc, (e, _)) =>
-        acc |+| e
-      })
+      .mapValues(_.foldLeft(Monoid[E].empty):
+        case (acc, (e, _)) =>
+          acc |+| e
+      )
       .toArray
       .sortBy(_._1)
       .map(_._2)

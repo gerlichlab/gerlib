@@ -21,15 +21,15 @@ trait CatsScalacheckInstances:
     ): Arbitrary[B] =
       ev.ap(ff.arbitrary)(fa.arbitrary).toArbitrary
 
-  /** Use Gen.flatMap to define {@code Applicative.ap} , and {@code Gen.const}
-    * to define {@code Applicative.pure} .
+  /** Use Gen.flatMap to define {@code Applicative.ap} , and {@code Gen.const} to define
+    * {@code Applicative.pure} .
     */
   given applicativeForGen: Applicative[Gen] with
     override def pure[A](a: A) = Gen.const(a)
-    override def ap[A, B](ff: Gen[A => B])(fa: Gen[A]): Gen[B] = for {
+    override def ap[A, B](ff: Gen[A => B])(fa: Gen[A]): Gen[B] = for
       f <- ff
       a <- fa
-    } yield f(a)
+    yield f(a)
 
   /** Use [[org.scalacheck.Gen]]'s {@code nonEmptyListOf} member to build a
     * [[cats.data.NonEmptyList]]

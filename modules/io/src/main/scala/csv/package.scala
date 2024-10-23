@@ -16,8 +16,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.*
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.* // for .extractValue
 
-/** Tools and types for working with comma-separated value representation of
-  * data
+/** Tools and types for working with comma-separated value representation of data
   */
 package object csv:
   /** CSV row with keyed fields */
@@ -36,8 +35,8 @@ package object csv:
       RowF(values, headers, None)
   end NamedRow
 
-  /** Wrap the given parse attempt function in a [[fs2.data.csv.CellEncoder]],
-    * then map over it with the given builder.
+  /** Wrap the given parse attempt function in a [[fs2.data.csv.CellEncoder]], then map over it with
+    * the given builder.
     *
     * @tparam A
     *   The wrapped/underlying coordinate value type
@@ -63,8 +62,7 @@ package object csv:
   ): CsvRowDecoder[(A, B), Head] =
     getCsvRowDecoderForProduct2((a: A, b: B) => a -> b)
 
-  /** Combine two decoders and a builder to get a decoder for the target output
-    * type.
+  /** Combine two decoders and a builder to get a decoder for the target output type.
     */
   def getCsvRowDecoderForProduct2[I1, I2, O, Head](build: (I1, I2) => O)(using
       decI1: CsvRowDecoder[I1, Head],
@@ -81,21 +79,16 @@ package object csv:
           DecoderError(s"Error(s) decoding row ($row): ${msgs.mkString_("; ")}")
         }
 
-  /** Simply concatenate the values and headers for the two members of a product
-    * type.
+  /** Simply concatenate the values and headers for the two members of a product type.
     *
     * @tparam I1
-    *   The type of the first "field" of the product type for which to build an
-    *   encoder
+    *   The type of the first "field" of the product type for which to build an encoder
     * @tparam I2
-    *   The type of the second "field" of the product type for which to build an
-    *   encoder
+    *   The type of the second "field" of the product type for which to build an encoder
     * @param getI1
-    *   How to get the first "field" value from a value of the given product
-    *   type `O`
+    *   How to get the first "field" value from a value of the given product type `O`
     * @param getI2
-    *   How to get the second "field" value from a value of the given product
-    *   type `O`
+    *   How to get the second "field" value from a value of the given product type `O`
     * @param encI1
     *   The encoder for values of the type of the product's first "field"
     * @param encI2
@@ -117,8 +110,8 @@ package object csv:
         val part2 = encI2(getI2(elem))
         part1 |+| part2
 
-  /** Turn the implicit/given cell decoder into a row decoder by parsing a row's
-    * value at the given field/key.
+  /** Turn the implicit/given cell decoder into a row decoder by parsing a row's value at the given
+    * field/key.
     */
   def getCsvRowDecoderForSingleton[T: CellDecoder](
       key: ColumnNameLike[T]
@@ -126,16 +119,16 @@ package object csv:
     override def apply(row: RowF[Some, String]): DecoderResult[T] =
       row.as[T](key.value)
 
-  /** Turn the implicit/given cell encoder into a row encoder by giving the
-    * field the assigned name (`key`).
+  /** Turn the implicit/given cell encoder into a row encoder by giving the field the assigned name
+    * (`key`).
     */
   def getCsvRowEncoderForSingleton[T: CellEncoder](
       key: ColumnNameLike[T]
   ): CsvRowEncoder[T, String] =
     getCsvRowEncoderForSingleton(key.value)
 
-  /** Turn the implicit/given cell encoder into a row encoder by giving the
-    * field the assigned name (`key`).
+  /** Turn the implicit/given cell encoder into a row encoder by giving the field the assigned name
+    * (`key`).
     */
   def getCsvRowEncoderForSingleton[T](key: String)(using
       enc: CellEncoder[T]
@@ -146,8 +139,8 @@ package object csv:
         headers = Some(NonEmptyList.one(key))
       )
 
-  /** Wrap the given parsing function as a CSV cell/field encoder, turning the
-    * message into an error in fail case.
+  /** Wrap the given parsing function as a CSV cell/field encoder, turning the message into an error
+    * in fail case.
     */
   def liftToCellDecoder[A](parse: String => Either[String, A]): CellDecoder[A] =
     CellDecoder.instance { (s: String) =>
@@ -170,16 +163,14 @@ package object csv:
   )(using CsvRowDecoder[A, String], CharLikeChunks[IO, Byte]): IO[List[A]] =
     readCsvToCaseClasses(FS2Path.fromNioPath(path.toNIO))
 
-  /** Get a writer for case class instances of the given type, writing to the
-    * given file.
+  /** Get a writer for case class instances of the given type, writing to the given file.
     */
   def writeCaseClassesToCsv[A](path: os.Path)(using
       CsvRowEncoder[A, String]
   ): Pipe[IO, A, Nothing] =
     writeCaseClassesToCsv(FS2Path.fromNioPath(path.toNIO))
 
-  /** Get a writer for case class instances of the given type, writing to the
-    * given file.
+  /** Get a writer for case class instances of the given type, writing to the given file.
     */
   def writeCaseClassesToCsv[A](path: FS2Path)(using
       CsvRowEncoder[A, String]
@@ -190,8 +181,7 @@ package object csv:
       .through(Files[IO].writeAll(path))
 
   extension (Enc: CellEncoder.type)
-    /** Add a {@code .fromSimpleShow} on [[fs2.data.csv.CellEncoder]] companion
-      * object.
+    /** Add a {@code .fromSimpleShow} on [[fs2.data.csv.CellEncoder]] companion object.
       */
     def fromSimpleShow[A: SimpleShow]: CellEncoder[A] =
       CellEncoder.instance(_.show_)

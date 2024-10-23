@@ -15,10 +15,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.numeric.{Nonnegative, NonnegativeInt}
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
 /** Tests for imaging-related types' typeclass instances */
-class TestImagingInstances
-    extends AnyFunSuite,
-      ScalaCheckPropertyChecks,
-      should.Matchers:
+class TestImagingInstances extends AnyFunSuite, ScalaCheckPropertyChecks, should.Matchers:
 
   override implicit val generatorDrivenConfig: PropertyCheckConfiguration =
     // Boost up the minimum number of successes since the tests are fast, but the
@@ -27,10 +24,9 @@ class TestImagingInstances
 
   given Arbitrary[PositionName] =
     type GoodChar = Char :| PositionNameCharacterConstraint
-    val goodPunctuation: Set[GoodChar] = {
+    val goodPunctuation: Set[GoodChar] =
       import io.github.iltotore.iron.autoRefine
       Set('-', '.', '_')
-    }
     def genPunct: Gen[GoodChar] = Gen.oneOf(goodPunctuation)
     def genPosNameChar: Gen[GoodChar] = Gen.oneOf(
       Arbitrary.arbitrary[Char :| Letter].map(_.asInstanceOf[GoodChar]),
@@ -42,7 +38,7 @@ class TestImagingInstances
         .nonEmptyListOf(genPosNameChar)
         .map(chars => chars.mkString(""))
         .suchThat { s =>
-          s.toList.filter(_.isLetter) match {
+          s.toList.filter(_.isLetter) match
             case Nil =>
               !(
                 // Check that the string doesn't encode an integer or decimal.
@@ -56,7 +52,6 @@ class TestImagingInstances
                   raw"-?[0-9]E-?[0-9]{1,3}".r.matches(s)
               )
             case _ => true
-          }
         }
         .map(PositionName.unsafe)
     }

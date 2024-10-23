@@ -130,8 +130,7 @@ trait InstancesForRoi:
       CellEncoder[XCoordinate[C]]
   ): CsvRowEncoder[DetectedSpot[C], String] = getCsvRowEncoderForDetectedSpot()
 
-  /** Encode the given spot field-by-field, using the column/key/field names
-    * defined in this object.
+  /** Encode the given spot field-by-field, using the column/key/field names defined in this object.
     */
   def getCsvRowEncoderForDetectedSpot[C](
       fovCol: ColumnNameLike[FieldOfViewLike] = FieldOfViewColumnName,
@@ -165,8 +164,8 @@ trait InstancesForRoi:
       RowF(values = textFields, headers = Some(headers.map(_.value)))
 
   /** Decoder for bounding box records from CSV with new headers */
-  given csvRowDecoderForBoundingBox[C: CellDecoder: Order]
-      : CsvRowDecoder[BoundingBox[C], String] with
+  given csvRowDecoderForBoundingBox[C: CellDecoder: Order]: CsvRowDecoder[BoundingBox[C], String]
+  with
     /** Parse each interval endpoint, then make assemble the intervals. */
     override def apply(row: CsvRow): DecoderResult[BoundingBox[C]] =
       val zNels = row.getPair[C, ZCoordinate[C]](

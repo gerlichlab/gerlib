@@ -14,10 +14,9 @@ trait InstancesForEncoding:
       val aNames = a.headers.extractValue
       val bNames = b.headers.extractValue
       val repeats = aNames.toNes & bNames.toNes
-      if (repeats.nonEmpty) {
+      if repeats.nonEmpty then
         throw new IllegalArgumentException(
           s"${repeats.size} names repeated between row parts to combine: ${repeats.mkString_("; ")}"
         )
-      }
       NamedRow(Some(aNames ::: bNames), a.values ::: b.values)
 end InstancesForEncoding

@@ -53,7 +53,8 @@ trait RoiInstances:
     Arbitrary {
       Arbitrary
         .arbitrary[(C, C)]
-        .map { case t @ (a, b) => if a > b then b -> a else t }
+        .map:
+          case t @ (a, b) => if a > b then b -> a else t
         .map(BoundingBox.Interval.apply[A, C])
     }
 end RoiInstances

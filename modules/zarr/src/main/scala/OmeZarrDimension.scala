@@ -38,13 +38,12 @@ object OmeZarr:
   /** Key in 'axes' mapping for which the value encodes ZARR dimension name */
   private val nameKey = "name"
 
-  /** Key in 'axes' mapping for which the value encodes ZARR dimension type,
-    * e.g. "space"
+  /** Key in 'axes' mapping for which the value encodes ZARR dimension type, e.g. "space"
     */
   private val typeKey = "type"
 
-  /** Key in 'axes' mapping for which the value encodes ZARR dimension unit of
-    * measure, e.g. "micrometer"
+  /** Key in 'axes' mapping for which the value encodes ZARR dimension unit of measure, e.g.
+    * "micrometer"
     */
   private val unitKey = "unit"
 
@@ -61,12 +60,10 @@ object OmeZarr:
       opt.map(liftString)
 
   /** ZARR dimension for timepoint of an imaging experiment */
-  case class TimepointDimension(nameOpt: Option[DimensionName])
-      extends OmeZarrDimension
+  case class TimepointDimension(nameOpt: Option[DimensionName]) extends OmeZarrDimension
 
   /** ZARR dimension for channel of an image */
-  case class ChannelDimension(nameOpt: Option[DimensionName])
-      extends OmeZarrDimension
+  case class ChannelDimension(nameOpt: Option[DimensionName]) extends OmeZarrDimension
 
   /** ZARR dimension for z axis of an image stack */
   case class ZDimension(getUnit: UnitsLength) extends SpatialOmeZarrDimension:
@@ -82,9 +79,8 @@ object OmeZarr:
 
   /** Build function that attempt to cast a given object to a target type.
     *
-    * If the cast succeeds, its result will be wrapped and returned; otherwise,
-    * an error message will be contextualised by the given descriptive argument
-    * here, and wrapped and returned.
+    * If the cast succeeds, its result will be wrapped and returned; otherwise, an error message
+    * will be contextualised by the given descriptive argument here, and wrapped and returned.
     *
     * @param targetDescription
     *   The contextual information with which to enrich potential error message
@@ -93,7 +89,9 @@ object OmeZarr:
     */
   private def safeCast[O](targetDescription: String): Any => Either[String, O] =
     i =>
-      Try { i.asInstanceOf[O] }.toEither.leftMap {
+      Try:
+        i.asInstanceOf[O]
+      .toEither.leftMap {
         case e: ClassCastException =>
           s"Could not complete type cast ($targetDescription): ${e.getMessage}"
         case e: Throwable => throw e
@@ -133,14 +131,14 @@ object OmeZarr:
   object IndexMapping:
     import OmeZarr.*
 
-    /** Attempt to get positional index for each OME-ZARR dimension, according
-      * to the metadata associated with the given ZARR group.
+    /** Attempt to get positional index for each OME-ZARR dimension, according to the metadata
+      * associated with the given ZARR group.
       *
       * @param zg
       *   The ZARR group with metadata to parse
       * @return
-      *   Either a [[scala.util.Left]]-wrapped collection of error/problem
-      *   messages, or a [[scala.util.Right]]-wrapped parsed mapping
+      *   Either a [[scala.util.Left]]-wrapped collection of error/problem messages, or a
+      *   [[scala.util.Right]]-wrapped parsed mapping
       */
     def fromZarrGroup(
         zg: ZarrGroup
@@ -151,7 +149,7 @@ object OmeZarr:
 
     def fromDimensions(
         dims: NonEmptyList[OmeZarrDimension]
-    ): Either[NonEmptyList[String], IndexMapping] = {
+    ): Either[NonEmptyList[String], IndexMapping] =
       val indexedDims =
         dims.zipWithIndex.map((d, i) => d -> NonnegativeInt.unsafe(i))
       if indexedDims.length =!= 5
@@ -175,20 +173,18 @@ object OmeZarr:
         val xNel = getUniqueIndexFor("x")(_.isInstanceOf[XDimension])(
           indexedDims
         ).toValidatedNel
-        (tNel, cNel, zNel, yNel, xNel).tupled.toEither.flatMap {
-          (t, c, z, y, x) =>
-            val reps = List(t, c, z, y, x)
-              .groupBy(identity)
-              .view
-              .mapValues(_.length)
-              .filter(_._2 > 1)
-              .toMap
-            reps.isEmpty.either(
-              NonEmptyList.one(s"Repeated dimension index counts: $reps"),
-              IndexMapping(t, c, z, y, x)
-            )
+        (tNel, cNel, zNel, yNel, xNel).tupled.toEither.flatMap { (t, c, z, y, x) =>
+          val reps = List(t, c, z, y, x)
+            .groupBy(identity)
+            .view
+            .mapValues(_.length)
+            .filter(_._2 > 1)
+            .toMap
+          reps.isEmpty.either(
+            NonEmptyList.one(s"Repeated dimension index counts: $reps"),
+            IndexMapping(t, c, z, y, x)
+          )
         }
-    }
 
     private def getUniqueIndexFor(
         targetName: String
@@ -197,34 +193,32 @@ object OmeZarr:
     ] => Either[String, NonnegativeInt] =
       dims =>
         (
-          dims.filter((d, _) => isMatch(d)) match {
+          dims.filter((d, _) => isMatch(d)) match
             case Nil           => "No match".asLeft
             case (_, i) :: Nil => i.asRight
             case multi         => s"${multi.length} matches".asLeft
-          }
         ).leftMap(msg => s"$targetName: $msg")
   end IndexMapping
 
   private def getOmeZarrDimensionMap(
       rawAxes: List[Map[String, String]]
-  ): Either[NonEmptyList[String], IndexMapping] = for {
+  ): Either[NonEmptyList[String], IndexMapping] = for
     nonemptyAxes <- rawAxes.toNel.toRight(NonEmptyList.one("Empty axes!"))
     dimensions <- nonemptyAxes.traverse(parseDimension)
     mapping <- IndexMapping.fromDimensions(dimensions)
-  } yield mapping
+  yield mapping
 
   /** Parse a single axis/dimension's metadata mapping.
     *
     * @param m
     *   The metadata to parse
     * @return
-    *   Either a [[scala.util.Left]]-wrapped nonempty list of explanations of
-    *   why the metadata parse failed, or a [[scala.util.Right]]-wrapped
-    *   dimension entity
+    *   Either a [[scala.util.Left]]-wrapped nonempty list of explanations of why the metadata parse
+    *   failed, or a [[scala.util.Right]]-wrapped dimension entity
     */
   private def parseDimension(
       m: Map[String, String]
-  ): Either[NonEmptyList[String], OmeZarrDimension] = {
+  ): Either[NonEmptyList[String], OmeZarrDimension] =
     type BuildSpatial = UnitsLength => SpatialOmeZarrDimension
     val nameOptNel = m.get(nameKey).validNel[String]
     val typeNel = m.get(typeKey).toValidNel(s"Missing type key ('$typeKey')")
@@ -244,7 +238,7 @@ object OmeZarr:
       /* ...then, deal with all the spatial possibilities. */
       case (dimOpt, "space", unitOpt) =>
         val buildNel: ValidatedNel[String, BuildSpatial] =
-          dimOpt match {
+          dimOpt match
             case Some(`zName`) => (ZDimension.apply).validNel[String]
             case Some(`yName`) => (YDimension.apply).validNel[String]
             case Some(`xName`) => (XDimension.apply).validNel[String]
@@ -254,7 +248,6 @@ object OmeZarr:
             case None =>
               "To decode spatial dimension, name is required"
                 .invalidNel[BuildSpatial]
-          }
         val unitNel: ValidatedNel[String, UnitsLength] = unitOpt
           .toRight("For spatial dimension, unit is required")
           .flatMap(unitName =>
@@ -267,7 +260,6 @@ object OmeZarr:
       case (_, typename, _) =>
         NonEmptyList.one(s"Illegal ZARR dimension type: $typename").asLeft
     }
-  }
 
   /** Access the mapping of axes/dimensions metadata for a ZARR group.
     *
@@ -275,26 +267,25 @@ object OmeZarr:
     *
     * Example data:
     *
-    * { "multiscales" : [ { "metadata" : { "method" :
-    * "loci.common.image.SimpleImageScaler", "version" : "Bio-Formats 7.3.0" },
-    * "axes" : [ { "name" : "t", "type" : "time" }, { "name" : "c", "type" :
-    * "channel" }, { "unit" : "micrometer", "name" : "z", "type" : "space" }, {
-    * "unit" : "micrometer", "name" : "y", "type" : "space" }, { "unit" :
-    * "micrometer", "name" : "x", "type" : "space" } ], "name" : "Scene #01",
-    * "datasets" : [ { "path" : "0", "coordinateTransformations" : [ { "scale" :
-    * [ 1.0, 1.0, 0.18999999999999995, 0.07059082892416223, 0.07059082892416223
-    * ], "type" : "scale" } ] } ], "version" : "0.4" } ], ..., ..., }
+    * { "multiscales" : [ { "metadata" : { "method" : "loci.common.image.SimpleImageScaler",
+    * "version" : "Bio-Formats 7.3.0" }, "axes" : [ { "name" : "t", "type" : "time" }, { "name" :
+    * "c", "type" : "channel" }, { "unit" : "micrometer", "name" : "z", "type" : "space" }, { "unit"
+    * : "micrometer", "name" : "y", "type" : "space" }, { "unit" : "micrometer", "name" : "x",
+    * "type" : "space" } ], "name" : "Scene #01", "datasets" : [ { "path" : "0",
+    * "coordinateTransformations" : [ { "scale" : [ 1.0, 1.0, 0.18999999999999995,
+    * 0.07059082892416223, 0.07059082892416223 ], "type" : "scale" } ] } ], "version" : "0.4" } ],
+    * ..., ..., }
     *
     * @param zg
     *   The ZARR group for which associated axis/dimension metadata is desired
     * @return
-    *   Either a [[scala.util.Left]]-wrapped explanation of why the metadata
-    *   parse failed, or a [[scala.util.Right]]-wrapped list of raw
-    *   (string-to-string) mappings, each representing a single axis/dimension
+    *   Either a [[scala.util.Left]]-wrapped explanation of why the metadata parse failed, or a
+    *   [[scala.util.Right]]-wrapped list of raw (string-to-string) mappings, each representing a
+    *   single axis/dimension
     */
   private def getRawAxesMaps(
       zg: ZarrGroup
-  ): Either[String, List[Map[String, String]]] = for {
+  ): Either[String, List[Map[String, String]]] = for
     attrs <- (zg.getAttributes() != null)
       .either("No attributes on ZARR group", zg.getAttributes().asScala)
     rawMultiscales <- attrs
@@ -302,7 +293,7 @@ object OmeZarr:
       .toRight("Missing 'multiscales' key")
       .flatMap(safeCast[java.util.List[Object]]("raw multiscales to list"))
       .map(_.asScala.toList)
-    multiscales <- rawMultiscales match {
+    multiscales <- rawMultiscales match
       case Nil => "Multiscales list is empty".asLeft
       case h :: Nil =>
         safeCast[java.util.HashMap[String, Object]](
@@ -310,12 +301,11 @@ object OmeZarr:
         )(h)
       case multi =>
         s"Multiple (${multi.length}) entries in multiscales list, not just 1".asLeft
-    }
     rawAxes <- multiscales.asScala
       .get("axes")
       .toRight("Missing 'axes' key in multiscales metadata")
     axes <- safeCast[java.util.List[java.util.HashMap[String, String]]](
       "raw axes to list-of-map"
     )(rawAxes)
-  } yield axes.asScala.toList.map(_.asScala.toMap)
+  yield axes.asScala.toList.map(_.asScala.toMap)
 end OmeZarr

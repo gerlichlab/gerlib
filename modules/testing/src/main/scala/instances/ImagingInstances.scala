@@ -26,10 +26,9 @@ trait ImagingInstances extends CatsScalacheckInstances:
       Arbitrary[Char :| Digit]
   ): Arbitrary[PositionName] =
     type GoodChar = Char :| PositionNameCharacterConstraint
-    val goodPunctuation: Set[GoodChar] = {
+    val goodPunctuation: Set[GoodChar] =
       import io.github.iltotore.iron.autoRefine
       Set('-', '.', '_')
-    }
     def genPunct: Gen[GoodChar] = Gen.oneOf(goodPunctuation)
     def genPosNameChar: Gen[GoodChar] = Gen.oneOf(
       Arbitrary.arbitrary[Char :| Letter].map(_.asInstanceOf[GoodChar]),
@@ -41,7 +40,7 @@ trait ImagingInstances extends CatsScalacheckInstances:
         .nonEmptyListOf(genPosNameChar)
         .map(chars => chars.mkString(""))
         .suchThat { s =>
-          s.toList.filter(_.isLetter) match {
+          s.toList.filter(_.isLetter) match
             case Nil =>
               !(
                 // Check that the string doesn't encode an integer or decimal.
@@ -55,7 +54,6 @@ trait ImagingInstances extends CatsScalacheckInstances:
                   raw"-?[0-9]E-?[0-9]{1,3}".r.matches(s)
               )
             case _ => true
-          }
         }
         .map(PositionName.unsafe)
     }
@@ -65,7 +63,8 @@ trait ImagingInstances extends CatsScalacheckInstances:
       arbFov: Arbitrary[FieldOfView],
       arbPos: Arbitrary[PositionName]
   ): Arbitrary[FieldOfViewLike] =
-    Arbitrary { Gen.oneOf(arbFov.arbitrary, arbPos.arbitrary) }
+    Arbitrary:
+      Gen.oneOf(arbFov.arbitrary, arbPos.arbitrary)
 
   /** [[org.scalacheck.Arbitrary]] instance for generating a
     * [[at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingChannel]] value

@@ -24,19 +24,18 @@ trait InstancesForGeometry:
       dec: CellDecoder[A]
   ): CellDecoder[XCoordinate[A]] = dec.map(XCoordinate.apply)
 
-  /** Use the contravariant nature of encoding to build an encoder for a
-    * coordinate.
+  /** Use the contravariant nature of encoding to build an encoder for a coordinate.
     *
-    * Simply encode the coordinate the same way as its raw, unwrapped,
-    * underlying value would be encoded in CSV.
+    * Simply encode the coordinate the same way as its raw, unwrapped, underlying value would be
+    * encoded in CSV.
     *
     * @tparam A
     *   The wrapped/underlying coordinate value type
     * @tparam C
     *   The coordinate (sub)type constructor
     * @param enc
-    *   The [[fs2.data.csv.CellEncoder]] instance for the raw, underlying value
-    *   which is wrapped as a coordinate
+    *   The [[fs2.data.csv.CellEncoder]] instance for the raw, underlying value which is wrapped as
+    *   a coordinate
     */
   given cellEncoderForCoordinate[A, C[A] <: Coordinate[A]: [C[A]] =>> NotGiven[
     C[A] =:= Coordinate[A]
@@ -53,7 +52,8 @@ trait InstancesForGeometry:
       val yNel = ColumnNames.yCenterColumnName[C].from(row)
       val zNel = ColumnNames.zCenterColumnName[C].from(row)
       (xNel, yNel, zNel)
-        .mapN { (x, y, z) => Centroid.fromPoint(Point3D(x, y, z)) }
+        .mapN: (x, y, z) =>
+          Centroid.fromPoint(Point3D(x, y, z))
         .toEither
         .leftMap { messages =>
           DecoderError(

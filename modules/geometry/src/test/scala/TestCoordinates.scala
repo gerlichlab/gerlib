@@ -14,10 +14,7 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.instances.coordinate.given
 
 /** Tests for the geometric coordinate abstractions */
-class TestCoordinates
-    extends AnyFunSuite,
-      should.Matchers,
-      ScalaCheckPropertyChecks:
+class TestCoordinates extends AnyFunSuite, should.Matchers, ScalaCheckPropertyChecks:
   override implicit val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 100)
 
@@ -27,14 +24,13 @@ class TestCoordinates
     ]] =>> NotGiven[C[A] =:= Coordinate[A]]](
         rawValues: List[A],
         build: A => C[A]
-    ) = {
+    ) =
       val orderedFirst = rawValues.sorted.map(build)
       val builtFirst = Random
         .shuffle(rawValues)
         .map(build)
         .sorted(summon[Order[C[A]]].toOrdering)
       orderedFirst shouldEqual builtFirst
-    }
 
     enum CoordinateKey:
       case X, Y, Z
@@ -43,11 +39,10 @@ class TestCoordinates
       Arbitrary { Gen.oneOf(CoordinateKey.X, CoordinateKey.Y, CoordinateKey.Z) }
 
     forAll { (arbKey: CoordinateKey, arbValues: List[Double]) =>
-      (arbKey, arbValues) match {
+      (arbKey, arbValues) match
         case (CoordinateKey.X, xs) => assertOrder(xs, XCoordinate.apply)
         case (CoordinateKey.Y, ys) => assertOrder(ys, YCoordinate.apply)
         case (CoordinateKey.Z, zs) => assertOrder(zs, ZCoordinate.apply)
-      }
     }
   }
 

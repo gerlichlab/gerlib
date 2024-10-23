@@ -32,8 +32,8 @@ package object imaging:
         }
 
   /** Type wrapper around 0-based index of field of view (FOV) */
-  final case class FieldOfView(private[imaging] get: NonnegativeInt)
-      extends FieldOfViewLike derives Order
+  final case class FieldOfView(private[imaging] get: NonnegativeInt) extends FieldOfViewLike
+      derives Order
 
   /** Helpers for working with fields of view */
   object FieldOfView:
@@ -45,28 +45,24 @@ package object imaging:
     def parse: Parser[FieldOfView] =
       parseThroughNonnegativeInt("FieldOfView")(FieldOfView.apply)
 
-    /** Lift an ordinary integer into field of view wrapper, erroring if
-      * invalid.
+    /** Lift an ordinary integer into field of view wrapper, erroring if invalid.
       */
     def unsafeLift: Int => FieldOfView =
       NonnegativeInt.unsafe `andThen` FieldOfView.apply
   end FieldOfView
 
-  private[gerlib] type PositionNamePunctuation = StrictEqual['.'] |
-    StrictEqual['-'] | StrictEqual['_']
+  private[gerlib] type PositionNamePunctuation = StrictEqual['.'] | StrictEqual['-'] |
+    StrictEqual['_']
 
-  /** A position name character must be alphanumeric, a hyphen, or an
-    * underscore.
+  /** A position name character must be alphanumeric, a hyphen, or an underscore.
     */
-  private[gerlib] type PositionNameCharacterConstraint = Digit | Letter |
-    PositionNamePunctuation
+  private[gerlib] type PositionNameCharacterConstraint = Digit | Letter | PositionNamePunctuation
 
-  /** A position name must be nonempty and contain only certain characters;
-    * furthermore, it must not start with a hyphen for potential ambiguity with
-    * a negative number. We also exclude a number in scientific notation.
+  /** A position name must be nonempty and contain only certain characters; furthermore, it must not
+    * start with a hyphen for potential ambiguity with a negative number. We also exclude a number
+    * in scientific notation.
     */
-  private type PositionNameConstraint = Not[Empty] &
-    ForAll[PositionNameCharacterConstraint] &
+  private type PositionNameConstraint = Not[Empty] & ForAll[PositionNameCharacterConstraint] &
     Not[Match["-?[0-9]+"]] & // Exclude integers.
     Not[Match["-?[0-9]+\\.[0-9]+"]] & // Exclude decimals.
     Not[
@@ -74,15 +70,15 @@ package object imaging:
     ] & // Exclude decimal scientific notation.
     Not[Match["-?[0-9]E-?[0-9]{1,3}"]] // Exclude integer scientific notation.
 
-  /** The name of a position / field of view is a string whose characters all
-    * fulfill the constraint.
+  /** The name of a position / field of view is a string whose characters all fulfill the
+    * constraint.
     */
   final case class PositionName(
       private[imaging] get: String :| PositionNameConstraint
   ) extends FieldOfViewLike derives Order
 
-  /** Put instances here since the refinement is opaque, so underlying String
-    * won't be visible elsewhere.
+  /** Put instances here since the refinement is opaque, so underlying String won't be visible
+    * elsewhere.
     */
   object PositionName:
     /** Inline variant when argument is inlineable */
@@ -101,8 +97,7 @@ package object imaging:
           )
 
     /** Refine the string, then wrap it. */
-    def unsafe = (s: String) =>
-      parse(s).fold(msg => throw IllegalArgumentException(msg), identity)
+    def unsafe = (s: String) => parse(s).fold(msg => throw IllegalArgumentException(msg), identity)
   end PositionName
 
 end imaging

@@ -6,11 +6,7 @@ import cats.syntax.all.*
 import fs2.data.csv.*
 
 import at.ac.oeaw.imba.gerlich.gerlib.cell.NuclearDesignation
-import at.ac.oeaw.imba.gerlich.gerlib.geometry.{
-  XCoordinate,
-  YCoordinate,
-  ZCoordinate
-}
+import at.ac.oeaw.imba.gerlich.gerlib.geometry.{XCoordinate, YCoordinate, ZCoordinate}
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingTimepoint
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.FieldOfViewLike
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingChannel

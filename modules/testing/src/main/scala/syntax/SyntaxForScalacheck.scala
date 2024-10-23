@@ -15,7 +15,8 @@ trait SyntaxForScalacheck:
   /** Add nicer syntax to the [[org.scalacheck.Arbitrary]] companion object. */
   extension (Arb: Arbitrary.type)
     def oneOf[A: Arbitrary, B: Arbitrary]: Arbitrary[A | B] =
-      Arbitrary { Gen.oneOf(arbitrary[A], arbitrary[B]) }
+      Arbitrary:
+        Gen.oneOf(arbitrary[A], arbitrary[B])
 
   /** Add nicer syntax to generators. */
   extension [A](g: Gen[A])
