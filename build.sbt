@@ -1,7 +1,7 @@
 import Dependencies.*
 
 /* Core settings */
-ThisBuild / scalaVersion := "3.5.1"
+ThisBuild / scalaVersion := "3.5.2"
 val groupId = "com.github.gerlichlab"
 val projectName = "gerlib"
 val rootPkg = s"at.ac.oeaw.imba.gerlich.$projectName"
@@ -102,6 +102,11 @@ lazy val numeric = defineModule("numeric")(project)
 
 // "pan"-subproject types and functions
 lazy val pan = defineModule("pan")(project)
+  .settings(
+    libraryDependencies ++= Seq(
+      iron,
+    )
+  )
 
 lazy val roi = defineModule("roi")(project)
   .dependsOn(geometry, numeric, zarr)
