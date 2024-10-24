@@ -36,6 +36,6 @@ trait FieldOfViewLikeInstances:
       showPos: SimpleShow[PositionName]
   ): SimpleShow[FieldOfViewLike] with
     override def show_(fovLike: FieldOfViewLike): String = fovLike match
-      case fov: FieldOfView  => fov.show_
-      case pos: PositionName => pos.show_
+    case fov: FieldOfView  => fov.show_
+    case pos: PositionName => pos.show_
 end FieldOfViewLikeInstances

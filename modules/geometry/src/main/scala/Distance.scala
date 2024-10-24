@@ -36,8 +36,8 @@ sealed trait DistanceThreshold:
 object DistanceThreshold:
   given showForDistanceThreshold: Show[DistanceThreshold] = Show.show { (t: DistanceThreshold) =>
     val typeName = t match
-      case _: EuclideanDistance.Threshold            => "Euclidean"
-      case _: PiecewiseDistance.ConjunctiveThreshold => "Conjunctive"
+    case _: EuclideanDistance.Threshold            => "Euclidean"
+    case _: PiecewiseDistance.ConjunctiveThreshold => "Conjunctive"
     s"${typeName}Threshold(${t.get})"
   }
 
@@ -54,18 +54,18 @@ object DistanceThreshold:
   def defineProximityPointwise(
       threshold: DistanceThreshold
   ): ProximityComparable[Point3D[Double]] = threshold match
-    case t: EuclideanDistance.Threshold =>
-      new ProximityComparable[Point3D[Double]]:
-        override def proximal = (a, b) =>
-          val d = EuclideanDistance.between(a, b)
-          if d.isInfinite then
-            throw new EuclideanDistance.OverflowException(
-              s"Cannot compute finite distance between $a and $b"
-            )
-          d `lessThan` t
-    case t: PiecewiseDistance.ConjunctiveThreshold =>
-      new ProximityComparable[Point3D[Double]]:
-        override def proximal = PiecewiseDistance.within(t)
+  case t: EuclideanDistance.Threshold =>
+    new ProximityComparable[Point3D[Double]]:
+      override def proximal = (a, b) =>
+        val d = EuclideanDistance.between(a, b)
+        if d.isInfinite then
+          throw new EuclideanDistance.OverflowException(
+            s"Cannot compute finite distance between $a and $b"
+          )
+        d `lessThan` t
+  case t: PiecewiseDistance.ConjunctiveThreshold =>
+    new ProximityComparable[Point3D[Double]]:
+      override def proximal = PiecewiseDistance.within(t)
 
   /** Define a proximity comparison for values of arbitrary type, according to given threshold and
     * how to extract a 3D point value.
@@ -134,11 +134,11 @@ object PiecewiseDistance:
     val zNel =
       NonnegativeReal.either((a.z.value - b.z.value).abs).toValidatedNel
     (xNel, yNel, zNel).tupled match
-      case Validated.Valid((delX, delY, delZ)) =>
-        PiecewiseDistance(x = delX, y = delY, z = delZ)
-      case Validated.Invalid(es) =>
-        throw new ArithmeticException:
-          s"Computing distance between point $a and point $b yielded ${es.length} error(s): ${es.mkString_("; ")}"
+    case Validated.Valid((delX, delY, delZ)) =>
+      PiecewiseDistance(x = delX, y = delY, z = delZ)
+    case Validated.Invalid(es) =>
+      throw new ArithmeticException:
+        s"Computing distance between point $a and point $b yielded ${es.length} error(s): ${es.mkString_("; ")}"
 
   /** Are points closer than given threshold along each axis? */
   def within(
@@ -177,16 +177,16 @@ object EuclideanDistance:
   // TODO: account for infinity/null-numeric cases.
   def between(a: Point3D[Double], b: Point3D[Double]): EuclideanDistance =
     (a, b) match
-      case (Point3D(x1, y1, z1), Point3D(x2, y2, z2)) =>
-        val d = NonnegativeReal.unsafe(
-          math.sqrt {
-            pow(x1.value - x2.value, 2) + pow(y1.value - y2.value, 2) + pow(
-              z1.value - z2.value,
-              2
-            )
-          }
-        )
-        new EuclideanDistance(d)
+    case (Point3D(x1, y1, z1), Point3D(x2, y2, z2)) =>
+      val d = NonnegativeReal.unsafe(
+        math.sqrt {
+          pow(x1.value - x2.value, 2) + pow(y1.value - y2.value, 2) + pow(
+            z1.value - z2.value,
+            2
+          )
+        }
+      )
+      new EuclideanDistance(d)
 
   /** Use a lens of a 3D point from arbitrary type {@code A} to compute distance between {@code A}
     * values.
