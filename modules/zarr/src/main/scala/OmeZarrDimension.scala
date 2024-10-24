@@ -194,9 +194,9 @@ object OmeZarr:
       dims =>
         (
           dims.filter((d, _) => isMatch(d)) match
-            case Nil           => "No match".asLeft
-            case (_, i) :: Nil => i.asRight
-            case multi         => s"${multi.length} matches".asLeft
+          case Nil           => "No match".asLeft
+          case (_, i) :: Nil => i.asRight
+          case multi         => s"${multi.length} matches".asLeft
         ).leftMap(msg => s"$targetName: $msg")
   end IndexMapping
 
@@ -239,15 +239,15 @@ object OmeZarr:
       case (dimOpt, "space", unitOpt) =>
         val buildNel: ValidatedNel[String, BuildSpatial] =
           dimOpt match
-            case Some(`zName`) => (ZDimension.apply).validNel[String]
-            case Some(`yName`) => (YDimension.apply).validNel[String]
-            case Some(`xName`) => (XDimension.apply).validNel[String]
-            case Some(dimname) =>
-              s"Illegal name for spatial dimension: $dimname"
-                .invalidNel[BuildSpatial]
-            case None =>
-              "To decode spatial dimension, name is required"
-                .invalidNel[BuildSpatial]
+          case Some(`zName`) => (ZDimension.apply).validNel[String]
+          case Some(`yName`) => (YDimension.apply).validNel[String]
+          case Some(`xName`) => (XDimension.apply).validNel[String]
+          case Some(dimname) =>
+            s"Illegal name for spatial dimension: $dimname"
+              .invalidNel[BuildSpatial]
+          case None =>
+            "To decode spatial dimension, name is required"
+              .invalidNel[BuildSpatial]
         val unitNel: ValidatedNel[String, UnitsLength] = unitOpt
           .toRight("For spatial dimension, unit is required")
           .flatMap(unitName =>
@@ -294,13 +294,13 @@ object OmeZarr:
       .flatMap(safeCast[java.util.List[Object]]("raw multiscales to list"))
       .map(_.asScala.toList)
     multiscales <- rawMultiscales match
-      case Nil => "Multiscales list is empty".asLeft
-      case h :: Nil =>
-        safeCast[java.util.HashMap[String, Object]](
-          "multiscales singleton to mapping"
-        )(h)
-      case multi =>
-        s"Multiple (${multi.length}) entries in multiscales list, not just 1".asLeft
+    case Nil => "Multiscales list is empty".asLeft
+    case h :: Nil =>
+      safeCast[java.util.HashMap[String, Object]](
+        "multiscales singleton to mapping"
+      )(h)
+    case multi =>
+      s"Multiple (${multi.length}) entries in multiscales list, not just 1".asLeft
     rawAxes <- multiscales.asScala
       .get("axes")
       .toRight("Missing 'axes' key in multiscales metadata")

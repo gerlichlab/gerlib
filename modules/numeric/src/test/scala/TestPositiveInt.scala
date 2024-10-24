@@ -44,9 +44,9 @@ class TestPositiveInt extends AnyFunSuite, should.Matchers, ScalaCheckPropertyCh
   test("PositiveInt.maybe behaves correctly.") {
     forAll { (z: Int) =>
       PositiveInt.maybe(z) match
-        case None if z <= 0   => succeed
-        case Some(n) if z > 0 => z shouldEqual n
-        case bad              => fail(s"PositiveInt.maybe($z) gave bad result: $bad")
+      case None if z <= 0   => succeed
+      case Some(n) if z > 0 => z shouldEqual n
+      case bad              => fail(s"PositiveInt.maybe($z) gave bad result: $bad")
     }
   }
 
@@ -81,10 +81,10 @@ class TestPositiveInt extends AnyFunSuite, should.Matchers, ScalaCheckPropertyCh
   test("PositiveInt.unsafe behaves in accordance with its safe counterpart.") {
     forAll { (z: Int) =>
       PositiveInt.either(z) match
-        case Left(_) =>
-          assertThrows[IllegalRefinement[Int]]:
-            PositiveInt.unsafe(z)
-        case Right(n) => n shouldEqual PositiveInt.unsafe(z)
+      case Left(_) =>
+        assertThrows[IllegalRefinement[Int]]:
+          PositiveInt.unsafe(z)
+      case Right(n) => n shouldEqual PositiveInt.unsafe(z)
     }
   }
 

@@ -40,9 +40,9 @@ class TestCoordinates extends AnyFunSuite, should.Matchers, ScalaCheckPropertyCh
 
     forAll { (arbKey: CoordinateKey, arbValues: List[Double]) =>
       (arbKey, arbValues) match
-        case (CoordinateKey.X, xs) => assertOrder(xs, XCoordinate.apply)
-        case (CoordinateKey.Y, ys) => assertOrder(ys, YCoordinate.apply)
-        case (CoordinateKey.Z, zs) => assertOrder(zs, ZCoordinate.apply)
+      case (CoordinateKey.X, xs) => assertOrder(xs, XCoordinate.apply)
+      case (CoordinateKey.Y, ys) => assertOrder(ys, YCoordinate.apply)
+      case (CoordinateKey.Z, zs) => assertOrder(zs, ZCoordinate.apply)
     }
   }
 

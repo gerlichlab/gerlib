@@ -7,4 +7,4 @@ trait SyntaxForOption:
     /** Given that the optional value's provably nonempty, provide value extraction helper.
       */
     def extractValue: A = sa match
-      case Some(a) => a
+    case Some(a) => a

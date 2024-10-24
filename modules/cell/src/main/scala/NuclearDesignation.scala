@@ -29,9 +29,9 @@ object NuclearDesignation:
   def orderWithNonNuclearFirst: Order[NuclearDesignation] = new:
     override def compare(a: NuclearDesignation, b: NuclearDesignation): Int =
       (a, b) match
-        case (OutsideNucleus, _)                    => -1
-        case (NucleusNumber(_), OutsideNucleus)     => 1
-        case (NucleusNumber(n1), NucleusNumber(n2)) => n1 - n2
+      case (OutsideNucleus, _)                    => -1
+      case (NucleusNumber(_), OutsideNucleus)     => 1
+      case (NucleusNumber(n1), NucleusNumber(n2)) => n1 - n2
 
   /** Attempt to read the given text as a nucleus number. */
   def parse(s: String): Either[String, NuclearDesignation] =
@@ -43,6 +43,6 @@ object NuclearDesignation:
 
   given SimpleShow[NuclearDesignation] with
     override def show_(nd: NuclearDesignation): String = nd match
-      case OutsideNucleus    => "0"
-      case nn: NucleusNumber => nn.show_
+    case OutsideNucleus    => "0"
+    case nn: NucleusNumber => nn.show_
 end NuclearDesignation

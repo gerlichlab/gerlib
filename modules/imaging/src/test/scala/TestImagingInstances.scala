@@ -39,19 +39,19 @@ class TestImagingInstances extends AnyFunSuite, ScalaCheckPropertyChecks, should
         .map(chars => chars.mkString(""))
         .suchThat { s =>
           s.toList.filter(_.isLetter) match
-            case Nil =>
-              !(
-                // Check that the string doesn't encode an integer or decimal.
-                raw"-?[0-9]+".r.matches(s) ||
-                  raw"-?[0-9]+\.[0-9]+".r.matches(s)
-              )
-            case 'E' :: Nil =>
-              !(
-                // Check that the string isn't a scientific notation.
-                raw"-?[0-9]\.[0-9]+E-?[0-9]{1,3}".r.matches(s) ||
-                  raw"-?[0-9]E-?[0-9]{1,3}".r.matches(s)
-              )
-            case _ => true
+          case Nil =>
+            !(
+              // Check that the string doesn't encode an integer or decimal.
+              raw"-?[0-9]+".r.matches(s) ||
+                raw"-?[0-9]+\.[0-9]+".r.matches(s)
+            )
+          case 'E' :: Nil =>
+            !(
+              // Check that the string isn't a scientific notation.
+              raw"-?[0-9]\.[0-9]+E-?[0-9]{1,3}".r.matches(s) ||
+                raw"-?[0-9]E-?[0-9]{1,3}".r.matches(s)
+            )
+          case _ => true
         }
         .map(PositionName.unsafe)
     }

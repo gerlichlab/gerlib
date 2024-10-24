@@ -44,9 +44,9 @@ class TestNonnegativeInt extends AnyFunSuite, should.Matchers, ScalaCheckPropert
   test("NonnegativeInt.maybe behaves correctly.") {
     forAll { (z: Int) =>
       NonnegativeInt.maybe(z) match
-        case None if z < 0     => succeed
-        case Some(n) if z >= 0 => z shouldEqual n
-        case bad               => fail(s"NonnegativeInt.maybe($z) gave bad result: $bad")
+      case None if z < 0     => succeed
+      case Some(n) if z >= 0 => z shouldEqual n
+      case bad               => fail(s"NonnegativeInt.maybe($z) gave bad result: $bad")
     }
   }
 
@@ -83,10 +83,10 @@ class TestNonnegativeInt extends AnyFunSuite, should.Matchers, ScalaCheckPropert
   ) {
     forAll { (z: Int) =>
       NonnegativeInt.either(z) match
-        case Left(_) =>
-          assertThrows[IllegalRefinement[Int]]:
-            NonnegativeInt.unsafe(z)
-        case Right(n) => n shouldEqual NonnegativeInt.unsafe(z)
+      case Left(_) =>
+        assertThrows[IllegalRefinement[Int]]:
+          NonnegativeInt.unsafe(z)
+      case Right(n) => n shouldEqual NonnegativeInt.unsafe(z)
     }
   }
 

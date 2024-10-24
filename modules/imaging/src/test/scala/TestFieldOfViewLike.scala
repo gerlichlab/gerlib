@@ -42,8 +42,8 @@ class TestFieldOfViewLike extends AnyFunSuite, ScalaCheckPropertyChecks, should.
             identity
           )
       FieldOfViewLike.parse(oldRawFov.show_) match
-        case Left(msg)       => fail(s"Expected successful parse but got error: $msg")
-        case Right(observed) => observed shouldEqual expected
+      case Left(msg)       => fail(s"Expected successful parse but got error: $msg")
+      case Right(observed) => observed shouldEqual expected
     }
   }
 
@@ -53,12 +53,12 @@ class TestFieldOfViewLike extends AnyFunSuite, ScalaCheckPropertyChecks, should.
     forAll { (z: Int) =>
       val input = z.toString
       PositionName.parse(input) match
-        case Left(msg) =>
-          msg.startsWith(s"Could not refine string ($input)") shouldBe true
-        case Right(name) =>
-          fail(
-            s"Expected PositionName.parse to fail on input '${input}', but it succeessfully yielded ${name}"
-          )
+      case Left(msg) =>
+        msg.startsWith(s"Could not refine string ($input)") shouldBe true
+      case Right(name) =>
+        fail(
+          s"Expected PositionName.parse to fail on input '${input}', but it succeessfully yielded ${name}"
+        )
     }
   }
 
@@ -66,12 +66,12 @@ class TestFieldOfViewLike extends AnyFunSuite, ScalaCheckPropertyChecks, should.
     forAll { (x: Double) =>
       val input = x.toString
       PositionName.parse(input) match
-        case Left(msg) =>
-          msg.startsWith(s"Could not refine string ($input)") shouldBe true
-        case Right(name) =>
-          fail(
-            s"Expected PositionName.parse to fail on input '${input}', but it succeessfully yielded ${name}"
-          )
+      case Left(msg) =>
+        msg.startsWith(s"Could not refine string ($input)") shouldBe true
+      case Right(name) =>
+        fail(
+          s"Expected PositionName.parse to fail on input '${input}', but it succeessfully yielded ${name}"
+        )
     }
   }
 
@@ -85,12 +85,12 @@ class TestFieldOfViewLike extends AnyFunSuite, ScalaCheckPropertyChecks, should.
     forAll(chooseBase, chooseExponent) { (base, exponent) =>
       val input = s"${base}E${exponent}"
       PositionName.parse(input) match
-        case Left(msg) =>
-          msg.startsWith(s"Could not refine string ($input)") shouldBe true
-        case Right(name) =>
-          fail(
-            s"Expected PositionName.parse to fail on input '${input}', but it succeessfully yielded ${name}"
-          )
+      case Left(msg) =>
+        msg.startsWith(s"Could not refine string ($input)") shouldBe true
+      case Right(name) =>
+        fail(
+          s"Expected PositionName.parse to fail on input '${input}', but it succeessfully yielded ${name}"
+        )
     }
   }
 end TestFieldOfViewLike

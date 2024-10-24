@@ -129,9 +129,9 @@ package object numeric:
     extension (n: NonnegativeInt)
       infix def add(m: NonnegativeInt): NonnegativeInt =
         either(n + m) match
-          case Left(msg) =>
-            throw new ArithmeticException(s"Uh-Oh! $n + $m = ${n + m}; $msg")
-          case Right(result) => result
+        case Left(msg) =>
+          throw new ArithmeticException(s"Uh-Oh! $n + $m = ${n + m}; $msg")
+        case Right(result) => result
   end NonnegativeInt
 
   /** Nonnegative real number */

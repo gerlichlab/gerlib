@@ -30,9 +30,9 @@ class TestRoiDiameter
   test("RoiDiameter.fromPositiveInteger is correct.") {
     forAll { (n: PositiveInt) =>
       RoiDiameter.fromPositiveInteger(n) match
-        case None if (n % 2 =!= 0)    => succeed
-        case Some(d) if (n % 2 === 0) => d shouldEqual n
-        case result                   => fail(s"RoiDiameter.fromPositiveInteger($n) --> $result")
+      case None if (n % 2 =!= 0)    => succeed
+      case Some(d) if (n % 2 === 0) => d shouldEqual n
+      case result                   => fail(s"RoiDiameter.fromPositiveInteger($n) --> $result")
     }
   }
 end TestRoiDiameter
