@@ -7,9 +7,7 @@ object Dependencies {
         def moduleId = getModuleID(None)
         def getModuleID(name: String): ModuleID = getModuleID(Some(name))
         private def getModuleID(name: Option[String]): ModuleID = 
-            groupId %% ("iron" ++ name.fold("")("-" ++ _)) % version
-        private val groupId = "io.github.iltotore"
-        private val version = "2.6.0"
+            "io.github.iltotore" %% ("iron" ++ name.fold("")("-" ++ _)) % "2.6.0" 
     }
 
     /** Build ModuleID for a com.lihaoyi JSON-related project. */
@@ -18,11 +16,17 @@ object Dependencies {
         private def latestVersion = "4.0.0"
     }
 
+    object Cats {
+        def getModuleId(name: String): ModuleID = 
+            "org.typelevel" %% s"cats-$name" % "2.12.0"
+    }
+
     /* Versions */
     lazy val scalatestVersion = "3.2.19"
     
     /* Core dependencies */
-    lazy val catsCore = "org.typelevel" %% "cats-core" % "2.12.0"
+    lazy val catsCore = Cats.getModuleId("core")
+    lazy val catsLaws = Cats.getModuleId("laws")
     lazy val kittens = "org.typelevel" %% "kittens" % "3.3.0"
     lazy val mouse = "org.typelevel" %% "mouse" % "1.3.2"
     lazy val uJson = HaoyiJson.getModuleId("ujson")
