@@ -104,7 +104,9 @@ lazy val numeric = defineModule("numeric")(project)
 lazy val pan = defineModule("pan")(project)
   .settings(
     libraryDependencies ++= Seq(
+      catsLaws % Test,
       iron,
+      ironScalacheck % Test,
     )
   )
 
@@ -144,7 +146,7 @@ lazy val compileSettings = Def.settings(
       // https://contributors.scala-lang.org/t/for-comprehension-requires-withfilter-to-destructure-tuples/5953
       "-source:future", // for tuples in for comprehension; see above link
       "-unchecked",
-      "-Wunused:all", // for scalafix
+      "-Wunused:all", // for scalafix RemoveUnused: https://scalacenter.github.io/scalafix/docs/rules/RemoveUnused.html
     ),
   Compile / console / scalacOptions -= "-Ywarn-unused:imports",
   Test / console / scalacOptions := (Compile / console / scalacOptions).value,
@@ -153,7 +155,7 @@ lazy val compileSettings = Def.settings(
 lazy val metadataSettings = Def.settings(
   name := projectName,
   description := "Gerlich lab programming utilities, especially for data from imaging or sequencing", 
-  version := "0.2.0",
+  version := "0.3-SNAPSHOT",
   organization := groupId, 
   organizationName := "Gerlich Group, IMBA, ÖAW",
   homepage := Some(url(s"https://github.com/$gitHubOwner/$projectName")),
