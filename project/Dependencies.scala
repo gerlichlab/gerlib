@@ -26,7 +26,6 @@ object Dependencies {
     
     /* Core dependencies */
     lazy val catsCore = Cats.getModuleId("core")
-    lazy val catsLaws = Cats.getModuleId("laws")
     lazy val kittens = "org.typelevel" %% "kittens" % "3.3.0"
     lazy val mouse = "org.typelevel" %% "mouse" % "1.3.2"
     lazy val uJson = HaoyiJson.getModuleId("ujson")
@@ -46,6 +45,7 @@ object Dependencies {
     lazy val jzarr = "dev.zarr" % "jzarr" % "0.4.2"
 
     /* Test dependencies */
+    lazy val catsLaws = Cats.getModuleId("laws")
     lazy val scalacheck = "org.scalacheck" %% "scalacheck" % "1.18.0"
     lazy val scalactic = "org.scalactic" %% "scalactic" % scalatestVersion
     lazy val scalatest = "org.scalatest" %% "scalatest" % scalatestVersion

@@ -1,8 +1,7 @@
 package at.ac.oeaw.imba.gerlich.gerlib
 
-import cats.Functor
+import cats.*
 import cats.data.{NonEmptyList, NonEmptySet}
-import cats.syntax.all.*
 import io.github.iltotore.iron.{:|, Constraint, refineEither, refineUnsafe}
 import io.github.iltotore.iron.constraint.collection.MinLength
 
@@ -16,7 +15,10 @@ object collections:
     * @tparam E
     *   The element type
     */
-  type AtLeast2[C[*], E] = C[E] :| MinLength[2]
+  opaque type AtLeast2[C[*], E] = C[E] :| MinLength[2]
+
+  /** A one-argument (element type) type constructor, fixing the container type */
+  private[gerlib] type AtLeast2FixedC[C[*]] = [X] =>> AtLeast2[C, X]
 
   /** Typeclass instances and convenience syntax for working with containers of at least two
     * elements
@@ -68,27 +70,76 @@ object collections:
     ): Either[String, AtLeast2[C, X]] =
       xs.refineEither[MinLength[2]]
 
-    extension [X](xs: AtLeast2[Set, X])
-      /** Add an element to the given collection, usign the same definition of this operator as for
-        * the underlying collection.
-        *
-        * @param x
-        *   The element to add to the collection
-        * @return
-        *   The collection with the given element added
-        */
-      infix def +(x: X): AtLeast2[Set, X] =
-        (xs + x).refineUnsafe[MinLength[2]]
+    inline def unsafe[C[*], X](xs: C[X])(using
+        inline ev: Constraint[C[X], MinLength[2]]
+    ): AtLeast2[C, X] =
+      xs.refineUnsafe
 
-    // A one-argument (element type) type constructor, fixing the container type
-    private type AtLeast2FixedC[C[*]] = [X] =>> AtLeast2[C, X]
+    /** Define equality the same way as for the underlying, unrefined value. */
+    given eqForAtLeast2[C[*], E](using Eq[C[E]]): Eq[AtLeast2[C, E]] = Eq.by(es => es: C[E])
 
-    /** Provide a [[cats.Functor]] instance using the natural definition following from an available
-      * instance for the underlying container type.
-      */
-    given functorForAtLeast2[C[*]: Functor]: Functor[AtLeast2FixedC[C]] with
-      override def map[A, B](fa: AtLeast2FixedC[C][A])(f: A => B): AtLeast2FixedC[C][B] =
-        fa.map(f)
+    /** Syntax enrichment for certain type members of at AtLeast2 family */
+    object syntax:
+      extension [X](xs: AtLeast2[Set, X])
+        /** Add an element to the given collection, usign the same definition of this operator as
+          * for the underlying collection.
+          *
+          * @param x
+          *   The element to add to the collection
+          * @return
+          *   The collection with the given element added
+          */
+        infix def +(x: X): AtLeast2[Set, X] =
+          (xs + x).refineUnsafe[MinLength[2]]
+
+      extension [X](xs: AtLeast2[List, X])
+        /** With knowledge that the given container type is an set, we can use the underlying
+          * collection's {@code .contains} member.
+          *
+          * @return
+          *   Whether the underlying collection contains the given element
+          */
+        def contains(x: X): Boolean = (xs: List[X]).contains(x)
+
+      extension [C[*] <: Set[*], X](xs: AtLeast2[C, X])
+        /** With knowledge that the given container type is an set, we can use the underlying
+          * collection's {@code .contains} member.
+          *
+          * @return
+          *   Whether the underlying collection contains the given element
+          */
+        def contains(x: X): Boolean = (xs: C[X]).contains(x)
+
+      extension [C[*], X](xs: AtLeast2[C, X])
+        /** When the underlying container type has a functor, use it to {@code .map} over the
+          * refined collection.
+          *
+          * @tparam Y
+          *   The codomain
+          * @param f
+          *   The function to apply to each value of the collection
+          * @param F
+          *   The [[cats.Functor]] instance for the underlying container type
+          * @param constraint
+          *   Proof of the requisite constraint for the output collection
+          * @return
+          *   A length-refined collection with each value mapped according to the given
+          *   transformation
+          */
+        inline def map[Y](
+            f: X => Y
+        )(using F: Functor[C], inline constraint: Constraint[C[Y], MinLength[2]]): AtLeast2[C, Y] =
+          unsafe(F.map(xs: C[X])(f))
+
+      extension [C[*] <: Iterable[*], X](xs: AtLeast2[C, X])
+        /** With knowledge that the given container type is an iterable, we can use the underlying
+          * collection's {@code .length} member.
+          *
+          * @return
+          *   The size of the underlying collection
+          */
+        def size: Int = (xs: C[X]).size
+    end syntax
   end AtLeast2
 
   extension [A](bag: Set[A])
