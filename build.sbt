@@ -152,10 +152,13 @@ lazy val compileSettings = Def.settings(
   Test / console / scalacOptions := (Compile / console / scalacOptions).value,
 )
 
+lazy val versionNumber = "0.3-SNAPSHOT"
+
 lazy val metadataSettings = Def.settings(
   name := projectName,
   description := "Gerlich lab programming utilities, especially for data from imaging or sequencing", 
-  version := "0.3-SNAPSHOT",
+  version := versionNumber,
+  isSnapshot := versionNumber.endsWith("SNAPSHOT"), // Allow publish overwrites: https://github.com/sbt/sbt/issues/1156#issuecomment-43512022
   organization := groupId, 
   organizationName := "Gerlich Group, IMBA, ÖAW",
   homepage := Some(url(s"https://github.com/$gitHubOwner/$projectName")),
