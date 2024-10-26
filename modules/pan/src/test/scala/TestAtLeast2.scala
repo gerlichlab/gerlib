@@ -75,4 +75,9 @@ class TestAtLeast2 extends AnyFunSuite, ScalaCheckPropertyChecks, should.Matcher
       "import AtLeast2.syntax.map; AtLeast2.unsafe(List(0, 1, 2)).map(_ + 1): AtLeast2[List, Int]"
     ) // With the proper syntax import, the .map operation works.
 
+  test("Wrapping a list in the AtLeast2 refinement doesn't change the .head element."):
+    import AtLeast2.syntax.head
+    forAll: (x: Int, xs: NonEmptyList[Int]) =>
+      AtLeast2(x, xs).head shouldEqual x
+
 end TestAtLeast2
