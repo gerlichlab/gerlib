@@ -101,6 +101,9 @@ object collections:
           */
         def contains(x: X): Boolean = (xs: List[X]).contains(x)
 
+        /** Access the first element of the collection. */
+        def head: X = (xs: List[X]).head
+
         /** We can safely convert to [[cats.data.NonEmptyList]]. */
         def toNel: NonEmptyList[X] = NonEmptyList(xs.head, xs.tail)
 
