@@ -56,9 +56,11 @@ class TestAtLeast2 extends AnyFunSuite, ScalaCheckPropertyChecks, should.Matcher
   test("For sets, AtLeast2 is correct with apply-syntax."):
     import at.ac.oeaw.imba.gerlich.gerlib.collections.AtLeast2.syntax.*
     forAll: (xs: NonEmptySet[Int], x: Int) =>
-      val atLeast2 = AtLeast2(xs, x)
-      atLeast2 `contains` x shouldBe true
-      atLeast2.size shouldEqual (xs.length + (if xs `contains` x then 0 else 1))
+      // The test's principle is invalid if the "extra" element is already in the collection.
+      whenever(!xs.contains(x)):
+        val atLeast2 = AtLeast2(xs, x)
+        atLeast2 `contains` x shouldBe true
+        atLeast2.size shouldEqual (xs.length + (if xs `contains` x then 0 else 1))
 
   test(
     ".map on a AtLeast2[C, *] value returns a refined value IF AND ONLY IF a functor is available for the underlying container type and the AtLeast2 syntax is imported"
