@@ -101,6 +101,9 @@ object collections:
           */
         def contains(x: X): Boolean = (xs: List[X]).contains(x)
 
+        /** We can safely convert to [[cats.data.NonEmptyList]]. */
+        def toNel: NonEmptyList[X] = NonEmptyList(xs.head, xs.tail)
+
       extension [C[*] <: Set[*], X](xs: AtLeast2[C, X])
         /** With knowledge that the given container type is an set, we can use the underlying
           * collection's {@code .contains} member.
@@ -139,6 +142,25 @@ object collections:
           *   The size of the underlying collection
           */
         def size: Int = (xs: C[X]).size
+
+        /** Library-private access to the underlying iterable */
+        private[gerlib] def toNativeIterable: C[X] = xs: C[X]
+
+        /** With knowledge that the container is iterable, use the underlying collection's
+          * {@code .toList} method.
+          *
+          * @return
+          *   A list representation of the underlying collection
+          */
+        def toList: List[X] = (xs: C[X]).toList
+
+        /** With knowledge that the underlying container is iterable, convert the underlying
+          * collection to a set.
+          *
+          * @return
+          *   A set representation of the underlying collection
+          */
+        def toSet: Set[X] = (xs: C[X]).toSet
     end syntax
   end AtLeast2
 
