@@ -46,6 +46,7 @@ object Dependencies {
 
     /* Test dependencies */
     lazy val catsLaws = Cats.getModuleId("laws")
+    lazy val disciplineScalatest = "org.typelevel" %% "discipline-scalatest" % "2.3.0"
     lazy val scalacheck = "org.scalacheck" %% "scalacheck" % "1.18.0"
     lazy val scalactic = "org.scalactic" %% "scalactic" % scalatestVersion
     lazy val scalatest = "org.scalatest" %% "scalatest" % scalatestVersion
