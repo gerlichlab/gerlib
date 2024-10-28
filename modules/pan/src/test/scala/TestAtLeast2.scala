@@ -10,6 +10,7 @@ import io.github.iltotore.iron.constraint.collection.MinLength
 import org.scalacheck.*
 import org.scalatest.funsuite.AnyFunSuiteLike
 import org.scalatest.matchers.should
+import org.scalatest.prop.Configuration.PropertyCheckConfiguration
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import at.ac.oeaw.imba.gerlich.gerlib.collections.{AtLeast2, AtLeast2List, AtLeast2Set}
 
@@ -21,24 +22,31 @@ class TestAtLeast2
       ScalaCheckPropertyChecks,
       should.Matchers:
 
-  inline given arbitraryForAtLeast2[C[*], E](using
+  override implicit val generatorDrivenConfig: PropertyCheckConfiguration =
+    PropertyCheckConfiguration(minSuccessful = 500)
+
+  inline given arbitraryForAtLeast2[C[*] <: Iterable[*], E](using
       Arbitrary[E],
       org.scalacheck.util.Buildable[E, C[E]],
       C[E] => Iterable[E],
       Constraint[C[E], MinLength[2]]
   ): Arbitrary[AtLeast2[C, E]] = Arbitrary {
-    for
-      n <- Gen.choose(2, 5)
-      unrefined <- Gen.containerOfN[C, E](n, Arbitrary.arbitrary[E])
-    yield AtLeast2
-      .either(unrefined)
-      .fold(
-        msg =>
-          throw new Exception(
-            s"Error generating collection of at least 2 elements! Collection: ${unrefined}. Message: $msg"
-          ),
-        identity
-      )
+    Gen.size
+      .flatMap: k =>
+        Gen.choose(2, scala.math.max(2, k))
+      .flatMap(Gen.containerOfN[C, E](_, Arbitrary.arbitrary[E]))
+      .suchThat(_.size > 2)
+      .map { unrefined =>
+        AtLeast2
+          .either(unrefined)
+          .fold(
+            msg =>
+              throw new Exception(
+                s"Error generating collection of at least 2 elements! Collection: ${unrefined}. Message: $msg"
+              ),
+            identity
+          )
+      }
   }
 
   test("For lists, AtLeast2.apply has cons-like argument order"):
@@ -77,5 +85,8 @@ class TestAtLeast2
 
   // Check the SemigroupK laws for the at-least-2-element refinement of Set.
   checkAll("AtLeast2[Set, *].SemigroupLaws", SemigroupKTests[AtLeast2Set].semigroupK[Int])
+
+  test("When syntax is imported, AtLeast2[Set, A] may be represented as cats.data.NonEmptySet[A]."):
+    pending
 
 end TestAtLeast2
