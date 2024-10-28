@@ -1,5 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib
 
+import scala.collection.immutable.SortedSet
 import cats.*
 import cats.data.{NonEmptyList, NonEmptySet}
 import io.github.iltotore.iron.{:|, Constraint, refineEither, refineUnsafe}
@@ -95,10 +96,20 @@ object collections:
         infix def +(x: X): AtLeast2Set[X] =
           (xs + x).refineUnsafe[MinLength[2]]
 
+        /** With knowledge that the given container type is an set, we can use the underlying
+          * collection's {@code .contains} member.
+          *
+          * @return
+          *   Whether the underlying collection contains the given element
+          */
+        def contains(x: X): Boolean = (xs: Set[X]).contains(x)
+
         /** Convert safely to [[cats.data.NonEmptySet]]. */
         def toNes(using ord: Order[X]): NonEmptySet[X] =
-          val sorted = scala.collection.immutable.SortedSet.from(xs)(ord.toOrdering)
-          NonEmptySet.fromSetUnsafe(sorted)
+          NonEmptySet.fromSetUnsafe(xs.toSortedSet)
+
+        def toSortedSet(using ord: Order[X]): SortedSet[X] =
+          SortedSet.from(xs)(ord.toOrdering)
 
       extension [X](xs: AtLeast2List[X])
         /** With knowledge that the given container type is an set, we can use the underlying
@@ -114,15 +125,6 @@ object collections:
 
         /** We can safely convert to [[cats.data.NonEmptyList]]. */
         def toNel: NonEmptyList[X] = NonEmptyList(xs.head, xs.tail)
-
-      extension [C[*] <: Set[*], X](xs: AtLeast2[C, X])
-        /** With knowledge that the given container type is an set, we can use the underlying
-          * collection's {@code .contains} member.
-          *
-          * @return
-          *   Whether the underlying collection contains the given element
-          */
-        def contains(x: X): Boolean = (xs: C[X]).contains(x)
 
       extension [C[*], X](xs: AtLeast2[C, X])
         /** When the underlying container type has a functor, use it to {@code .map} over the

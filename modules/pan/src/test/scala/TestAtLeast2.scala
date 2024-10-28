@@ -87,6 +87,17 @@ class TestAtLeast2
   checkAll("AtLeast2[Set, *].SemigroupLaws", SemigroupKTests[AtLeast2Set].semigroupK[Int])
 
   test("When syntax is imported, AtLeast2[Set, A] may be represented as cats.data.NonEmptySet[A]."):
-    pending
+    assertCompiles("AtLeast2.unsafe(Set(1, 2))") // Precondition: we can build the collection.
+    assertTypeError(
+      "AtLeast2.unsafe(Set(1, 2)).toNes"
+    ) // Test: without syntax import, .toNes is unavailable.
+    assertCompiles(
+      "import AtLeast2.syntax.toNes; AtLeast2.unsafe(Set(1, 2)).toNes"
+    ) // Test: with syntax import, .toNes becomes available.
+
+    // Check the equivalence of the result of the .toNes operation and the underlying collection.
+    import AtLeast2.syntax.{toNes, toSortedSet}
+    forAll: (xs: AtLeast2[Set, Int]) =>
+      xs.toNes shouldEqual NonEmptySet.fromSetUnsafe(xs.toSortedSet)
 
 end TestAtLeast2
