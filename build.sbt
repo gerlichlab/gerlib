@@ -105,6 +105,7 @@ lazy val pan = defineModule("pan")(project)
   .settings(
     libraryDependencies ++= Seq(
       catsLaws % Test,
+      disciplineScalatest % Test,
       iron,
       ironScalacheck % Test,
     )

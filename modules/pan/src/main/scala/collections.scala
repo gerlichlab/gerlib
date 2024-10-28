@@ -20,6 +20,12 @@ object collections:
   /** A one-argument (element type) type constructor, fixing the container type */
   private[gerlib] type AtLeast2FixedC[C[*]] = [X] =>> AtLeast2[C, X]
 
+  /** List of at least 2 elements */
+  type AtLeast2List[A] = AtLeast2[List, A]
+
+  /** Set of at least 2 elements */
+  type AtLeast2Set[A] = AtLeast2[Set, A]
+
   /** Typeclass instances and convenience syntax for working with containers of at least two
     * elements
     */
@@ -77,6 +83,16 @@ object collections:
 
     /** Define equality the same way as for the underlying, unrefined value. */
     given eqForAtLeast2[C[*], E](using Eq[C[E]]): Eq[AtLeast2[C, E]] = Eq.by(es => es: C[E])
+
+    /** Simply concatenate the elements from the left list to the head of the right list. */
+    given semigroupKForAtLeast2List: SemigroupK[AtLeast2List] = new:
+      override def combineK[A](xs: AtLeast2List[A], ys: AtLeast2List[A]): AtLeast2List[A] =
+        AtLeast2.unsafe(xs ::: ys)
+
+    /** Simply take the union of the underlying sets. */
+    given semigroupKForAtLeast2Set: SemigroupK[AtLeast2Set] = new:
+      override def combineK[A](xs: AtLeast2Set[A], ys: AtLeast2Set[A]): AtLeast2Set[A] =
+        AtLeast2.unsafe(xs ++ ys)
 
     /** Syntax enrichment for certain type members of at AtLeast2 family */
     object syntax:

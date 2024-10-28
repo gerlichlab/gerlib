@@ -2,17 +2,24 @@ package at.ac.oeaw.imba.gerlich.gerlib
 
 import cats.data.*
 import cats.laws.discipline.arbitrary.given // for Arbitrary[NonEmptySet[*]], Arbitrary[NonEmptyList[*]], etc.
+import cats.laws.discipline.SemigroupKTests
+import org.typelevel.discipline.scalatest.FunSuiteDiscipline
+import cats.syntax.all.*
 import io.github.iltotore.iron.Constraint
 import io.github.iltotore.iron.constraint.collection.MinLength
 import org.scalacheck.*
-import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.funsuite.AnyFunSuiteLike
 import org.scalatest.matchers.should
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
-import at.ac.oeaw.imba.gerlich.gerlib.collections.AtLeast2
+import at.ac.oeaw.imba.gerlich.gerlib.collections.{AtLeast2, AtLeast2List, AtLeast2Set}
 
 /** Tests for the [[collections.AtLeast2]] refinement type
   */
-class TestAtLeast2 extends AnyFunSuite, ScalaCheckPropertyChecks, should.Matchers:
+class TestAtLeast2
+    extends AnyFunSuiteLike,
+      FunSuiteDiscipline,
+      ScalaCheckPropertyChecks,
+      should.Matchers:
 
   inline given arbitraryForAtLeast2[C[*], E](using
       Arbitrary[E],
@@ -79,5 +86,11 @@ class TestAtLeast2 extends AnyFunSuite, ScalaCheckPropertyChecks, should.Matcher
     import AtLeast2.syntax.head
     forAll: (x: Int, xs: NonEmptyList[Int]) =>
       AtLeast2(x, xs).head shouldEqual x
+
+  // Check the SemigroupK laws for the at-least-2-element refinement of List.
+  checkAll("AtLeast2[List, *].SemigroupLaws", SemigroupKTests[AtLeast2List].semigroupK[Int])
+
+  // Check the SemigroupK laws for the at-least-2-element refinement of Set.
+  checkAll("AtLeast2[Set, *].SemigroupLaws", SemigroupKTests[AtLeast2Set].semigroupK[Int])
 
 end TestAtLeast2
