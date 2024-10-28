@@ -46,21 +46,8 @@ object collections:
       * @param xs
       *   The existing nonempty collection
       */
-    def apply[X](x: X, xs: NonEmptyList[X]): AtLeast2[List, X] =
+    def apply[X](x: X, xs: NonEmptyList[X]): AtLeast2List[X] =
       (x :: xs).toList.refineUnsafe[MinLength[2]]
-
-    /** Build an at-least-two-element list by adding the given single element to the given
-      * collection.
-      *
-      * @tparam X
-      *   The type of value stored in the collection
-      * @param xs
-      *   The existing nonempty collection
-      * @param x
-      *   The element to prepend to the collection
-      */
-    def apply[X](xs: NonEmptySet[X], x: X): AtLeast2[Set, X] =
-      xs.add(x).toSortedSet.refineUnsafe
 
     /** Attempt to refine the given collection as one of at least two elements.
       *
@@ -96,7 +83,7 @@ object collections:
 
     /** Syntax enrichment for certain type members of at AtLeast2 family */
     object syntax:
-      extension [X](xs: AtLeast2[Set, X])
+      extension [X](xs: AtLeast2Set[X])
         /** Add an element to the given collection, usign the same definition of this operator as
           * for the underlying collection.
           *
@@ -105,10 +92,15 @@ object collections:
           * @return
           *   The collection with the given element added
           */
-        infix def +(x: X): AtLeast2[Set, X] =
+        infix def +(x: X): AtLeast2Set[X] =
           (xs + x).refineUnsafe[MinLength[2]]
 
-      extension [X](xs: AtLeast2[List, X])
+        /** Convert safely to [[cats.data.NonEmptySet]]. */
+        def toNes(using ord: Order[X]): NonEmptySet[X] =
+          val sorted = scala.collection.immutable.SortedSet.from(xs)(ord.toOrdering)
+          NonEmptySet.fromSetUnsafe(sorted)
+
+      extension [X](xs: AtLeast2List[X])
         /** With knowledge that the given container type is an set, we can use the underlying
           * collection's {@code .contains} member.
           *
