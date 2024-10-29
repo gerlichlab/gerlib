@@ -4,6 +4,7 @@ package object instances:
   object all extends AllJsonInstances
 
   trait AllJsonInstances
-      extends JsonInstancesForGeometry,
+      extends JsonInstancesForCollections,
+        JsonInstancesForGeometry,
         JsonInstancesForNumeric,
         JsonInstancesForText
