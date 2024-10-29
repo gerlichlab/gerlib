@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 * Scala is now version 3.5.2.
+* `sbt` is now version 1.10.4.
 
 ### Added
 * `IntraCellDelimiter[A]` abstraction for reading and writing a CSV cell which contains a collection of individual elements
