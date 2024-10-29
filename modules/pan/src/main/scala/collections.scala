@@ -104,6 +104,9 @@ object collections:
           */
         def contains(x: X): Boolean = (xs: Set[X]).contains(x)
 
+        /** Use the underlying collection's {@code .groupBy} operation */
+        def groupBy[K](f: X => K): Map[K, Set[X]] = (xs: Set[X]).groupBy(f)
+
         /** Convert safely to [[cats.data.NonEmptySet]]. */
         def toNes(using ord: Order[X]): NonEmptySet[X] =
           NonEmptySet.fromSetUnsafe(xs.toSortedSet)
@@ -119,6 +122,9 @@ object collections:
           *   Whether the underlying collection contains the given element
           */
         def contains(x: X): Boolean = (xs: List[X]).contains(x)
+
+        /** Use the underlying collection's {@code .groupBy} operation */
+        def groupBy[K](f: X => K): Map[K, List[X]] = (xs: List[X]).groupBy(f)
 
         /** Access the first element of the collection. */
         def head: X = (xs: List[X]).head
