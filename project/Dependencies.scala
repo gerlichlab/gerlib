@@ -31,6 +31,9 @@ object Dependencies {
     lazy val uJson = HaoyiJson.getModuleId("ujson")
     lazy val uPickle = HaoyiJson.getModuleId("upickle")
     
+    /* graph dependencies */
+    lazy val scalaGraphCore = "org.scala-graph" %% "graph-core" % "2.0.2"
+
     /* numeric dependencies */
     lazy val iron = Iron.moduleId
     lazy val ironCats = Iron.getModuleID("cats")
