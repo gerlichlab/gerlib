@@ -13,5 +13,4 @@ trait JsonInstancesForGeometry:
   ): JsonValueWriter[C, O] = new:
     override def apply(c: C): O = writeRaw(c.value)
 
-  
 end JsonInstancesForGeometry

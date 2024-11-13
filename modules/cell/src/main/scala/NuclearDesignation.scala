@@ -25,7 +25,7 @@ object NucleusNumber:
   given SimpleShow[NucleusNumber] = SimpleShow.instance(_.get.show)
 
   /** Try to read the given string as a nucleus number. */
-  def parse(s: String): Either[String, NucleusNumber] = 
+  def parse(s: String): Either[String, NucleusNumber] =
     readAsInt(s)
       .flatMap(PositiveInt.either)
       .bimap(
