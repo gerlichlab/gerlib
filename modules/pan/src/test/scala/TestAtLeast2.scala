@@ -81,10 +81,10 @@ class TestAtLeast2
       AtLeast2(x, xs).head shouldEqual x
 
   // Check the SemigroupK laws for the at-least-2-element refinement of List.
-  checkAll("AtLeast2[List, *].SemigroupLaws", SemigroupKTests[AtLeast2List].semigroupK[Int])
+  checkAll("AtLeast2[List, *].SemigroupKLaws", SemigroupKTests[AtLeast2List].semigroupK[Int])
 
   // Check the SemigroupK laws for the at-least-2-element refinement of Set.
-  checkAll("AtLeast2[Set, *].SemigroupLaws", SemigroupKTests[AtLeast2Set].semigroupK[Int])
+  checkAll("AtLeast2[Set, *].SemigroupKLaws", SemigroupKTests[AtLeast2Set].semigroupK[Int])
 
   test("When syntax is imported, AtLeast2[Set, A] may be represented as cats.data.NonEmptySet[A]."):
     assertCompiles("AtLeast2.unsafe(Set(1, 2))") // Precondition: we can build the collection.
