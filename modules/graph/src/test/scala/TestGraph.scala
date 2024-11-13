@@ -6,6 +6,7 @@ import scalax.collection.generator.*
 import scalax.collection.immutable.Graph
 
 import cats.*
+import cats.syntax.all.*
 import cats.laws.discipline.MonoidKTests
 import org.typelevel.discipline.scalatest.FunSuiteDiscipline
 import org.scalacheck.*
@@ -54,9 +55,18 @@ class TestGraph
   override implicit val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 100)
 
-  // Check the SemigroupK laws for the at-least-2-element refinement of Set.
+  // Check laws for graphs monoid defined by outer-node union and outer-edge union.
   checkAll(
     "graph.SimplestGraph.MonoidKLaws",
     MonoidKTests[SimplestGraph](using monoidKForSimplestGraphByOuterElements).monoidK[Int]
   )
+
+  test("graph.buildSimpleGraph yields graph with correct node set."):
+    forAll { (adj: Map[Int, Set[Int]]) =>
+      val expNodes = adj.keySet | adj.values.toList.combineAll
+      val obsNodes =
+        val g = buildSimpleGraph(adj)
+        g.nodes.toOuter
+      obsNodes shouldEqual expNodes
+    }
 end TestGraph
