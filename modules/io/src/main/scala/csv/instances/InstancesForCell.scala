@@ -8,6 +8,8 @@ import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
 /** Typeclass instances and helper functions for cell-related data types */
 trait InstancesForCell:
+  given CellDecoder[NucleusNumber] = liftToCellDecoder(NucleusNumber.parse)
+
   given cellDecoderForNuclearDesignation: CellDecoder[NuclearDesignation] =
     liftToCellDecoder(NuclearDesignation.parse)
 

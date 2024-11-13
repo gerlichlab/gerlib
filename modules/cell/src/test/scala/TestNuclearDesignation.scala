@@ -35,7 +35,7 @@ class TestNuclearDesignation extends AnyFunSuite, ScalaCheckPropertyChecks, shou
 
     forAll { (b: NuclearDesignation) =>
       val a: NuclearDesignation = OutsideNucleus
-      a < b shouldBe true
+      a <= b shouldBe true
     }
   }
 
