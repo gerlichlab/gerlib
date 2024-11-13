@@ -72,6 +72,11 @@ object collections:
     /** Define equality the same way as for the underlying, unrefined value. */
     given eqForAtLeast2[C[*], E](using Eq[C[E]]): Eq[AtLeast2[C, E]] = Eq.by(es => es: C[E])
 
+    /** Define order the same way as for the underlying, unrefined value. */
+    given orderForAtLeast2[C[*], A](using Order[C[A]]): Order[AtLeast2[C, A]] =
+      Order.by: xs =>
+        xs: C[A]
+
     /** Simply concatenate the elements from the left list to the head of the right list. */
     given semigroupKForAtLeast2List: SemigroupK[AtLeast2List] = new:
       override def combineK[A](xs: AtLeast2List[A], ys: AtLeast2List[A]): AtLeast2List[A] =
