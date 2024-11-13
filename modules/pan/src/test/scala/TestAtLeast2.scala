@@ -100,4 +100,13 @@ class TestAtLeast2
     forAll: (xs: AtLeast2[Set, Int]) =>
       xs.toNes shouldEqual NonEmptySet.fromSetUnsafe(xs.toSortedSet)
 
+  test("When syntax is imported, AtLeast2[Set, A] may be represented as simply Set[A]."):
+    assertCompiles("AtLeast2.unsafe(Set(1, 2))") // Precondition: we can build the collection.
+    assertTypeError(
+      "AtLeast2.unsafe(Set(1, 2)).toSet"
+    ) // Test: without syntax import, .toNes is unavailable.
+    assertCompiles(
+      "import AtLeast2.syntax.toSet; AtLeast2.unsafe(Set(1, 2)).toSet"
+    ) // Test: with syntax import, .toNes becomes available.
+
 end TestAtLeast2
