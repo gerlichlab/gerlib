@@ -143,6 +143,7 @@ lazy val commonSettings = Def.settings(
   metadataSettings,
 )
 
+// For subprojects that shouldn't be published (e.g., root)
 lazy val noPublishSettings = Def.settings(
   publish / skip := true
 )
