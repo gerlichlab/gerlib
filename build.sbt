@@ -42,9 +42,11 @@ ThisBuild / assemblyMergeStrategy := {
     oldStrategy(x)
 }
 
+ThisBuild / testOptions += Tests.Argument("-oF") // full stack traces
+
 lazy val root = project
   .in(file("."))
-  .aggregate(cell, geometry, imaging, io, json, numeric, pan, roi, testing, zarr)
+  .aggregate(cell, geometry, graph, imaging, io, json, numeric, pan, roi, testing, zarr)
   .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings)
   .settings(noPublishSettings)
@@ -59,6 +61,15 @@ lazy val cell = defineModule("cell")(project)
 
 lazy val geometry = defineModule("geometry")(project)
   .dependsOn(numeric)
+
+lazy val graph = defineModule("graph")(project)
+  .settings(
+    libraryDependencies ++= Seq(
+      scalaGraphCore,
+      catsLaws % Test,
+      disciplineScalatest % Test,
+    ), 
+  )
 
 lazy val io = defineModule("io")(project)
   .dependsOn(cell, geometry, imaging, pan, roi)
