@@ -19,7 +19,7 @@ package object graph:
       )
 
   private def fromSingleNodeAndNeighbors[N](n: N, neighbors: Set[N]): SimplestGraph[N] =
-    immutable.Graph.from(neighbors.map(n ~ _))
+    immutable.Graph.from(Set(n), neighbors.map(n ~ _))
 
   /** Construct a simple graph from an adjancency list/'matrix'.
     *
