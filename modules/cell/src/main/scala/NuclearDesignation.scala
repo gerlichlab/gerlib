@@ -21,7 +21,18 @@ case object OutsideNucleus extends NuclearDesignation
 final case class NucleusNumber(get: PositiveInt) extends NuclearDesignation derives Order
 
 object NucleusNumber:
+  /** Show the nucleus number by the underlying, wrapped numeric value. */
   given SimpleShow[NucleusNumber] = SimpleShow.instance(_.get.show)
+
+  /** Try to read the given string as a nucleus number. */
+  def parse(s: String): Either[String, NucleusNumber] = 
+    readAsInt(s)
+      .flatMap(PositiveInt.either)
+      .bimap(
+        msg => s"Cannot parse value ($s) as nucleus number: $msg",
+        NucleusNumber.apply
+      )
+end NucleusNumber
 
 /** Helpers for working with nuclei number labels */
 object NuclearDesignation:
@@ -29,7 +40,8 @@ object NuclearDesignation:
   def orderWithNonNuclearFirst: Order[NuclearDesignation] = new:
     override def compare(a: NuclearDesignation, b: NuclearDesignation): Int =
       (a, b) match
-      case (OutsideNucleus, _)                    => -1
+      case (OutsideNucleus, OutsideNucleus)       => 0
+      case (OutsideNucleus, NucleusNumber(_))     => -1
       case (NucleusNumber(_), OutsideNucleus)     => 1
       case (NucleusNumber(n1), NucleusNumber(n2)) => n1 - n2
 
