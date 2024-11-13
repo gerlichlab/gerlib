@@ -24,27 +24,24 @@ class TestGraph
 
   private val maxOrder: Int = 20
 
-  given arbitraryForRandomGraphMetrics[N: Arbitrary]: Arbitrary[GraphGen.Metrics[N]] =
-    Arbitrary {
-      Gen.choose(1, maxOrder).map { n => // RandomGraph throws exception for order-0.
-        new GraphGen.Metrics[N]:
-          override def order: Int = n
-          override def nodeDegrees: NodeDegreeRange =
-            // Don't let graph order approach vertex degreer, else
-            // too many edge add tries will fail and the generator will stop.
-            NodeDegreeRange(0, n / 2)
-          override def nodeGen: Gen[N] = Arbitrary.arbitrary[N]
-          override def connected: Boolean = false
-      }
+  def genRandomGraphMetrics[N: Arbitrary]: Gen[GraphGen.Metrics[N]] =
+    Gen.choose(1, maxOrder).map { n => // RandomGraph throws exception for order-0.
+      new GraphGen.Metrics[N]:
+        override def order: Int = n
+        override def nodeDegrees: NodeDegreeRange =
+          // Don't let graph order approach vertex degreer, else
+          // too many edge add tries will fail and the generator will stop.
+          NodeDegreeRange(0, math.ceil(n / 3.0).toInt)
+        override def nodeGen: Gen[N] = Arbitrary.arbitrary[N]
+        override def connected: Boolean = false
     }
 
   given arbitrarySimplestGraph[N: Arbitrary: ClassTag]: Arbitrary[SimplestGraph[N]] =
     def genEmpty: Gen[SimplestGraph[N]] = Graph.empty
-    def genNonEmpty: Gen[SimplestGraph[N]] = Arbitrary
-      .arbitrary[GraphGen.Metrics[N]]
-      .flatMap { metrics =>
-        GraphGen.fromMetrics[N, UnDiEdge[N], Graph](Graph, metrics, Set(UnDiEdge)).apply
-      }
+    def genNonEmpty: Gen[SimplestGraph[N]] =
+      genRandomGraphMetrics.flatMap(
+        GraphGen.fromMetrics[N, UnDiEdge[N], Graph](Graph, _, Set(UnDiEdge)).apply
+      )
     Arbitrary { Gen.frequency(1 -> genEmpty, (maxOrder - 1) -> genNonEmpty) }
 
   given eqSimplestGraphByOuter[N: Eq]: Eq[SimplestGraph[N]] =
