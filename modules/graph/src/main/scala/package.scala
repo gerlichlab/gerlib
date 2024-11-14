@@ -25,10 +25,10 @@ package object graph:
     *
     * @tparam N
     *   The node type
-    * @param adjecency
+    * @param adj
     *   The adjacency list / 'matrix' which encodes the edge relationships / node adjacencies
     */
-  def buildSimpleGraph[N](adjacency: Map[N, Set[N]]): SimplestGraph[N] =
-    val singleGraphs = adjacency.toList.map(fromSingleNodeAndNeighbors[N].tupled)
+  def buildSimpleGraph[N](adj: List[(N, Set[N])]): SimplestGraph[N] =
+    val singleGraphs = adj.map(fromSingleNodeAndNeighbors[N].tupled)
     monoidKForSimplestGraphByOuterElements.combineAllK(singleGraphs)
 end graph
