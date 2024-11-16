@@ -101,6 +101,9 @@ object collections:
         infix def +(x: X): AtLeast2Set[X] =
           (xs + x).refineUnsafe[MinLength[2]]
 
+        def subtract(x: X)(using ord: Order[X]): NonEmptySet[X] =
+          NonEmptySet.fromSetUnsafe(SortedSet.from(xs - x)(using ord.toOrdering))
+
         /** With knowledge that the given container type is an set, we can use the underlying
           * collection's {@code .contains} member.
           *
