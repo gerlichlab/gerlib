@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `sbt` is now version 1.10.4.
 
 ### Added
+* `graph` module for graph-related functionality (using `scala-graph`)
+* `remove` method as syntax extension on `AtLeast2[Set, X]`, yielding a `NonEmptySet[X]`
 * `IntraCellDelimiter[A]` abstraction for reading and writing a CSV cell which contains a collection of individual elements
 * The `AtLeast2[C[*], A]` abstraction for a collection/container `C[A]` which must contain at least two elements
 * `fs2.data.csv.CellEncoder[AtLeast2[C[*], A]]` instance derivation for when the element type `A` has a `fs2.data.csv.CellEncoder` instance available, and there's an given `IntraCellDelimiter[A]` available
