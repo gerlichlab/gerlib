@@ -101,7 +101,16 @@ object collections:
         infix def +(x: X): AtLeast2Set[X] =
           (xs + x).refineUnsafe[MinLength[2]]
 
-        def subtract(x: X)(using ord: Order[X]): NonEmptySet[X] =
+        /** Remove one element from the collection of at least two.
+          *
+          * @param x
+          *   Element to remove
+          * @param ord
+          *   Evidence of a way to sort elements
+          * @return
+          *   Collection (still guaranteed nonempty) with target removed
+          */
+        def remove(x: X)(using ord: Order[X]): NonEmptySet[X] =
           NonEmptySet.fromSetUnsafe(SortedSet.from(xs - x)(using ord.toOrdering))
 
         /** With knowledge that the given container type is an set, we can use the underlying
