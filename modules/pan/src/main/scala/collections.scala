@@ -2,6 +2,7 @@ package at.ac.oeaw.imba.gerlich.gerlib
 
 import scala.collection.immutable.SortedSet
 import cats.*
+import cats.syntax.all.*
 import cats.data.{NonEmptyList, NonEmptySet}
 import io.github.iltotore.iron.{:|, Constraint, refineEither, refineUnsafe}
 import io.github.iltotore.iron.constraint.collection.MinLength
@@ -207,6 +208,36 @@ object collections:
         def toSet: Set[X] = (xs: C[X]).toSet
     end syntax
   end AtLeast2
+
+  /** Try to look up a value by unique subset match
+    *
+    * The query succeeds if and only if it's the subset (proper or improper) of 'exactly one' "key"
+    * in the given "mapping" (a list, but functionally representing key-value pairs).
+    *
+    * Otherwise, the query fails, and it can fail in either of two ways. The 'more' "severe" failure
+    * is one in which 'multiple' keys are supersets of the given query set; this results in a
+    * [[scala.util.Left]] wrapping the matching keys. The 'less' severe failure is when no key
+    * matches the given query, and this results in a [[scala.util.Right]]-wrapped empty optional
+    * value, to provide similar semantics to an ordinary {@code .get} call on a [[scala.util.Map]].
+    *
+    * @tparam E
+    *   The element type of the sets functioning as keys
+    * @tparam V
+    *   The type of value functioning as the "value" in the given "mapping"
+    * @param keyValuePairs
+    *   A collection of pairs of "key" and "value", where each key is itself a collection
+    * @return
+    *   A function which attempts to look up the value for a given collection, with a "hit" occuring
+    *   when the given query set is a subset of one of the key sets in the initial collection
+    */
+  def lookupBySubset[E, V](
+      keyValuePairs: List[(Set[E], V)]
+  ): Set[E] => Either[AtLeast2[List, (Set[E], V)], Option[V]] =
+    elements =>
+      keyValuePairs.filter { (group, _) => elements.subsetOf(group) } match
+      case Nil              => None.asRight
+      case (_, v) :: Nil    => v.some.asRight
+      case h1 :: h2 :: rest => AtLeast2(h1, NonEmptyList(h2, rest)).asLeft
 
   extension [A](bag: Set[A])
     /** Negation of inclusion/membership test result */
