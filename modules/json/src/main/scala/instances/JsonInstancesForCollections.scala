@@ -21,7 +21,7 @@ trait JsonInstancesForCollections:
             Try:
               v.transform[A](summon[Reader[A]])
             .toEither
-            .leftMap(e => s"Cannot parse value ($v): ${e.getMessage}")
+              .leftMap(e => s"Cannot parse value ($v): ${e.getMessage}")
           }
         ) match
         case (Nil, parsedValues) =>
