@@ -218,7 +218,7 @@ object collections:
     * is one in which 'multiple' keys are supersets of the given query set; this results in a
     * [[scala.util.Left]] wrapping the matching keys. The 'less' severe failure is when no key
     * matches the given query, and this results in a [[scala.util.Right]]-wrapped empty optional
-    * value, to provide similar semantics to an ordinary {@code .get} call on a [[scala.util.Map]].
+    * value, to provide similar semantics to an ordinary {@code .get} call on a [[scala.collection.immutable.Map]].
     *
     * @tparam E
     *   The element type of the sets functioning as keys
