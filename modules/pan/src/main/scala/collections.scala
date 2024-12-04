@@ -50,6 +50,14 @@ object collections:
     def apply[X](x: X, xs: NonEmptyList[X]): AtLeast2List[X] =
       (x :: xs).toList.refineUnsafe[MinLength[2]]
 
+    /** Build using List as underlying collection. */
+    def listOf[X](x1: X, x2: X, xs: X*): AtLeast2List[X] =
+      listOf(x1, x2, xs.toList)
+
+    /** Build using List as underlying collection. */
+    def listOf[X](x1: X, x2: X, xs: List[X]): AtLeast2List[X] =
+      unsafe(x1 :: x2 :: xs)
+
     /** Attempt to refine the given collection as one of at least two elements.
       *
       * @tparam C
