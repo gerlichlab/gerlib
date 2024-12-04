@@ -165,7 +165,7 @@ lazy val compileSettings = Def.settings(
   Test / console / scalacOptions := (Compile / console / scalacOptions).value,
 )
 
-lazy val versionNumber = "0.3.0"
+lazy val versionNumber = "0.3.1"
 
 lazy val metadataSettings = Def.settings(
   name := projectName,
