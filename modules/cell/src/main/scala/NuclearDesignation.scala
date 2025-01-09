@@ -53,6 +53,7 @@ object NuclearDesignation:
       else s"Negative value parsed for nucleus number: $z".asLeft
     }
 
+  /** Represent the extranuclear designation as 0, and intranuclear by the wrapped number. */
   given SimpleShow[NuclearDesignation] with
     override def show_(nd: NuclearDesignation): String = nd match
     case OutsideNucleus    => "0"

@@ -15,6 +15,9 @@ package object graph:
     *   The node type
     * @param adj
     *   The adjacency list / 'matrix' which encodes the edge relationships / node adjacencies
+    * @return
+    *   An undirected graph with vertex and edge sets corresponding to what's encoded in the given
+    *   adjacency list
     */
   def buildSimpleGraph[N](adj: List[(N, Set[N])]): SimplestGraph[N] =
     val singleGraphs = adj.map(fromSingleNodeAndNeighbors[N].tupled)
@@ -24,8 +27,14 @@ package object graph:
     *
     * @tparam N
     *   The node type
-    * @param adj
-    *   The endpoints of edges to build
+    * @param nodes
+    *   The vertex set
+    * @param endpoints
+    *   The (undirected) edge set; any equivalent (parallel) edges will be collapsed
+    * @return
+    *   An undirected graph with given vertex set guaranteed, plus any new vertices implied by the
+    *   edges in the given set of endpoints, along with edge set corresponding to what's encoded by
+    *   the given endpoints
     */
   def buildSimpleGraph[N](nodes: Set[N], endpoints: Set[(N, N)]): SimplestGraph[N] =
     immutable.Graph.from(nodes, endpoints.map(_ ~ _))
