@@ -1,7 +1,7 @@
 import Dependencies.*
 
 /* Core settings */
-ThisBuild / scalaVersion := "3.5.2"
+ThisBuild / scalaVersion := "3.6.3"
 val groupId = "com.github.gerlichlab"
 val projectName = "gerlib"
 val rootPkg = s"at.ac.oeaw.imba.gerlich.$projectName"
@@ -13,6 +13,12 @@ val isPrimaryOsAndPrimaryJavaTest = s"runner.os == '$primaryOs' && runner.java-v
 
 // Needed for ZARR (jzarr) (?)
 ThisBuild / resolvers += "Unidata UCAR" at "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/"
+
+/* scalafix */
+ThisBuild / semanticdbEnabled := true
+ThisBuild / scalafixDependencies ++= Seq(
+  "cats", "cats-effect", "fs2"
+).map(prj => "org.typelevel" %% s"typelevel-scalafix-${prj}" % "0.2.0")
 
 /* sbt-github-actions settings */
 ThisBuild / githubWorkflowOSes := Seq(primaryOs, "ubuntu-20.04", "macos-latest")

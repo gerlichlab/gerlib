@@ -164,17 +164,13 @@ package object numeric:
     * for fail.
     */
   def readAsInt(s: String): Either[String, Int] =
-    Try:
-      s.toInt
-    .toEither.leftMap(e => s"Cannot read as integer: $s")
+    Try { s.toInt }.toEither.leftMap(e => s"Cannot read as integer: $s")
 
   /** Attempt to parse the given text as decimal, wrapping error message as a [[scala.util.Left]]
     * for fail.
     */
   def readAsDouble(s: String): Either[String, Double] =
-    Try:
-      s.toDouble
-    .toEither.leftMap(e => s"Cannot read as double: $s")
+    Try { s.toDouble }.toEither.leftMap(e => s"Cannot read as double: $s")
 
   /** Try to read a string into a target type, through nonnegative integer intermediate.
     *
