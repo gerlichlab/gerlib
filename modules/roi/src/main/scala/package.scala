@@ -30,8 +30,7 @@ package object roi:
   /** Helpers for working with (array) pivot size abstraction */
   object PivotSize:
     /** Simply show the pivot size by its {@code toString} representation. */
-    given simpleShowForPivotSize[D <: PivotSize]: SimpleShow[D] =
-      SimpleShow.fromToString[D]
+    given [D <: PivotSize] => SimpleShow[D] = SimpleShow.fromToString[D]
 
     /** Designate, semantically, the given value as an array pivot size. */
     def apply(n: PositiveInt): PivotSize = (n: PivotSize)
@@ -58,8 +57,7 @@ package object roi:
     ): Option[Multiarray[D, E]] =
       arr.length
         .isDivisibleBy(pivot)
-        .option:
-          arr: Multiarray[D, E]
+        .option { arr: Multiarray[D, E] }
 
   /** Typelevel refinement of positive integer as valid ROI diameter (must be even)
     */
@@ -80,8 +78,7 @@ package object roi:
     /** Try to lift the given positive integer into the ROI diameter type, refining it as even.
       */
     def fromPositiveInteger(n: PositiveInt): Option[RoiDiameter] =
-      (n % 2 === 0).option:
-        n: RoiDiameter
+      (n % 2 === 0).option { n: RoiDiameter }
     given showForRoiDiameter: Show[RoiDiameter] = Show.fromToString[RoiDiameter]
   end RoiDiameter
 
@@ -97,9 +94,7 @@ package object roi:
     (time, channel, centroid) =>
       val shape = za.getShape()
       0.5 * diameter
-      val zDepthNel = Try:
-        shape(indexMapping.zIndex)
-      .toEither
+      val zDepthNel = Try { shape(indexMapping.zIndex) }.toEither
         .leftMap(e => s"Failed to get Z axis raw length: ${e.getMessage}")
         .flatMap(z =>
           PositiveInt
@@ -173,13 +168,13 @@ package object roi:
         )
     (zNel, yNel, xNel).tupled
 
-  def getMaxProjectionValues[D <: PivotSize, E: AdmitsMinimum: ClassTag: Order](
+  def getMaxProjectionValues[D <: PivotSize, E: {AdmitsMinimum, ClassTag, Order}](
       d: D
   )(arr: Multiarray[D, E]): Array[E] =
     given maxMonoid: MaximumSeekingMonoid[E] = MaximumSeekingMonoid.instance[E]
     getFlatProjection(d)(arr)
 
-  private def getFlatProjection[D <: PivotSize, E: ClassTag: Monoid](
+  private def getFlatProjection[D <: PivotSize, E: {ClassTag, Monoid}](
       d: D
   )(arr: Multiarray[D, E]): Array[E] =
     arr.zipWithIndex
@@ -187,10 +182,9 @@ package object roi:
       .view
       // Not using .combineAll here, since we're working in Array and the method's not available.
       // .mapValues(_.map(_._1).toList.combineAll)
-      .mapValues(_.foldLeft(Monoid[E].empty):
-        case (acc, (e, _)) =>
-          acc |+| e
-      )
+      .mapValues(_.foldLeft(Monoid[E].empty) { case (acc, (e, _)) =>
+        acc |+| e
+      })
       .toArray
       .sortBy(_._1)
       .map(_._2)

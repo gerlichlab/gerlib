@@ -16,16 +16,12 @@ class TestNuclearDesignation extends AnyFunSuite, ScalaCheckPropertyChecks, shou
   given Arbitrary[PositiveInt] = Arbitrary:
     Gen.choose(1, Int.MaxValue).map(PositiveInt.unsafe)
 
-  given arbitraryForNucNum(using
-      Arbitrary[PositiveInt]
-  ): Arbitrary[NucleusNumber] =
-    Arbitrary { Arbitrary.arbitrary[PositiveInt].map(NucleusNumber.apply) }
+  given (arbPosInt: Arbitrary[PositiveInt]) => Arbitrary[NucleusNumber] =
+    Arbitrary { arbPosInt.arbitrary.map(NucleusNumber.apply) }
 
-  given arbitraryForNuclearDesignation(using
-      Arbitrary[NucleusNumber]
-  ): Arbitrary[NuclearDesignation] =
+  given (arbNucNum: Arbitrary[NucleusNumber]) => Arbitrary[NuclearDesignation] =
     Arbitrary {
-      Gen.oneOf(Arbitrary.arbitrary[NucleusNumber], Gen.const(OutsideNucleus))
+      Gen.oneOf(arbNucNum.arbitrary, Gen.const(OutsideNucleus))
     }
 
   test(
