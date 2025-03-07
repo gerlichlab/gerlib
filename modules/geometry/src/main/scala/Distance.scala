@@ -1,6 +1,8 @@
 package at.ac.oeaw.imba.gerlich.gerlib.geometry
 
 import scala.math.{pow, sqrt}
+import scala.util.NotGiven
+import scala.util.chaining.* // for pipe
 import cats.*
 import cats.data.Validated
 import cats.syntax.all.*
@@ -43,6 +45,8 @@ object DistanceThreshold:
 
   /** Define a proximity comparison for 3D points values.
     *
+    * @tparam C
+    *   The type of raw value wrapped in a coordinate for each 3D point
     * @param threshold
     *   The distance beneath which to consider a given pair of points as proximal
     * @return
@@ -51,11 +55,11 @@ object DistanceThreshold:
     * @see
     *   [[at.ac.oeaw.imba.gerlich.gerlib.geometry.Point3D]]
     */
-  def defineProximityPointwise(
+  def defineProximityPointwise[C: Numeric](
       threshold: DistanceThreshold
-  ): ProximityComparable[Point3D[Double]] = threshold match
+  ): ProximityComparable[Point3D[C]] = threshold match
   case t: EuclideanDistance.Threshold =>
-    new ProximityComparable[Point3D[Double]]:
+    new ProximityComparable[Point3D[C]]:
       override def proximal = (a, b) =>
         val d = EuclideanDistance.between(a, b)
         if d.isInfinite then
@@ -64,7 +68,7 @@ object DistanceThreshold:
           )
         d `lessThan` t
   case t: PiecewiseDistance.ConjunctiveThreshold =>
-    new ProximityComparable[Point3D[Double]]:
+    new ProximityComparable[Point3D[C]]:
       override def proximal = PiecewiseDistance.within(t)
 
   /** Define a proximity comparison for values of arbitrary type, according to given threshold and
@@ -73,6 +77,8 @@ object DistanceThreshold:
     * @tparam A
     *   The type of value from which a 3D point will be extracted for purpose of proximity check /
     *   comparison
+    * @tparam C
+    *   The type of raw value wrapped in a coordinate for each 3D point
     * @param threshold
     *   The distance beneath which to consider a given pair of points as proximal
     * @return
@@ -82,9 +88,9 @@ object DistanceThreshold:
     * @see
     *   [[at.ac.oeaw.imba.gerlich.gerlib.geometry.Point3D]]
     */
-  def defineProximityPointwise[A](
+  def defineProximityPointwise[A, C: Numeric](
       threshold: DistanceThreshold
-  ): (A => Point3D[Double]) => ProximityComparable[A] =
+  ): (A => Point3D[C]) => ProximityComparable[A] =
     defineProximityPointwise(threshold).contramap
 end DistanceThreshold
 
@@ -116,6 +122,8 @@ object PiecewiseDistance:
 
   /** Compute the piecewise / component-wise distance between the given points.
     *
+    * @tparam C
+    *   The type of raw value wrapped in a coordinate for each 3D point
     * @param a
     *   One point
     * @param b
@@ -126,13 +134,10 @@ object PiecewiseDistance:
     * @throws java.lang.ArithmeticException
     *   if taking any absolute difference fails to refine as nonnegative
     */
-  def between(a: Point3D[Double], b: Point3D[Double]): PiecewiseDistance =
-    val xNel =
-      NonnegativeReal.either((a.x.value - b.x.value).abs).toValidatedNel
-    val yNel =
-      NonnegativeReal.either((a.y.value - b.y.value).abs).toValidatedNel
-    val zNel =
-      NonnegativeReal.either((a.z.value - b.z.value).abs).toValidatedNel
+  def between[C: Numeric](a: Point3D[C], b: Point3D[C]): PiecewiseDistance =
+    val xNel = absoluteComponentDifference(a.x, b.x).toValidatedNel
+    val yNel = absoluteComponentDifference(a.y, b.y).toValidatedNel
+    val zNel = absoluteComponentDifference(a.z, b.z).toValidatedNel
     (xNel, yNel, zNel).tupled match
     case Validated.Valid((delX, delY, delZ)) =>
       PiecewiseDistance(x = delX, y = delY, z = delZ)
@@ -141,11 +146,17 @@ object PiecewiseDistance:
         s"Computing distance between point $a and point $b yielded ${es.length} error(s): ${es.mkString_("; ")}"
 
   /** Are points closer than given threshold along each axis? */
-  def within(
+  def within[C: Numeric](
       threshold: ConjunctiveThreshold
-  )(a: Point3D[Double], b: Point3D[Double]): Boolean =
+  )(a: Point3D[C], b: Point3D[C]): Boolean =
     val d = between(a, b)
     d.getX < threshold.get && d.getY < threshold.get && d.getZ < threshold.get
+
+  private def absoluteComponentDifference[X: Numeric, C[X] <: Coordinate[X]: [C[X]] =>> NotGiven[
+    C[X] =:= Coordinate[X]
+  ]](a: C[X], b: C[X]): Either[String, NonnegativeReal] =
+    import scala.math.Numeric.Implicits.infixNumericOps
+    NonnegativeReal.either((a.value - b.value).toDouble.abs)
 end PiecewiseDistance
 
 /** Semantic wrapper to denote that a nonnegative real number represents a Euclidean distance
@@ -176,25 +187,18 @@ object EuclideanDistance:
 
   // TODO: account for infinity/null-numeric cases.
   def between[C: Numeric](a: Point3D[C], b: Point3D[C]): EuclideanDistance =
+    import scala.math.Numeric.Implicits.infixNumericOps
     (a, b) match
     case (Point3D(x1, y1, z1), Point3D(x2, y2, z2)) =>
-      val ss = sumOfSquares(
-        List(
-          x1.value -> x2.value,
-          y1.value -> y2.value,
-          z1.value -> z2.value
-        )
-      )
-      val d = NonnegativeReal.unsafe(sqrt(ss))
-      new EuclideanDistance(d)
+      List(x1 -> x2, y1 -> y2, z1 -> z2)
+        .foldLeft(0.0) { case (acc, (a, b)) => acc + pow((a.value - b.value).toDouble, 2) }
+        .pipe(sqrt)
+        .pipe(NonnegativeReal.unsafe)
+        .pipe(EuclideanDistance.apply)
 
   /** Use a lens of a 3D point from arbitrary type {@code A} to compute distance between {@code A}
     * values.
     */
   def between[A, C: Numeric](p: A => Point3D[C])(a1: A, a2: A): EuclideanDistance =
     between(p(a1), p(a2))
-
-  private def sumOfSquares[C: Numeric](cs: Iterable[(C, C)]): Double =
-    import scala.math.Numeric.Implicits.infixNumericOps
-    cs.foldLeft(0.0) { case (acc, (a, b)) => acc + pow((a - b).toDouble, 2) }
 end EuclideanDistance
