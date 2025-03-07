@@ -1,6 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib.geometry
 
-import scala.math.pow
+import scala.math.{pow, sqrt}
 import cats.*
 import cats.data.Validated
 import cats.syntax.all.*
@@ -175,22 +175,26 @@ object EuclideanDistance:
   final case class Threshold(get: NonnegativeReal) extends DistanceThreshold
 
   // TODO: account for infinity/null-numeric cases.
-  def between(a: Point3D[Double], b: Point3D[Double]): EuclideanDistance =
+  def between[C: Numeric](a: Point3D[C], b: Point3D[C]): EuclideanDistance =
     (a, b) match
     case (Point3D(x1, y1, z1), Point3D(x2, y2, z2)) =>
-      val d = NonnegativeReal.unsafe(
-        math.sqrt {
-          pow(x1.value - x2.value, 2) + pow(y1.value - y2.value, 2) + pow(
-            z1.value - z2.value,
-            2
-          )
-        }
+      val ss = sumOfSquares(
+        List(
+          x1.value -> x2.value,
+          y1.value -> y2.value,
+          z1.value -> z2.value
+        )
       )
+      val d = NonnegativeReal.unsafe(sqrt(ss))
       new EuclideanDistance(d)
 
   /** Use a lens of a 3D point from arbitrary type {@code A} to compute distance between {@code A}
     * values.
     */
-  def between[A](p: A => Point3D[Double])(a1: A, a2: A): EuclideanDistance =
+  def between[A, C: Numeric](p: A => Point3D[C])(a1: A, a2: A): EuclideanDistance =
     between(p(a1), p(a2))
+
+  private def sumOfSquares[C: Numeric](cs: Iterable[(C, C)]): Double =
+    import scala.math.Numeric.Implicits.infixNumericOps
+    cs.foldLeft(0.0) { case (acc, (a, b)) => acc + pow((a - b).toDouble, 2) }
 end EuclideanDistance
