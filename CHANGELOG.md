@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 * Generalise `EuclideanDistance.between` to accommodate points with any raw coordinate type `C` for which there's a `Numeric` instance available, rather than restricting to `C =:= Double`.
-* Bump Scala from 3.5.2 to 3.6.3.
+* Bump Scala from 3.5.2 to 3.6.4.
 * Bump up all project plugins and dependencies to latest versions (as of 2025-03-07).
 
 ## [v0.3.2] - 2024-12-12
