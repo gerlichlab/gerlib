@@ -4,17 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v0.4.1] - 2025-03-07
+## [v0.4.0] - 2025-03-12
+
+### Added
+* `.jvmopts` to provide more memory for the environment, mainly related to use of Semantic DB with `scalafix`
 
 ### Changed
-* More generalization, w.r.t. the wrapped raw coordinate value, of distance computations
-
-## [v0.4.0] - 2025-03-07
-
-### Changed
-* Generalise `EuclideanDistance.between` to accommodate points with any raw coordinate type `C` for which there's a `Numeric` instance available, rather than restricting to `C =:= Double`.
+* Generalise the wrapped raw coordinate value, of distance computations to accommodate points with any raw coordinate type `C` for which there's a `Numeric` instance available, rather than restricting to `C =:= Double`.
 * Bump Scala from 3.5.2 to 3.6.4.
 * Bump up all project plugins and dependencies to latest versions (as of 2025-03-07).
+* Update to Scala 3.6's revision of syntax for `given` instances and for bounds, per SIP-64.
+* Back off of a couple of the more aggressive applications of `fewerBraces`, as this was not playing nicely between `scalafmt`, `scalafix`, general compilation, and IDE plugin (Metals). 
+This seemed to pertain mainly to replacement of braces by colons and indentation in `Try` blocks (i.e., `scala.util.Try`, not `try...catch`).
+* Condensed / centralised implementation of `PiecewiseDistance.between`.
 
 ## [v0.3.2] - 2024-12-12
 
