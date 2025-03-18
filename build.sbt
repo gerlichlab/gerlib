@@ -165,13 +165,15 @@ lazy val compileSettings = Def.settings(
       // https://contributors.scala-lang.org/t/for-comprehension-requires-withfilter-to-destructure-tuples/5953
       "-source:future", // for tuples in for comprehension; see above link
       "-unchecked",
-      "-Wunused:all", // for scalafix RemoveUnused: https://scalacenter.github.io/scalafix/docs/rules/RemoveUnused.html
+      // for scalafix RemoveUnused: https://scalacenter.github.io/scalafix/docs/rules/RemoveUnused.html
+      "-Wunused:all", 
+      // These unused symbol warnings are expected in the tests related to availability of typeclass instances.
+      "-Wconf:msg=unused import&src=./modules/testing/src/test/scala/TestInstanceAvailability.scala:silent",
+      "-Werror",
     ),
-  Compile / console / scalacOptions -= "-Ywarn-unused:imports",
   Test / console / scalacOptions := (Compile / console / scalacOptions).value,
 )
 
-lazy val versionNumber = "0.4.0"
 
 lazy val metadataSettings = Def.settings(
   name := projectName,
