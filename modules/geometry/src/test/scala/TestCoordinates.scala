@@ -19,7 +19,7 @@ class TestCoordinates extends AnyFunSuite, should.Matchers, ScalaCheckPropertyCh
     PropertyCheckConfiguration(minSuccessful = 100)
 
   test("Ordering coordinates works.") {
-    def assertOrder[A: Numeric: Order, C[A] <: Coordinate[A]: [C[
+    def assertOrder[A: {Numeric, Order}, C[A] <: Coordinate[A]: [C[
         A
     ]] =>> NotGiven[C[A] =:= Coordinate[A]]](
         rawValues: List[A],

@@ -23,7 +23,7 @@ object SimpleShow:
 
   /** Use the given function to get a value for which an instance already is available.
     */
-  given Contravariant[SimpleShow] with
+  given Contravariant[SimpleShow]:
     override def contramap[A, B](fa: SimpleShow[A])(
         f: B => A
     ): SimpleShow[B] = new:

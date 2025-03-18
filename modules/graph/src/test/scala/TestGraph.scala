@@ -45,7 +45,7 @@ class TestGraph
         override def connected: Boolean = false
     }
 
-  given arbitrarySimplestGraph[N: Arbitrary: ClassTag]: Arbitrary[SimplestGraph[N]] =
+  given [N: {Arbitrary, ClassTag}] => Arbitrary[SimplestGraph[N]] =
     def genEmpty: Gen[SimplestGraph[N]] = Graph.empty
     def genNonEmpty: Gen[SimplestGraph[N]] =
       genRandomGraphMetrics.flatMap(
@@ -53,7 +53,7 @@ class TestGraph
       )
     Arbitrary { Gen.frequency(1 -> genEmpty, (maxOrder - 1) -> genNonEmpty) }
 
-  given eqSimplestGraphByOuter[N: Eq]: Eq[SimplestGraph[N]] =
+  given [N: Eq] => Eq[SimplestGraph[N]] =
     Eq.by: g =>
       (g.nodes.toOuter, g.edges.toOuter)
 

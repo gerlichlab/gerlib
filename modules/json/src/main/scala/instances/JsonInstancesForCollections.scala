@@ -11,7 +11,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.collections.AtLeast2
 /** JSON-related typeclass instances collections */
 trait JsonInstancesForCollections:
   /** Read a list of at least 2 elements of the target type from JSON. */
-  given readerForAtLeast2List[A: Reader]: Reader[AtLeast2[List, A]] =
+  given [A: Reader] => Reader[AtLeast2[List, A]] =
     reader[ujson.Value].map(json =>
       json.arrOpt match
       case None => throw IncompleteParseException(s"Cannot read value as array-like: $json")

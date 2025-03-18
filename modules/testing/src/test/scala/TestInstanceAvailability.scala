@@ -2,6 +2,7 @@ package at.ac.oeaw.imba.gerlich.gerlib.testing
 
 import org.scalacheck.Arbitrary // Save importing this in every snippet.
 import org.scalatest.funsuite.AnyFunSuite
+import scala.annotation.nowarn
 
 /** Tests for availability of typeclass instances */
 class TestInstanceAvailability extends AnyFunSuite:

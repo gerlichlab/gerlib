@@ -165,6 +165,8 @@ lazy val compileSettings = Def.settings(
       // https://contributors.scala-lang.org/t/for-comprehension-requires-withfilter-to-destructure-tuples/5953
       "-source:future", // for tuples in for comprehension; see above link
       "-unchecked",
+      "-new-syntax",
+      "-rewrite",
       // for scalafix RemoveUnused: https://scalacenter.github.io/scalafix/docs/rules/RemoveUnused.html
       "-Wunused:all", 
       // These unused symbol warnings are expected in the tests related to availability of typeclass instances.

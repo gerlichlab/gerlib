@@ -24,14 +24,14 @@ package object numeric:
   /** Instances of the trait */
   object IntLike:
     /** IntLike for Int is identity. */
-    given IntLike[Int] with
+    given IntLike[Int]:
       def asInt: Int => Int = identity
 
     /** Syntax */
     extension [A](a: A)(using ev: IntLike[A]) def asInt: Int = ev.asInt(a)
 
     /** Transitive Int fetching */
-    given Contravariant[IntLike] with
+    given Contravariant[IntLike]:
       def contramap[A, B](fa: IntLike[A])(f: B => A): IntLike[B] = new:
         def asInt: B => Int = f `andThen` fa.asInt
 

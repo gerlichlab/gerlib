@@ -12,17 +12,11 @@ import at.ac.oeaw.imba.gerlich.gerlib.io.csv.instances.encoding.given
 /** Typeclass instances for geometry-related data types */
 trait InstancesForGeometry:
   /* Coordinate decoders */
-  given cellDecoderForZCoordinate[A](using
-      dec: CellDecoder[A]
-  ): CellDecoder[ZCoordinate[A]] = dec.map(ZCoordinate.apply)
+  given [A] => (dec: CellDecoder[A]) => CellDecoder[ZCoordinate[A]] = dec.map(ZCoordinate.apply)
 
-  given cellDecoderForYCoordinate[A](using
-      dec: CellDecoder[A]
-  ): CellDecoder[YCoordinate[A]] = dec.map(YCoordinate.apply)
+  given [A] => (dec: CellDecoder[A]) => CellDecoder[YCoordinate[A]] = dec.map(YCoordinate.apply)
 
-  given cellDecoderForXCoordinate[A](using
-      dec: CellDecoder[A]
-  ): CellDecoder[XCoordinate[A]] = dec.map(XCoordinate.apply)
+  given [A] => (dec: CellDecoder[A]) => CellDecoder[XCoordinate[A]] = dec.map(XCoordinate.apply)
 
   /** Use the contravariant nature of encoding to build an encoder for a coordinate.
     *
@@ -37,16 +31,16 @@ trait InstancesForGeometry:
     *   The [[fs2.data.csv.CellEncoder]] instance for the raw, underlying value which is wrapped as
     *   a coordinate
     */
-  given cellEncoderForCoordinate[A, C[A] <: Coordinate[A]: [C[A]] =>> NotGiven[
+  given [A, C[A] <: Coordinate[A]: [C[A]] =>> NotGiven[
     C[A] =:= Coordinate[A]
-  ]](using enc: CellEncoder[A]): CellEncoder[C[A]] =
+  ]] => (enc: CellEncoder[A]) => CellEncoder[C[A]] =
     enc.contramap(_.value)
 
-  given defaultCsvRowDecoderForCentroid[C](using
+  given [C] => (
       CellDecoder[XCoordinate[C]],
       CellDecoder[YCoordinate[C]],
       CellDecoder[ZCoordinate[C]]
-  ): CsvRowDecoder[Centroid[C], String] = new:
+  ) => CsvRowDecoder[Centroid[C], String] = new:
     override def apply(row: RowF[Some, String]): DecoderResult[Centroid[C]] =
       val xNel = ColumnNames.xCenterColumnName[C].from(row)
       val yNel = ColumnNames.yCenterColumnName[C].from(row)
@@ -61,9 +55,7 @@ trait InstancesForGeometry:
           )
         }
 
-  given csvRowEncoderForCentroid[C](using
-      CellEncoder[C]
-  ): CsvRowEncoder[Centroid[C], String] = new:
+  given [C: CellEncoder] => CsvRowEncoder[Centroid[C], String] = new:
     override def apply(elem: Centroid[C]): RowF[Some, String] =
       val pt = elem.asPoint
       val z = ColumnNames.zCenterColumnName[C].write(pt.z)

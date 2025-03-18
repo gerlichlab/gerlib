@@ -10,7 +10,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.geometry.instances.coordinate.given
 trait PointInstances:
   /** Make points monoidally combinable when the underlying value type is such.
     */
-  given monoidForPoint[A](using raw: Monoid[A]): Monoid[Point3D[A]] with
+  given [A] => (Monoid[A]) => Monoid[Point3D[A]]:
     /** Simply create the base value of each coordinate. */
     override def empty: Point3D[A] = Point3D(
       summon[Monoid[XCoordinate[A]]].empty,

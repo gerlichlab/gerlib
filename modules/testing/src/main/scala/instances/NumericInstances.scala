@@ -17,7 +17,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.testing.GeneratorBound.{
 trait NumericInstances:
   /** Choose a nonnegative integer through the Choose[Int], then unsafely refine.
     */
-  given Gen.Choose[NonnegativeInt] with
+  given Gen.Choose[NonnegativeInt]:
     override def choose(
         min: NonnegativeInt,
         max: NonnegativeInt
@@ -29,7 +29,7 @@ trait NumericInstances:
 
   /** Choose a positive integer through the Choose[Int], then unsafely refine.
     */
-  given Gen.Choose[PositiveInt] with
+  given Gen.Choose[PositiveInt]:
     override def choose(min: PositiveInt, max: PositiveInt): Gen[PositiveInt] =
       Gen
         .choose[Int](min, max)
@@ -39,10 +39,10 @@ trait NumericInstances:
   /** [[org.scalacheck.Arbitrary]] instance for generating bounded numeric type, subject to the
     * given bounds.
     */
-  given arbitraryForBounded[V: Gen.Choose: Numeric, P](using
+  given [V: {Gen.Choose, Numeric}, P] => (
       lo: LowerBound[V :| P],
       hi: UpperBound[V :| P]
-  ): Arbitrary[V :| P] =
+  ) => Arbitrary[V :| P] =
     intervalArbitrary[V, P](lo.value, hi.value)
 
   given nonnegativeIntArbitrary: Arbitrary[NonnegativeInt] =

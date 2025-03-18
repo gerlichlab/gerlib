@@ -18,7 +18,7 @@ final case class BoundingBox[A](
 
 /** Helpers for working with the notion of a 3D bounding box */
 object BoundingBox:
-  given orderForBoundingBox[A](using Order[A]): Order[BoundingBox[A]] =
+  given [A] => (Order[A]) => Order[BoundingBox[A]] =
     Order.by {
       case BoundingBox(
             BoundingBox.Interval(XCoordinate(loX), XCoordinate(hiX)),

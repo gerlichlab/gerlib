@@ -79,10 +79,10 @@ object collections:
       xs.refineUnsafe
 
     /** Define equality the same way as for the underlying, unrefined value. */
-    given eqForAtLeast2[C[*], E](using Eq[C[E]]): Eq[AtLeast2[C, E]] = Eq.by(es => es: C[E])
+    given [C[*], E] => (Eq[C[E]]) => Eq[AtLeast2[C, E]] = Eq.by(es => es: C[E])
 
     /** Define order the same way as for the underlying, unrefined value. */
-    given orderForAtLeast2[C[*], A](using Order[C[A]]): Order[AtLeast2[C, A]] =
+    given [C[*], A] => (Order[C[A]]) => Order[AtLeast2[C, A]] =
       Order.by: xs =>
         xs: C[A]
 

@@ -48,7 +48,7 @@ class TestFieldOfViewLike extends AnyFunSuite, ScalaCheckPropertyChecks, should.
   }
 
   test("PositionName cannot be parsed from an integer.") {
-    given noShrink[A]: Shrink[A] = Shrink.shrinkAny[A]
+    given [A] => Shrink[A] = Shrink.shrinkAny[A]
 
     forAll { (z: Int) =>
       val input = z.toString
@@ -78,7 +78,7 @@ class TestFieldOfViewLike extends AnyFunSuite, ScalaCheckPropertyChecks, should.
   test(
     "Regression: PositionName will NOT be parsed from an exponent-like (scientific notation) string."
   ) {
-    given noShrink[A]: Shrink[A] = Shrink.shrinkAny[A]
+    given [A] => Shrink[A] = Shrink.shrinkAny[A]
     def chooseBase =
       Gen.oneOf(Gen.choose(-9.999, -1.001), Gen.choose(1.001, 9.999))
     def chooseExponent = Gen.oneOf(Gen.choose(-308, -1), Gen.choose(1, 308))

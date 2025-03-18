@@ -18,30 +18,27 @@ trait CoordinateInstances:
     (c1, c2) => lift(c1.value |+| c2.value)
   )
 
-  given monoidForX[A: Monoid]: Monoid[XCoordinate[A]] = monoidInstance(
+  given [A: Monoid] => Monoid[XCoordinate[A]] = monoidInstance(
     XCoordinate.apply
   )
 
-  given monoidForY[A: Monoid]: Monoid[YCoordinate[A]] = monoidInstance(
+  given [A: Monoid] => Monoid[YCoordinate[A]] = monoidInstance(
     YCoordinate.apply
   )
 
-  given monoidForZ[A: Monoid]: Monoid[ZCoordinate[A]] = monoidInstance(
+  given [A: Monoid] => Monoid[ZCoordinate[A]] = monoidInstance(
     ZCoordinate.apply
   )
 
-  given simpleShowForCoordinate[A: SimpleShow, C <: Coordinate[
-    A
-  ]: [C] =>> NotGiven[C =:= Coordinate[A]]]: SimpleShow[C] =
+  given [A: SimpleShow, C <: Coordinate[A]: [C] =>> NotGiven[C =:= Coordinate[A]]]
+    => SimpleShow[C] =
     SimpleShow.instance: c =>
       c.value.show_
 
   /** Use the [[cats.Order]] instance for the underlying type to order a particular coordinate
     * subtype.
     */
-  given orderForCoordinate[A: Order, C <: Coordinate[A]: [C] =>> NotGiven[
-    C =:= Coordinate[A]
-  ]]: Order[C] =
+  given [A: Order, C <: Coordinate[A]: [C] =>> NotGiven[C =:= Coordinate[A]]] => Order[C] =
     Order.by {
       case XCoordinate(value) => value
       case YCoordinate(value) => value

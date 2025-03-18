@@ -17,33 +17,29 @@ import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.catsScalacheck.given
 
 /** Testing-related typeclass instances for ROI-related data types */
 trait RoiInstances:
-  given arbitraryForBoundingBox[A](using
-      ordA: Order[A],
-      arbZ: Arbitrary[ZCoordinate[A]],
-      arbY: Arbitrary[YCoordinate[A]],
-      arbX: Arbitrary[XCoordinate[A]]
-  ): Arbitrary[BoundingBox[A]] = (
+  given [A] => (
+      Order[A],
+      Arbitrary[ZCoordinate[A]],
+      Arbitrary[YCoordinate[A]],
+      Arbitrary[XCoordinate[A]]
+  ) => Arbitrary[BoundingBox[A]] = (
     arbitraryInterval[A, XCoordinate[A]],
     arbitraryInterval[A, YCoordinate[A]],
     arbitraryInterval[A, ZCoordinate[A]]
   ).mapN(BoundingBox.apply)
 
-  given arbitraryForDetectedSpot[C](using
+  given [C] => (
       arbCtx: Arbitrary[ImagingContext],
       arbCenter: Arbitrary[Centroid[C]],
       arbArea: Arbitrary[Area],
       arbIntensity: Arbitrary[MeanIntensity]
-  ): Arbitrary[DetectedSpot[C]] =
+  ) => Arbitrary[DetectedSpot[C]] =
     (arbCtx, arbCenter, arbArea, arbIntensity).mapN(DetectedSpot.apply)
 
-  given arbitraryForArea(using
-      arbRaw: Arbitrary[PositiveReal]
-  ): Arbitrary[Area] =
+  given (arbRaw: Arbitrary[PositiveReal]) => Arbitrary[Area] =
     arbRaw.map(Area.apply)
 
-  given arbitraryForMeanIntensity(using
-      arbRaw: Arbitrary[NonnegativeReal]
-  ): Arbitrary[MeanIntensity] =
+  given (arbRaw: Arbitrary[NonnegativeReal]) => Arbitrary[MeanIntensity] =
     arbRaw.map(MeanIntensity.apply)
 
   /** Generate an arbitrary interval along a particular axis. */

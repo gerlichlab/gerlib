@@ -6,7 +6,7 @@ import io.github.iltotore.iron.cats.given
 import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
 
 trait PositiveIntInstances:
-  given IntLike[PositiveInt] with
+  given IntLike[PositiveInt]:
     override def asInt = identity
   given Order[PositiveInt] = summon[Order[PositiveInt]]
   given Show[PositiveInt] = summon[Show[PositiveInt]]

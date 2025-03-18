@@ -13,5 +13,5 @@ trait ImagingTimepointInstances:
   given SimpleShow[ImagingTimepoint] =
     summon[SimpleShow[NonnegativeInt]].contramap(_.get)
 
-  given JsonValueWriter[ImagingTimepoint, ujson.Num] with
+  given JsonValueWriter[ImagingTimepoint, ujson.Num]:
     override def apply(t: ImagingTimepoint): ujson.Num = ujson.Num(t.get)

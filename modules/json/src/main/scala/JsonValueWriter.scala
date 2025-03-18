@@ -15,8 +15,7 @@ object JsonValueWriter:
 
   def instance[I, O <: ujson.Value](f: I => O): JsonValueWriter[I, O] = apply(f)
 
-  given contravariantForJsonValueWriter[O <: ujson.Value]
-      : Contravariant[[I] =>> JsonValueWriter[I, O]] with
+  given [O <: ujson.Value] => Contravariant[[I] =>> JsonValueWriter[I, O]]:
     override def contramap[A, B](writeA: JsonValueWriter[A, O])(
         f: B => A
     ): JsonValueWriter[B, O] = new:

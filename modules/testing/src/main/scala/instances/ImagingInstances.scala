@@ -16,15 +16,10 @@ trait ImagingInstances extends CatsScalacheckInstances:
   /** [[org.scalacheck.Arbitrary]] instance for generating a
     * [[at.ac.oeaw.imba.gerlich.gerlib.imaging.FieldOfView]] value
     */
-  given arbitraryForFieldOfView(using
-      arbNN: Arbitrary[NonnegativeInt]
-  ): Arbitrary[FieldOfView] = arbNN.map(FieldOfView.apply)
+  given (arbNN: Arbitrary[NonnegativeInt]) => Arbitrary[FieldOfView] = arbNN.map(FieldOfView.apply)
 
   /** Use the given instances of letter or digit generators as the base. */
-  given arbitraryForPositionName(using
-      Arbitrary[Char :| Letter],
-      Arbitrary[Char :| Digit]
-  ): Arbitrary[PositionName] =
+  given (Arbitrary[Char :| Letter], Arbitrary[Char :| Digit]) => Arbitrary[PositionName] =
     type GoodChar = Char :| PositionNameCharacterConstraint
     val goodPunctuation: Set[GoodChar] =
       import io.github.iltotore.iron.autoRefine
@@ -59,31 +54,31 @@ trait ImagingInstances extends CatsScalacheckInstances:
     }
 
   /** Simply choose from one of the given instances. */
-  given arbitraryForFieldOfViewLike(using
+  given (
       arbFov: Arbitrary[FieldOfView],
       arbPos: Arbitrary[PositionName]
-  ): Arbitrary[FieldOfViewLike] =
+  ) => Arbitrary[FieldOfViewLike] =
     Arbitrary:
       Gen.oneOf(arbFov.arbitrary, arbPos.arbitrary)
 
   /** [[org.scalacheck.Arbitrary]] instance for generating a
     * [[at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingChannel]] value
     */
-  given arbitraryForImagingChannel(using
+  given (
       arbNN: Arbitrary[NonnegativeInt]
-  ): Arbitrary[ImagingChannel] = arbNN.map(ImagingChannel.apply)
+  ) => Arbitrary[ImagingChannel] = arbNN.map(ImagingChannel.apply)
 
   /** [[org.scalacheck.Arbitrary]] instance for generating a
     * [[at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingTimepoint]] value
     */
-  given arbitraryForImagingTimepoint(using
+  given (
       arbNN: Arbitrary[NonnegativeInt]
-  ): Arbitrary[ImagingTimepoint] = arbNN.map(ImagingTimepoint.apply)
+  ) => Arbitrary[ImagingTimepoint] = arbNN.map(ImagingTimepoint.apply)
 
-  given arbitraryForImagingContext(using
+  given (
       arbFov: Arbitrary[FieldOfViewLike],
       arbTime: Arbitrary[ImagingTimepoint],
       arbChannel: Arbitrary[ImagingChannel]
-  ): Arbitrary[ImagingContext] =
+  ) => Arbitrary[ImagingContext] =
     (arbFov, arbTime, arbChannel).mapN(ImagingContext.apply)
 end ImagingInstances

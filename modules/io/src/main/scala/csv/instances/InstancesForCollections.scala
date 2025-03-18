@@ -28,10 +28,8 @@ trait InstancesForCollections:
     *   A builder of the text representation of a collection of {@code X} values in a container
     *   {@code C}
     */
-  given cellEncoderForAtLeast2[C[*] <: Iterable[*], X](using
-      enc: CellEncoder[X],
-      sep: IntraCellDelimiter[X]
-  ): CellEncoder[AtLeast2[C, X]] =
+  given [C[*] <: Iterable[*], X] => (enc: CellEncoder[X], sep: IntraCellDelimiter[X])
+    => CellEncoder[AtLeast2[C, X]] =
     val encode = cellEncoderForIterable(enc, sep)
     new:
       override def apply(cell: AtLeast2[C, X]): String = encode(cell.toNativeIterable)

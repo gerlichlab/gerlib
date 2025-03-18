@@ -29,18 +29,14 @@ trait InstancesForRoi:
   given cellDecoderForArea: CellDecoder[Area] =
     liftToCellDecoder(Area.parse)
 
-  given cellEncoderForArea(using
-      enc: CellEncoder[Double]
-  ): CellEncoder[Area] = enc.contramap(_.toDouble)
+  given (enc: CellEncoder[Double]) => CellEncoder[Area] = enc.contramap(_.toDouble)
 
   given cellDecoderForMeanIntensity: CellDecoder[MeanIntensity] =
     liftToCellDecoder(MeanIntensity.parse)
 
-  given cellEncoderForMeanIntensity(using
-      enc: CellEncoder[Double]
-  ): CellEncoder[MeanIntensity] = enc.contramap(_.toDouble)
+  given (enc: CellEncoder[Double]) => CellEncoder[MeanIntensity] = enc.contramap(_.toDouble)
 
-  given csvRowDecoderForDetectedSpotFromNamedFieldReaders[C](using
+  given [C] => (
       fovReader: NamedFieldReader[FieldOfViewLike],
       timeReader: NamedFieldReader[ImagingTimepoint],
       channelReader: NamedFieldReader[ImagingChannel],
@@ -49,7 +45,7 @@ trait InstancesForRoi:
       xReader: NamedFieldReader[XCoordinate[C]],
       areaReader: NamedFieldReader[Area],
       intensityReader: NamedFieldReader[MeanIntensity]
-  ): CsvRowDecoder[DetectedSpot[C], String] with
+  ) => CsvRowDecoder[DetectedSpot[C], String]:
     override def apply(
         row: CsvRow
     ): DecoderResult[DetectedSpot[C]] =
@@ -79,56 +75,32 @@ trait InstancesForRoi:
         }
 
   /** The default given instance uses all the default column names. */
-  given defaultCsvRowDecoderForDetectedSpot[C](using
-      CellDecoder[FieldOfViewLike],
-      CellDecoder[ImagingTimepoint],
-      CellDecoder[ImagingChannel],
-      CellDecoder[ZCoordinate[C]],
-      CellDecoder[YCoordinate[C]],
-      CellDecoder[XCoordinate[C]]
-  ): CsvRowDecoder[DetectedSpot[C], String] =
-    getCsvRowDecoderForDetectedSpot()
-
-  /** Parse the detected spot from CSV field-by-field. */
-  def getCsvRowDecoderForDetectedSpot[C](
-      fovCol: ColumnNameLike[FieldOfViewLike] = FieldOfViewColumnName,
-      timeCol: ColumnNameLike[ImagingTimepoint] = TimepointColumnName,
-      channelCol: ColumnNameLike[ImagingChannel] = SpotChannelColumnName,
-      zCol: ColumnNameLike[ZCoordinate[C]] = zCenterColumnName[C],
-      yCol: ColumnNameLike[YCoordinate[C]] = yCenterColumnName[C],
-      xCol: ColumnNameLike[XCoordinate[C]] = xCenterColumnName[C],
-      areaCol: ColumnNameLike[Area] = AreaColumnName,
-      intensityCol: ColumnNameLike[MeanIntensity] = IntensityColumnName
-  )(using
+  given [C] => (
       decFov: CellDecoder[FieldOfViewLike],
       decTime: CellDecoder[ImagingTimepoint],
       decChannel: CellDecoder[ImagingChannel],
       decZ: CellDecoder[ZCoordinate[C]],
       decY: CellDecoder[YCoordinate[C]],
       decX: CellDecoder[XCoordinate[C]]
-  ): CsvRowDecoder[DetectedSpot[C], String] = new:
-    override def apply(
-        row: CsvRow
-    ): DecoderResult[DetectedSpot[C]] =
-      csvRowDecoderForDetectedSpotFromNamedFieldReaders(using
-        fovCol -> decFov,
-        timeCol -> decTime,
-        channelCol -> decChannel,
-        zCol -> decZ,
-        yCol -> decY,
-        xCol -> decX,
-        areaCol -> summon[CellDecoder[Area]],
-        intensityCol -> cellDecoderForMeanIntensity
-      )(row)
+  ) => CsvRowDecoder[DetectedSpot[C], String] =
+    given NamedFieldReader[FieldOfViewLike] = FieldOfViewColumnName -> decFov
+    given NamedFieldReader[ImagingTimepoint] = TimepointColumnName -> decTime
+    given NamedFieldReader[ImagingChannel] = SpotChannelColumnName -> decChannel
+    given NamedFieldReader[ZCoordinate[C]] = zCenterColumnName[C] -> decZ
+    given NamedFieldReader[YCoordinate[C]] = yCenterColumnName[C] -> decY
+    given NamedFieldReader[XCoordinate[C]] = xCenterColumnName[C] -> decX
+    given NamedFieldReader[Area] = AreaColumnName -> summon[CellDecoder[Area]]
+    given NamedFieldReader[MeanIntensity] = IntensityColumnName -> cellDecoderForMeanIntensity
+    summon[CsvRowDecoder[DetectedSpot[C], String]]
 
-  given defaultCsvRowEncoderForDetectedSpot[C](using
+  given [C] => (
       CellEncoder[FieldOfViewLike],
       CellEncoder[ImagingTimepoint],
       CellEncoder[ImagingChannel],
       CellEncoder[ZCoordinate[C]],
       CellEncoder[YCoordinate[C]],
       CellEncoder[XCoordinate[C]]
-  ): CsvRowEncoder[DetectedSpot[C], String] = getCsvRowEncoderForDetectedSpot()
+  ) => CsvRowEncoder[DetectedSpot[C], String] = getCsvRowEncoderForDetectedSpot()
 
   /** Encode the given spot field-by-field, using the column/key/field names defined in this object.
     */
@@ -158,14 +130,13 @@ trait InstancesForRoi:
         yCol -> encY(elem.centerY),
         xCol -> encX(elem.centerX),
         areaCol -> summon[CellEncoder[Area]](elem.area),
-        intensityCol -> cellEncoderForMeanIntensity(elem.intensity)
+        intensityCol -> summon[CellEncoder[MeanIntensity]](elem.intensity)
       )
       val (headers, textFields) = kvs.unzip
       RowF(values = textFields, headers = Some(headers.map(_.value)))
 
   /** Decoder for bounding box records from CSV with new headers */
-  given csvRowDecoderForBoundingBox[C: CellDecoder: Order]: CsvRowDecoder[BoundingBox[C], String]
-  with
+  given [C: {CellDecoder, Order}] => CsvRowDecoder[BoundingBox[C], String]:
     /** Parse each interval endpoint, then make assemble the intervals. */
     override def apply(row: CsvRow): DecoderResult[BoundingBox[C]] =
       val zNels = row.getPair[C, ZCoordinate[C]](
@@ -182,11 +153,11 @@ trait InstancesForRoi:
       )
       buildBox(zNels, yNels, xNels).leftMap(row.buildDecoderError)
 
-  given csvRowEncoderForBoundingBox[C](using
+  given [C] => (
       encZ: CellEncoder[ZCoordinate[C]],
       encY: CellEncoder[YCoordinate[C]],
       encX: CellEncoder[XCoordinate[C]]
-  ): CsvRowEncoder[BoundingBox[C], String] = new:
+  ) => CsvRowEncoder[BoundingBox[C], String] = new:
     override def apply(box: BoundingBox[C]): CsvRow =
       val kvs: NonEmptyList[(ColumnName[?], String)] = NonEmptyList.of(
         zLoColumnNameCamel -> encZ(box.sideZ.lo),
@@ -206,9 +177,9 @@ trait InstancesForRoi:
   /* Syntax enrichments for parsing data from CSV row */
   extension (row: CsvRow)
     /* Try to parse a pair of interval endpoints from the row. */
-    private def getPair[A, C <: Coordinate[A]: CellDecoder: [C] =>> NotGiven[
-      C =:= Coordinate[A]
-    ]](
+    private def getPair[A, C <: Coordinate[A]: {CellDecoder, [C] =>> NotGiven[
+        C =:= Coordinate[A]
+      ]}](
         keyLo: ColumnName[C],
         keyHi: ColumnName[C]
     ): MaybeEndpoints[A, C] =

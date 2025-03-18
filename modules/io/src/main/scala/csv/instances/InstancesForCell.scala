@@ -13,7 +13,7 @@ trait InstancesForCell:
   given cellDecoderForNuclearDesignation: CellDecoder[NuclearDesignation] =
     liftToCellDecoder(NuclearDesignation.parse)
 
-  given cellEncoderForNuclearDesignation: CellEncoder[NuclearDesignation] with
+  given cellEncoderForNuclearDesignation: CellEncoder[NuclearDesignation]:
     override def apply(cell: NuclearDesignation): String = cell.show_
 
   def getCsvRowDecoderForNuclearDesignation(

@@ -9,7 +9,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
 /** Typeclass instances for [[fs2.data.csv.CsvRowEncoder]] */
 trait InstancesForEncoding:
-  given Semigroup[NamedRow] with
+  given Semigroup[NamedRow]:
     override def combine(a: NamedRow, b: NamedRow): NamedRow =
       val aNames = a.headers.extractValue
       val bNames = b.headers.extractValue

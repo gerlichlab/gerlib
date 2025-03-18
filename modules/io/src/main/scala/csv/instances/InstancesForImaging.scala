@@ -27,7 +27,7 @@ trait InstancesForImaging:
     * NB: CellEncoder is invariant, so we have this subtype instance in addition to the instance for
     * the parent.
     */
-  given CellEncoder[FieldOfView] with
+  given CellEncoder[FieldOfView]:
     override def apply(cell: FieldOfView): String = cell.show_
 
   /** Decode a CSV field/cell by using the companion object's parse function. */
@@ -55,22 +55,22 @@ trait InstancesForImaging:
   given CellEncoder[ImagingTimepoint] =
     CellEncoder.fromSimpleShow[ImagingTimepoint]
 
-  given csvRowDecoderForImagingContext(using
+  given (
       decFov: CsvRowDecoder[FieldOfViewLike, String],
       decTime: CsvRowDecoder[ImagingTimepoint, String],
       decChannel: CsvRowDecoder[ImagingChannel, String]
-  ): CsvRowDecoder[ImagingContext, String] = new:
+  ) => CsvRowDecoder[ImagingContext, String] = new:
     override def apply(row: RowF[Some, String]): DecoderResult[ImagingContext] =
       val fovNel = decFov(row)
       val timeNel = decTime(row)
       val channelNel = decChannel(row)
       (fovNel, timeNel, channelNel).mapN(ImagingContext.apply)
 
-  given csvRowEncoderForImagingContext(using
+  given (
       encFov: CellEncoder[FieldOfViewLike],
       envTime: CellEncoder[ImagingTimepoint],
       encChannel: CsvRowEncoder[ImagingChannel, String]
-  ): CsvRowEncoder[ImagingContext, String] = new:
+  ) => CsvRowEncoder[ImagingContext, String] = new:
     override def apply(elem: ImagingContext): RowF[Some, String] =
       val fovRow = ColumnNames.FieldOfViewColumnName.write(elem.fieldOfView)
       val timeRow = ColumnNames.TimepointColumnName.write(elem.timepoint)

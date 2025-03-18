@@ -12,11 +12,11 @@ import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 /** Typeclass instances for types related to representation of imaging field of view
   */
 trait FieldOfViewLikeInstances:
-  given JsonValueWriter[PositionName, ujson.Str] with
+  given JsonValueWriter[PositionName, ujson.Str]:
     override def apply(posName: PositionName): ujson.Str =
       ujson.Str(posName.get)
 
-  given JsonValueWriter[FieldOfView, ujson.Num] with
+  given JsonValueWriter[FieldOfView, ujson.Num]:
     override def apply(fov: FieldOfView): ujson.Num =
       ujson.Num(fov.get)
 
@@ -31,10 +31,7 @@ trait FieldOfViewLikeInstances:
   /** Simply show a general field-of-view-like by distinguishing among the subtypes and choosing the
     * appropriate instance.
     */
-  given simpleShowForFovLike(using
-      showFov: SimpleShow[FieldOfView],
-      showPos: SimpleShow[PositionName]
-  ): SimpleShow[FieldOfViewLike] with
+  given (SimpleShow[FieldOfView], SimpleShow[PositionName]) => SimpleShow[FieldOfViewLike] = new:
     override def show_(fovLike: FieldOfViewLike): String = fovLike match
     case fov: FieldOfView  => fov.show_
     case pos: PositionName => pos.show_

@@ -10,8 +10,6 @@ import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.catsScalacheck.given
 /** Testing-related typeclass instances for CSV-related data types */
 trait CsvInstances:
   /** Simply generate a column name, and type the wrapper appropriately. */
-  given arbitraryForColumnNameLike[A](using
-      arbStr: Arbitrary[String]
-  ): Arbitrary[ColumnNameLike[A]] =
+  given [A] => (arbStr: Arbitrary[String]) => Arbitrary[ColumnNameLike[A]] =
     arbStr.map(ColumnName.apply[A])
 end CsvInstances

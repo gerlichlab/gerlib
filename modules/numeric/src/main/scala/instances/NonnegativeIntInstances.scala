@@ -7,7 +7,7 @@ import io.github.iltotore.iron.cats.given
 import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
 
 trait NonnegativeIntInstances:
-  given IntLike[NonnegativeInt] with
+  given IntLike[NonnegativeInt]:
     override def asInt = identity
   given Order[NonnegativeInt] = summon[Order[NonnegativeInt]]
   given Show[NonnegativeInt] = summon[Show[NonnegativeInt]]

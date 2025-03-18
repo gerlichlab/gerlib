@@ -25,29 +25,29 @@ class TestAtLeast2
   override implicit val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 500)
 
-  inline given arbitraryForAtLeast2[C[*] <: Iterable[*], E](using
+  inline given [C[*] <: Iterable[*], E] => (
       Arbitrary[E],
       org.scalacheck.util.Buildable[E, C[E]],
       C[E] => Iterable[E],
       Constraint[C[E], MinLength[2]]
-  ): Arbitrary[AtLeast2[C, E]] = Arbitrary {
-    Gen.size
-      .flatMap: k =>
-        Gen.choose(2, scala.math.max(2, k))
-      .flatMap(Gen.containerOfN[C, E](_, Arbitrary.arbitrary[E]))
-      .suchThat(_.size > 2)
-      .map { unrefined =>
-        AtLeast2
-          .either(unrefined)
-          .fold(
-            msg =>
-              throw new Exception(
-                s"Error generating collection of at least 2 elements! Collection: ${unrefined}. Message: $msg"
-              ),
-            identity
-          )
-      }
-  }
+  ) => Arbitrary[AtLeast2[C, E]] = 
+    Arbitrary:
+      Gen.size
+        .flatMap: k =>
+          Gen.choose(2, scala.math.max(2, k))
+        .flatMap(Gen.containerOfN[C, E](_, Arbitrary.arbitrary[E]))
+        .suchThat(_.size > 2)
+        .map { unrefined =>
+          AtLeast2
+            .either(unrefined)
+            .fold(
+              msg =>
+                throw new Exception(
+                  s"Error generating collection of at least 2 elements! Collection: ${unrefined}. Message: $msg"
+                ),
+              identity
+            )
+        }
 
   test("For lists, AtLeast2.apply has cons-like argument order"):
     assertTypeError:

@@ -22,9 +22,9 @@ object extrema:
 
   /** Instances of maximum admission for some types */
   object AdmitsMaximum:
-    given admitsMaximumForInt: AdmitsMaximum[Int] with
+    given admitsMaximumForInt: AdmitsMaximum[Int]:
       def maximum: MaximumValue[Int] = Int.MaxValue
-    given admitsMaximumForNonnegativeInt: AdmitsMaximum[NonnegativeInt] with
+    given admitsMaximumForNonnegativeInt: AdmitsMaximum[NonnegativeInt]:
       def maximum: MaximumValue[NonnegativeInt] =
         MaximumValue(NonnegativeInt(Int.MaxValue))
   end AdmitsMaximum
@@ -39,9 +39,9 @@ object extrema:
 
   /** Instances of minimum admission for some types */
   object AdmitsMinimum:
-    given admitsMinimumForInt: AdmitsMinimum[Int] with
+    given admitsMinimumForInt: AdmitsMinimum[Int]:
       def minimum: MinimumValue[Int] = Int.MinValue
-    given admitsMinimumForNonnegativeInt: AdmitsMinimum[NonnegativeInt] with
+    given admitsMinimumForNonnegativeInt: AdmitsMinimum[NonnegativeInt]:
       def minimum: MinimumValue[NonnegativeInt] = MinimumValue(
         NonnegativeInt(0)
       )
@@ -60,7 +60,7 @@ object extrema:
   trait MaximumSeekingMonoid[A] extends Monoid[A]
 
   object MaximumSeekingMonoid:
-    def instance[A: AdmitsMinimum: Order]: MaximumSeekingMonoid[A] = new:
+    def instance[A: {AdmitsMinimum, Order}]: MaximumSeekingMonoid[A] = new:
       override def empty: A = summon[AdmitsMinimum[A]].minimum
       override def combine(x: A, y: A): A = if y > x then y else x
   end MaximumSeekingMonoid

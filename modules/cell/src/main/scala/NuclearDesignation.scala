@@ -54,7 +54,7 @@ object NuclearDesignation:
     }
 
   /** Represent the extranuclear designation as 0, and intranuclear by the wrapped number. */
-  given SimpleShow[NuclearDesignation] with
+  given SimpleShow[NuclearDesignation]:
     override def show_(nd: NuclearDesignation): String = nd match
     case OutsideNucleus    => "0"
     case nn: NucleusNumber => nn.show_

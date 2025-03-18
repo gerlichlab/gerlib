@@ -10,12 +10,10 @@ import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
 trait NonnegativeRealInstances:
   given orderForNonnegativeReal: Order[NonnegativeReal] =
     summon[Order[NonnegativeReal]]
-  given showForNonnegativeReal(using ev: Show[Double]): Show[NonnegativeReal] =
+  given (ev: Show[Double]) => Show[NonnegativeReal] =
     ev.contramap(identity)
-  given simpleShowForNonnegativeReal(using
-      Show[Double]
-  ): SimpleShow[NonnegativeReal] =
+  given (Show[Double]) => SimpleShow[NonnegativeReal] =
     SimpleShow.fromShow
-  given Subtraction[NonnegativeReal, Double, Double] with
+  given Subtraction[NonnegativeReal, Double, Double]:
     def minus(minuend: NonnegativeReal)(subtrahend: Double): Double =
       minuend - subtrahend

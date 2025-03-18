@@ -12,14 +12,10 @@ import at.ac.oeaw.imba.gerlich.gerlib.testing.syntax.scalacheck.*
 
 /** Testing-related typeclass instances for cell-related data types */
 trait CellInstances:
-  given arbitraryForNucleusNumber(using
-      arbRaw: Arbitrary[PositiveInt]
-  ): Arbitrary[NucleusNumber] =
+  given (arbRaw: Arbitrary[PositiveInt]) => Arbitrary[NucleusNumber] =
     arbRaw.map(NucleusNumber.apply)
 
-  given arbitraryForNuclearDesignation(using
-      Arbitrary[NucleusNumber]
-  ): Arbitrary[NuclearDesignation] =
+  given (Arbitrary[NucleusNumber]) => Arbitrary[NuclearDesignation] =
     Gen
       .option(Arbitrary.arbitrary[NucleusNumber])
       .map(_.getOrElse(OutsideNucleus))

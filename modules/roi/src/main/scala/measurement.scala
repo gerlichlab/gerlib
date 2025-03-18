@@ -21,7 +21,7 @@ package object measurement:
       PositiveReal.either(x).map(apply)
 
     /** Use normal numeric ordering for ROI area values. */
-    given orderForArea(using ordPosNum: Order[PositiveReal]): Order[Area] =
+    given (ordPosNum: Order[PositiveReal]) => Order[Area] =
       ordPosNum.contramap(identity)
 
     /** Attempt to read the given text as a ROI area value. */
@@ -43,9 +43,7 @@ package object measurement:
       NonnegativeReal.either(x).map(apply)
 
     /** Use normal numeric ordering for ROI mean intensity values. */
-    given orderForMeanIntensity(using
-        ordNonNegNum: Order[NonnegativeReal]
-    ): Order[MeanIntensity] =
+    given (ordNonNegNum: Order[NonnegativeReal]) => Order[MeanIntensity] =
       ordNonNegNum.contramap(identity)
 
     /** Attempt to read the given text as a ROI mean intensity value. */

@@ -12,9 +12,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.testing.syntax.scalacheck.*
 trait CatsScalacheckInstances:
 
   /** Define {@code Applicative[Arbitrary]} i.t.o. {@code Applicative[Gen]}. */
-  given applicativeForArbitrary(using
-      ev: Applicative[Gen]
-  ): Applicative[Arbitrary] with
+  given (ev: Applicative[Gen]) => Applicative[Arbitrary]:
     override def pure[A](a: A): Arbitrary[A] = ev.pure(a).toArbitrary
     override def ap[A, B](ff: Arbitrary[A => B])(
         fa: Arbitrary[A]
@@ -24,7 +22,7 @@ trait CatsScalacheckInstances:
   /** Use Gen.flatMap to define {@code Applicative.ap} , and {@code Gen.const} to define
     * {@code Applicative.pure} .
     */
-  given applicativeForGen: Applicative[Gen] with
+  given applicativeForGen: Applicative[Gen]:
     override def pure[A](a: A) = Gen.const(a)
     override def ap[A, B](ff: Gen[A => B])(fa: Gen[A]): Gen[B] = for
       f <- ff
@@ -34,9 +32,7 @@ trait CatsScalacheckInstances:
   /** Use [[org.scalacheck.Gen]]'s {@code nonEmptyListOf} member to build a
     * [[cats.data.NonEmptyList]]
     */
-  given arbitraryForNonEmptyList[A: Arbitrary](using
-      ev: Arbitrary[List[A]]
-  ): Arbitrary[NonEmptyList[A]] =
+  given [A: Arbitrary] => Arbitrary[NonEmptyList[A]] =
     Gen
       .nonEmptyListOf(Arbitrary.arbitrary[A])
       .map(_.toNel)
