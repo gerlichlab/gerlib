@@ -183,8 +183,8 @@ lazy val metadataSettings = Def.settings(
   organization := groupId, 
   organizationName := "Gerlich Group, IMBA, ÖAW",
   homepage := Some(url(s"https://github.com/$gitHubOwner/$projectName")),
-  startYear := Some(2015),
-  licenses := Seq("MIT" -> url("http://opensource.org/licenses/MIT")),
+  startYear := Some(2023),
+  licenses := Seq("Apache2" -> url("https://www.apache.org/licenses/LICENSE-2.0")),
   scmInfo := Some(ScmInfo(homepage.value.get, s"scm:git:$gitPubUrl", None)),
   developers := List(
     Developer(
