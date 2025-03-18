@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.4.1] - 2025-03-18
+
+### Added
+* `getRawValue` member to the `FieldOfView` type, such that client code can access the raw nonnegative integer value, but in a clear and intentional way.
+
+### Changed
+* More updates regarding Scala 3.6's revision of syntax for `given` instances and for bounds, per SIP-64.
+* Apply `-new-syntax` + `-rewrite` to scalac settings.
+
 ## [v0.4.0] - 2025-03-12
 
 ### Added
