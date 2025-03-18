@@ -30,7 +30,7 @@ class TestAtLeast2
       org.scalacheck.util.Buildable[E, C[E]],
       C[E] => Iterable[E],
       Constraint[C[E], MinLength[2]]
-  ) => Arbitrary[AtLeast2[C, E]] = 
+  ) => Arbitrary[AtLeast2[C, E]] =
     Arbitrary:
       Gen.size
         .flatMap: k =>
