@@ -5,6 +5,7 @@
   }) {}, 
   dev ? true,
   javaSpec ? "jdk21",
+  includeScalac ? false,
 }:
 let 
    sysPkgs = [ pkgs.${javaSpec} ];
@@ -12,9 +13,11 @@ let
 in
 pkgs.mkShell {
   name = "gerlib-env";
-  buildInputs = sysPkgs ++ (
-    if dev then [ scalaDevTools ] else []
-  );
+  buildInputs = 
+    sysPkgs ++ 
+    (if dev then [ scalaDevTools ] else []) ++ 
+    (if includeScalac then [ pkgs.scala ] else [])
+  ;
   shellHook = ''
     export LD_LIBRARY_PATH="${pkgs.zlib}/lib:${pkgs.stdenv.cc.cc.lib}/lib"
   '';
