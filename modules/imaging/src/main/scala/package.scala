@@ -33,7 +33,8 @@ package object imaging:
 
   /** Type wrapper around 0-based index of field of view (FOV) */
   final case class FieldOfView(private[imaging] get: NonnegativeInt) extends FieldOfViewLike
-      derives Order
+      derives Order:
+    def getRawValue: NonnegativeInt = get
 
   /** Helpers for working with fields of view */
   object FieldOfView:
