@@ -4,11 +4,12 @@ import scala.util.Try
 import cats.*
 import cats.syntax.all.*
 
-import io.github.iltotore.iron.*
+import io.github.iltotore.iron.RefinedType
 import io.github.iltotore.iron.constraint.any.Not
 // for summoning Order[Int :| P] or Order[Double :| P]
 import io.github.iltotore.iron.constraint.numeric.*
-import io.github.iltotore.iron.macros.assertCondition
+
+import at.ac.oeaw.imba.gerlich.gerlib.refinement.IllegalRefinement
 
 /** Numeric tools and types */
 package object numeric:
@@ -35,130 +36,35 @@ package object numeric:
       def contramap[A, B](fa: IntLike[A])(f: B => A): IntLike[B] = new:
         def asInt: B => Int = f `andThen` fa.asInt
 
-  /** Error subtype for when refinement of a negative integer as nonnegative is attempted
-    *
-    * @param getInt
-    *   The integer to refine as nonnegative
-    * @param context
-    *   The context (e.g., purpose) in which the refinement's being attempted; this is used to craft
-    *   a more informative error message
-    */
-  final case class IllegalRefinement[A] private[numeric] (
-      rawValue: A,
-      msg: String,
-      context: Option[String]
-  ) extends IllegalArgumentException(
-        s"Cannot refine value $rawValue: $msg.${context
-            .fold("")(ctx => s" Context: $ctx")}"
-      )
-
-  /** Builders for [[IllegalRefinement]] */
-  object IllegalRefinement:
-    /** No additional message context */
-    private[numeric] def apply[A](value: A, msg: String): IllegalRefinement[A] =
-      new IllegalRefinement(value, msg, None)
-
-    /** Add additional message context. */
-    private[numeric] def apply[A](
-        value: A,
-        msg: String,
-        ctx: String
-    ): IllegalRefinement[A] =
-      new IllegalRefinement(value, msg, ctx.some)
-
-  /** Enrich [[io.github.iltotore.iron.RefinedTypeOps]] with semantic context for error messages,
-    * and a parser.
-    *
-    * @tparam V
-    *   The type of value to refine with constraint/predicate
-    * @tparam P
-    *   The constraint/predicate by which to refine values
-    * @see
-    *   [[io.github.iltotore.iron.RefinedTypeOps]]
-    */
-  private sealed trait RefinementBuilder[V, P] extends RefinedTypeOps.Transparent[V :| P]:
-    /** Compile-time refinement of a {@code V} acc. to predicate {@code P} , with constructor-like
-      * syntax
-      *
-      * @param v
-      *   The value to test under predicate/constraint {@code P}
-      * @param constraint
-      *   The predicate under which to test a given value
-      * @see
-      *   [[io.github.iltotore.iron.autoRefine]]
-      */
-    inline def apply(inline v: V)(using
-        inline constraint: Constraint[V, P]
-    ): V :| P =
-      assertCondition(v, constraint.test(v), constraint.message)
-      IronType(v)
-
-    /** How to safely try to get a raw value {@code V} from text */
-    protected def parseRaw: String => Either[String, V]
-
-    /** Alias for {@code option} */
-    final def maybe(v: V): Option[V :| P] = option(v)
-
-    /** Provide a safe parser of {@code V :| P} from text */
-    def parse: String => Either[String, V :| P] =
-      parseRaw.map(_.flatMap(either))
-
-    /** Modify the parent trait's {@code either} member by injecting semantic context into fail
-      * message.
-      */
-    final def unsafe: V => V :| P = v =>
-      either(v).fold(msg => throw IllegalRefinement(v, msg), identity)
-
-  /** Alias to hide implementation choice of Not[Negative] vs. GreaterEqual[0] vs., e.g.,
-    * Not[Less[0]]
-    */
-  private[gerlib] type Nonnegative = Not[Negative]
-
   /** Refinement type for nonnegative integers */
-  type NonnegativeInt = Int :| Nonnegative
+  type NonnegativeInt = NonnegativeInt.T
 
   /** Helpers for working with nonnegative integers */
-  object NonnegativeInt extends RefinementBuilder[Int, Nonnegative]:
-    override protected def parseRaw: String => Either[String, Int] = readAsInt
+  object NonnegativeInt extends RefinedType[Int, Not[Negative]]:
+    def indexed[F[_]: Functor, A](ais: F[(A, Int)]): F[(A, NonnegativeInt)] =
+      ais.map((a, i) =>
+        a -> NonnegativeInt.either(i).fold(msg => throw IllegalRefinement(i, msg), identity)
+      )
 
-    def indexed[A](as: List[A]): List[(A, NonnegativeInt)] =
-      as.zipWithIndex.map: (a, i) =>
-        a -> unsafe(i)
-
-    // Add a pair of nonnegative numbers, ensuring that the result stays as a nonnegative.
-    extension (n: NonnegativeInt)
-      infix def add(m: NonnegativeInt): NonnegativeInt =
-        either(n + m) match
-        case Left(msg) =>
-          throw new ArithmeticException(s"Uh-Oh! $n + $m = ${n + m}; $msg")
-        case Right(result) => result
   end NonnegativeInt
 
   /** Nonnegative real number */
-  type NonnegativeReal = Double :| Nonnegative
+  type NonnegativeReal = NonnegativeReal.T
 
   /** Helpers for working with nonnegative real numbers */
-  object NonnegativeReal extends RefinementBuilder[Double, Nonnegative]:
-    override protected def parseRaw: String => Either[String, Double] =
-      readAsDouble
-  end NonnegativeReal
+  object NonnegativeReal extends RefinedType[Double, Not[Negative]]
 
   /** Refinement type for positive integers */
-  type PositiveInt = Int :| Positive
+  type PositiveInt = PositiveInt.T
 
   /** Helpers for working with positive integers */
-  object PositiveInt extends RefinementBuilder[Int, Positive]:
-    override protected def parseRaw: String => Either[String, Int] = readAsInt
-  end PositiveInt
+  object PositiveInt extends RefinedType[Int, Positive]
 
   /** Positive real number */
-  type PositiveReal = Double :| Positive
+  type PositiveReal = PositiveReal.T
 
   /** Helpers for working with positive real numbers */
-  object PositiveReal extends RefinementBuilder[Double, Positive]:
-    override protected def parseRaw: String => Either[String, Double] =
-      readAsDouble
-  end PositiveReal
+  object PositiveReal extends RefinedType[Double, Positive]
 
   /** Attempt to parse the given text as integer, wrapping error message as a [[scala.util.Left]]
     * for fail.
@@ -176,7 +82,7 @@ package object numeric:
     *
     * @tparam T
     *   The target type
-    * @param aName
+    * @param targetName
     *   The name of the target type, used to contextualise error message
     * @param lift
     *   How to lift raw nonnegative integer into target type
@@ -184,9 +90,11 @@ package object numeric:
     *   Either a [[scala.util.Left]]-wrapped error message, or a [[scala.util.Right]]-wrapped parsed
     *   value
     */
-  def parseThroughNonnegativeInt[T](aName: String)(
+  def parseThroughNonnegativeInt[T](targetName: String)(
       lift: NonnegativeInt => T
-  ): String => Either[String, T] =
-    s => NonnegativeInt.parse(s).bimap(msg => s"For $aName -- $msg", lift)
+  ): String => Either[String, T] = s =>
+    readAsInt(s)
+      .flatMap(NonnegativeInt.either)
+      .bimap(msg => s"For $targetName -- $msg", lift)
 
 end numeric

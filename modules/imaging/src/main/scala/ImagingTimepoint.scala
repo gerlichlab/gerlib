@@ -3,16 +3,20 @@ package at.ac.oeaw.imba.gerlich.gerlib.imaging
 import cats.*
 import cats.derived.*
 import cats.syntax.all.*
+import io.github.iltotore.iron.:|
+import io.github.iltotore.iron.cats.given_Order_:| // for derivation of Order for wrapper type
+import io.github.iltotore.iron.constraint.any.Not
+import io.github.iltotore.iron.constraint.numeric.Negative
 
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
-import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
+import at.ac.oeaw.imba.gerlich.gerlib.refinement.IllegalRefinement
 
 /** Semantic wrapper around value representing 0-based imaging timepoint */
-final case class ImagingTimepoint(private[gerlib] get: NonnegativeInt) derives Order
+final case class ImagingTimepoint(private[gerlib] get: Int :| Not[Negative]) derives Order
 
 /** Helpers for working with imaging timepoints */
 object ImagingTimepoint:
-  /** Attempt to create a timepoint from an integer, first refining through {@code NonnegativeInt} .
+  /** Attempt to create a timepoint from an integer, first refining as nonnegative integer .
     */
   def fromInt: Int => Either[String, ImagingTimepoint] =
     NonnegativeInt.either.map(_.map(ImagingTimepoint.apply))
@@ -34,7 +38,11 @@ object ImagingTimepoint:
 
   /** Lift the given integer to nonnegative, then wrap as an imaging timepoint.
     */
-  def unsafeLift = NonnegativeInt.unsafe `andThen` ImagingTimepoint.apply
+  def unsafeLift = (i: Int) =>
+    NonnegativeInt.option(i) match {
+    case None    => throw IllegalRefinement(i, s"Illegal value as imaging timepoint: $i")
+    case Some(t) => ImagingTimepoint(t)
+    }
 
   extension (t: ImagingTimepoint)
     /** Attempt to create a new imaging timepoint by shifting one by the given increment.

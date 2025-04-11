@@ -6,9 +6,9 @@ import cats.derived.*
 import cats.syntax.all.*
 
 import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
-import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.positiveInt.given
+import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
 /** Designation of whether something's in a cell nucleus or not */
 sealed trait NuclearDesignation
@@ -27,11 +27,8 @@ object NucleusNumber:
   /** Try to read the given string as a nucleus number. */
   def parse(s: String): Either[String, NucleusNumber] =
     readAsInt(s)
-      .flatMap(PositiveInt.either)
-      .bimap(
-        msg => s"Cannot parse value ($s) as nucleus number: $msg",
-        NucleusNumber.apply
-      )
+      .flatMap(i => PositiveInt.option(i).toRight(s"Cannot parse value ($s) as nucleus number"))
+      .map(NucleusNumber.apply)
 end NucleusNumber
 
 /** Helpers for working with nuclei number labels */
@@ -47,10 +44,9 @@ object NuclearDesignation:
 
   /** Attempt to read the given text as a nucleus number. */
   def parse(s: String): Either[String, NuclearDesignation] =
-    readAsInt(s).flatMap { z =>
-      if z > 0 then NucleusNumber(PositiveInt.unsafe(z)).asRight
-      else if z === 0 then OutsideNucleus.asRight
-      else s"Negative value parsed for nucleus number: $z".asLeft
+    readAsInt(s).flatMap {
+      case 0 => OutsideNucleus.asRight
+      case z => PositiveInt.either(z).map(NucleusNumber.apply)
     }
 
   /** Represent the extranuclear designation as 0, and intranuclear by the wrapped number. */

@@ -10,11 +10,18 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.PositiveInt
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.all.given
+import at.ac.oeaw.imba.gerlich.gerlib.refinement.IllegalRefinement
 
 /** Tests for data type for nucleuar / non-nuclear attribution */
 class TestNuclearDesignation extends AnyFunSuite, ScalaCheckPropertyChecks, should.Matchers:
   given Arbitrary[PositiveInt] = Arbitrary:
-    Gen.choose(1, Int.MaxValue).map(PositiveInt.unsafe)
+    Gen
+      .choose(1, Int.MaxValue)
+      .map(n =>
+        PositiveInt
+          .option(n)
+          .getOrElse { throw IllegalRefinement(n, "Cannot refine as positive") }
+      )
 
   given (arbPosInt: Arbitrary[PositiveInt]) => Arbitrary[NucleusNumber] =
     Arbitrary { arbPosInt.arbitrary.map(NucleusNumber.apply) }

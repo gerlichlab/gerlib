@@ -20,21 +20,21 @@ object OmeZarrIndex:
 
   object Z:
     def fromDouble: Double => Option[Z] =
-      ((_: Double).toInt).andThen(NonnegativeInt.maybe)
+      ((_: Double).toInt).andThen(NonnegativeInt.option)
 
   /** Index into y dimension of ZARR array */
   opaque type Y = NonnegativeInt
 
   object Y:
     def fromDouble: Double => Option[Y] =
-      ((_: Double).toInt).andThen(NonnegativeInt.maybe)
+      ((_: Double).toInt).andThen(NonnegativeInt.option)
 
   /** Index into x dimension of ZARR array */
   opaque type X = NonnegativeInt
 
   object X:
     def fromDouble: Double => Option[X] =
-      ((_: Double).toInt).andThen(NonnegativeInt.maybe)
+      ((_: Double).toInt).andThen(NonnegativeInt.option)
 
   /** Index of "point" in standard OME-ZARR coordinate space */
   final case class OmeZarrStandardCoordinate(

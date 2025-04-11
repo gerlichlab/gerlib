@@ -1,4 +1,3 @@
-package at.ac.oeaw.imba.gerlich.gerlib.numeric
-package instances
+package at.ac.oeaw.imba.gerlich.gerlib.numeric.instances
 
 package object nonnegativeInt extends NonnegativeIntInstances
