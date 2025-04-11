@@ -1,5 +1,10 @@
 package at.ac.oeaw.imba.gerlich.gerlib
 
+import io.github.iltotore.iron.{RefinedType, RuntimeConstraint}
+import io.github.iltotore.iron.constraint.any.Not
+import io.github.iltotore.iron.constraint.numeric.Negative
+import squants.space.Length
+
 /** Types and tools related to geometry */
 package object geometry:
   /** Centroid of a region of interest */
@@ -27,6 +32,20 @@ package object geometry:
       /** Access z-component of centroid. */
       private[gerlib] def z: ZCoordinate[C] = c.z
   end Centroid
+
+  /** Constrain a length to be like a distance (nonnegative). */
+  given RuntimeConstraint[Length, Not[Negative]] =
+    new RuntimeConstraint(
+      _.value >= 0,
+      "Allegedly nonnegative length must actually be nonnegative."
+    )
+
+  /** Leave this alias transparent, since we just want the typelevel 'check' that the length is
+    * nonnegative; we don't want the underlying type masked.
+    */
+  type Distance = Distance.T
+
+  object Distance extends RefinedType[Length, Not[Negative]]
 
   type AxisX = EuclideanAxis.X.type
 

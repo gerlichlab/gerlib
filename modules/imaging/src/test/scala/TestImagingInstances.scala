@@ -6,12 +6,13 @@ import org.scalatest.matchers.*
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 import io.github.iltotore.iron.:|
+import io.github.iltotore.iron.constraint.any.Not
 import io.github.iltotore.iron.constraint.char.*
+import io.github.iltotore.iron.constraint.numeric.Negative
 import io.github.iltotore.iron.scalacheck.char.given
 import io.github.iltotore.iron.scalacheck.numeric.intervalArbitrary
 
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.instances.fieldOfViewLike.given
-import at.ac.oeaw.imba.gerlich.gerlib.numeric.{Nonnegative, NonnegativeInt}
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
 /** Tests for imaging-related types' typeclass instances */
@@ -77,7 +78,7 @@ class TestImagingInstances extends AnyFunSuite, ScalaCheckPropertyChecks, should
     import at.ac.oeaw.imba.gerlich.gerlib.json.syntax.*
 
     given Arbitrary[FieldOfView] = Arbitrary {
-      intervalArbitrary[Int, Nonnegative](0, Int.MaxValue).arbitrary
+      intervalArbitrary[Int, Not[Negative]](0, Int.MaxValue).arbitrary
         .map(FieldOfView.apply)
     }
 

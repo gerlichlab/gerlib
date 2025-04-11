@@ -52,7 +52,7 @@ ThisBuild / testOptions += Tests.Argument("-oF") // full stack traces
 
 lazy val root = project
   .in(file("."))
-  .aggregate(cell, geometry, graph, imaging, io, json, numeric, pan, roi, testing, zarr)
+  .aggregate(cell, geometry, graph, imaging, io, json, numeric, pan, refinement, roi, testing, zarr)
   .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings)
   .settings(noPublishSettings)
@@ -66,7 +66,12 @@ lazy val cell = defineModule("cell")(project)
   .dependsOn(numeric)
 
 lazy val geometry = defineModule("geometry")(project)
-  .dependsOn(numeric)
+  .dependsOn(numeric, refinement)
+  .settings(
+    libraryDependencies ++= Seq(
+      squants,
+    )
+  )
 
 lazy val graph = defineModule("graph")(project)
   .settings(
@@ -88,7 +93,7 @@ lazy val io = defineModule("io")(project)
   )
 
 lazy val imaging = defineModule("imaging")(project)
-  .dependsOn(json, numeric)
+  .dependsOn(json, numeric, refinement)
   .settings(
     libraryDependencies ++= Seq(
       iron % Test,
@@ -108,7 +113,7 @@ lazy val json = defineModule("json")(project)
   )
 
 lazy val numeric = defineModule("numeric")(project)
-  .dependsOn(pan)
+  .dependsOn(pan, refinement)
   .settings(
     libraryDependencies ++= Seq(
       iron, 
@@ -123,6 +128,14 @@ lazy val pan = defineModule("pan")(project)
     libraryDependencies ++= Seq(
       catsLaws % Test,
       disciplineScalatest % Test,
+      iron,
+      ironScalacheck % Test,
+    )
+  )
+
+lazy val refinement = defineModule("refinement")(project)
+  .settings(
+    libraryDependencies ++= Seq(
       iron,
       ironScalacheck % Test,
     )
@@ -176,7 +189,7 @@ lazy val compileSettings = Def.settings(
   Test / console / scalacOptions := (Compile / console / scalacOptions).value,
 )
 
-lazy val versionNumber = "0.4.1"
+lazy val versionNumber = "0.5.0"
 
 lazy val metadataSettings = Def.settings(
   name := projectName,

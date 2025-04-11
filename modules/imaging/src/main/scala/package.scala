@@ -9,10 +9,11 @@ import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.any.{Not, StrictEqual}
 import io.github.iltotore.iron.constraint.char.{Digit, Letter}
 import io.github.iltotore.iron.constraint.collection.{Empty, ForAll}
+import io.github.iltotore.iron.constraint.numeric.Negative
 import io.github.iltotore.iron.constraint.string.Match
 
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
-import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
+import at.ac.oeaw.imba.gerlich.gerlib.refinement.IllegalRefinement
 
 /** Tools and types related to imaging */
 package object imaging:
@@ -32,9 +33,9 @@ package object imaging:
         }
 
   /** Type wrapper around 0-based index of field of view (FOV) */
-  final case class FieldOfView(private[imaging] get: NonnegativeInt) extends FieldOfViewLike
+  final case class FieldOfView(private[imaging] get: Int :| Not[Negative]) extends FieldOfViewLike
       derives Order:
-    def getRawValue: NonnegativeInt = get
+    def getRawValue: Int :| Not[Negative] = get
 
   /** Helpers for working with fields of view */
   object FieldOfView:
@@ -48,8 +49,11 @@ package object imaging:
 
     /** Lift an ordinary integer into field of view wrapper, erroring if invalid.
       */
-    def unsafeLift: Int => FieldOfView =
-      NonnegativeInt.unsafe `andThen` FieldOfView.apply
+    def unsafeLift: Int => FieldOfView = i =>
+      NonnegativeInt.option(i) match {
+      case None    => throw IllegalRefinement(i, s"Illegal value as field of view: $i")
+      case Some(t) => FieldOfView(t)
+      }
   end FieldOfView
 
   private[gerlib] type PositionNamePunctuation = StrictEqual['.'] | StrictEqual['-'] |
