@@ -160,6 +160,6 @@ package object imaging:
     val delY = pixels.liftY(p.y.value - q.y.value)
     val delZ = pixels.liftZ(p.z.value - q.z.value)
     val distanceSquared = List(delX, delY, delZ).foldLeft(0.0): (sumSqs, pxDiff) =>
-      sumSqs + scala.math.pow((pxDiff in Nanometers).value, 2)
+      sumSqs + scala.math.pow(pxDiff to Nanometers, 2)
     Nanometers(scala.math.sqrt(distanceSquared))
 end imaging
