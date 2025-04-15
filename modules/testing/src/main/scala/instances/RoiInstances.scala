@@ -4,13 +4,14 @@ package instances
 import scala.util.NotGiven
 import cats.Order
 import cats.syntax.all.*
+import io.github.iltotore.iron.:|
+import io.github.iltotore.iron.constraint.any.Not
+import io.github.iltotore.iron.constraint.numeric.{Negative, Positive}
 
 import org.scalacheck.*
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.*
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.instances.coordinate.given
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingContext
-import at.ac.oeaw.imba.gerlich.gerlib.numeric.NonnegativeReal
-import at.ac.oeaw.imba.gerlich.gerlib.numeric.PositiveReal
 import at.ac.oeaw.imba.gerlich.gerlib.roi.DetectedSpot
 import at.ac.oeaw.imba.gerlich.gerlib.roi.measurement.{Area, MeanIntensity}
 import at.ac.oeaw.imba.gerlich.gerlib.testing.instances.catsScalacheck.given
@@ -36,10 +37,10 @@ trait RoiInstances:
   ) => Arbitrary[DetectedSpot[C]] =
     (arbCtx, arbCenter, arbArea, arbIntensity).mapN(DetectedSpot.apply)
 
-  given (arbRaw: Arbitrary[PositiveReal]) => Arbitrary[Area] =
+  given (arbRaw: Arbitrary[Double :| Positive]) => Arbitrary[Area] =
     arbRaw.map(Area.apply)
 
-  given (arbRaw: Arbitrary[NonnegativeReal]) => Arbitrary[MeanIntensity] =
+  given (arbRaw: Arbitrary[Double :| Not[Negative]]) => Arbitrary[MeanIntensity] =
     arbRaw.map(MeanIntensity.apply)
 
   /** Generate an arbitrary interval along a particular axis. */

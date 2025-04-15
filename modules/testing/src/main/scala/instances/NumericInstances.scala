@@ -4,7 +4,8 @@ package instances
 import org.scalacheck.*
 
 import io.github.iltotore.iron.:|
-import io.github.iltotore.iron.constraint.numeric.Positive
+import io.github.iltotore.iron.constraint.any.Not
+import io.github.iltotore.iron.constraint.numeric.{Negative, Positive}
 import io.github.iltotore.iron.scalacheck.numeric.intervalArbitrary
 
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
@@ -12,6 +13,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.testing.GeneratorBound.{
   Lower as LowerBound,
   Upper as UpperBound
 }
+import at.ac.oeaw.imba.gerlich.gerlib.refinement.IllegalRefinement
 
 /** Tools for writing property-based tests involving custom numeric types */
 trait NumericInstances:
@@ -24,8 +26,8 @@ trait NumericInstances:
     ): Gen[NonnegativeInt] =
       Gen
         .choose[Int](min, max)
-        .map:
-          NonnegativeInt.unsafe
+        .map: i =>
+          NonnegativeInt.either(i).fold(msg => throw IllegalRefinement(i, msg), identity)
 
   /** Choose a positive integer through the Choose[Int], then unsafely refine.
     */
@@ -33,8 +35,8 @@ trait NumericInstances:
     override def choose(min: PositiveInt, max: PositiveInt): Gen[PositiveInt] =
       Gen
         .choose[Int](min, max)
-        .map:
-          PositiveInt.unsafe
+        .map: i =>
+          PositiveInt.either(i).fold(msg => throw IllegalRefinement(i, msg), identity)
 
   /** [[org.scalacheck.Arbitrary]] instance for generating bounded numeric type, subject to the
     * given bounds.
@@ -45,15 +47,15 @@ trait NumericInstances:
   ) => Arbitrary[V :| P] =
     intervalArbitrary[V, P](lo.value, hi.value)
 
-  given nonnegativeIntArbitrary: Arbitrary[NonnegativeInt] =
-    intervalArbitrary[Int, Nonnegative](0, Int.MaxValue)
+  given nonnegativeIntArbitrary: Arbitrary[Int :| Not[Negative]] =
+    intervalArbitrary[Int, Not[Negative]](0, Int.MaxValue)
 
-  given positiveIntArbitrary: Arbitrary[PositiveInt] =
+  given positiveIntArbitrary: Arbitrary[Int :| Positive] =
     intervalArbitrary[Int, Positive](1, Int.MaxValue)
 
-  given nonnegativeRealArbitrary: Arbitrary[NonnegativeReal] =
-    intervalArbitrary[Double, Nonnegative](0, Double.MaxValue)
+  given nonnegativeRealArbitrary: Arbitrary[Double :| Not[Negative]] =
+    intervalArbitrary[Double, Not[Negative]](0, Double.MaxValue)
 
-  given positiveRealArbitrary: Arbitrary[PositiveReal] =
+  given positiveRealArbitrary: Arbitrary[Double :| Positive] =
     intervalArbitrary[Double, Positive](1 / Double.MaxValue, Double.MaxValue)
 end NumericInstances

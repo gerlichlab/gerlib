@@ -9,10 +9,14 @@ import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.any.{Not, StrictEqual}
 import io.github.iltotore.iron.constraint.char.{Digit, Letter}
 import io.github.iltotore.iron.constraint.collection.{Empty, ForAll}
+import io.github.iltotore.iron.constraint.numeric.{Negative, Positive}
 import io.github.iltotore.iron.constraint.string.Match
+import squants.MetricSystem
+import squants.space.{Length, LengthUnit, Nanometers}
 
+import at.ac.oeaw.imba.gerlich.gerlib.geometry.Point3D
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
-import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
+import at.ac.oeaw.imba.gerlich.gerlib.refinement.IllegalRefinement
 
 /** Tools and types related to imaging */
 package object imaging:
@@ -32,9 +36,9 @@ package object imaging:
         }
 
   /** Type wrapper around 0-based index of field of view (FOV) */
-  final case class FieldOfView(private[imaging] get: NonnegativeInt) extends FieldOfViewLike
+  final case class FieldOfView(private[imaging] get: Int :| Not[Negative]) extends FieldOfViewLike
       derives Order:
-    def getRawValue: NonnegativeInt = get
+    def getRawValue: Int :| Not[Negative] = get
 
   /** Helpers for working with fields of view */
   object FieldOfView:
@@ -48,8 +52,11 @@ package object imaging:
 
     /** Lift an ordinary integer into field of view wrapper, erroring if invalid.
       */
-    def unsafeLift: Int => FieldOfView =
-      NonnegativeInt.unsafe `andThen` FieldOfView.apply
+    def unsafeLift: Int => FieldOfView = i =>
+      NonnegativeInt.option(i) match {
+      case None    => throw IllegalRefinement(i, s"Illegal value as field of view: $i")
+      case Some(t) => FieldOfView(t)
+      }
   end FieldOfView
 
   private[gerlib] type PositionNamePunctuation = StrictEqual['.'] | StrictEqual['-'] |
@@ -101,4 +108,58 @@ package object imaging:
     def unsafe = (s: String) => parse(s).fold(msg => throw IllegalArgumentException(msg), identity)
   end PositionName
 
+  // TODO: try to restrict the .symbol abstract member to be "px" singleton.
+  opaque type PixelDefinition = LengthUnit
+
+  /** A fundamental unit of length in imaging, the pixel */
+  object PixelDefinition:
+    /** Define a unit of length in pixels by specifying number of nanometers per pixel. */
+    def tryToDefine(onePixelIs: Length): Either[String, PixelDefinition] =
+      PositiveReal
+        .either(onePixelIs.to(Nanometers))
+        .bimap(
+          msg => s"Cannot define pixel by given length ($onePixelIs): $msg",
+          defineByNanometers
+        )
+
+    def unsafeDefine(onePixelIs: Length): PixelDefinition =
+      tryToDefine(onePixelIs)
+        .leftMap { msg => new Exception(msg) }
+        .fold(throw _, identity)
+
+    given Show[PixelDefinition] =
+      Show.show(pxDef => s"PixelDefinition: ${pxDef(1)}")
+
+    /** Define a unit of length in pixels by specifying number of nanometers per pixel. */
+    private def defineByNanometers(nmPerPx: Double :| Positive): PixelDefinition = new:
+      val conversionFactor: Double = nmPerPx * MetricSystem.Nano
+      val symbol: String = "px"
+
+    object syntax:
+      extension (pxDef: PixelDefinition)
+        def lift[A: Numeric](a: A): Length = (pxDef: LengthUnit).apply(a)
+  end PixelDefinition
+
+  /** Rescaling of the units in 3D */
+  final case class Pixels3D(
+      private val x: PixelDefinition,
+      private val y: PixelDefinition,
+      private val z: PixelDefinition
+  ):
+    import PixelDefinition.syntax.lift
+    def liftX[A: Numeric](a: A): Length = x.lift(a)
+    def liftY[A: Numeric](a: A): Length = y.lift(a)
+    def liftZ[A: Numeric](a: A): Length = z.lift(a)
+  end Pixels3D
+
+  def euclideanDistanceBetweenImagePoints[C: Numeric](
+      pixels: Pixels3D
+  )(p: Point3D[C], q: Point3D[C]): Length =
+    import scala.math.Numeric.Implicits.infixNumericOps
+    val delX = pixels.liftX(p.x.value - q.x.value)
+    val delY = pixels.liftY(p.y.value - q.y.value)
+    val delZ = pixels.liftZ(p.z.value - q.z.value)
+    val distanceSquared = List(delX, delY, delZ).foldLeft(0.0): (sumSqs, pxDiff) =>
+      sumSqs + scala.math.pow(pxDiff to Nanometers, 2)
+    Nanometers(scala.math.sqrt(distanceSquared))
 end imaging
