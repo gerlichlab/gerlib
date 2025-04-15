@@ -7,6 +7,7 @@ import org.scalacheck.Arbitrary.arbitrary
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import at.ac.oeaw.imba.gerlich.gerlib.refinement.IllegalRefinement
 
 /** Tests for the refinement of a [[squants.space.Length]] value as a distance */
 class TestDistance extends AnyFunSuite, should.Matchers, ScalaCheckPropertyChecks:
@@ -39,5 +40,21 @@ class TestDistance extends AnyFunSuite, should.Matchers, ScalaCheckPropertyCheck
     assertTypeError(
       "Distance(Length(1 -> \"nm\").get)"
     ) // should be missing Constraint[Length, Not[Negative]]
+
+  test("A value typed as Distance is correctly compared to a squants.space.Length value."):
+    given Arbitrary[Distance] =
+      given Arbitrary[Double] = Arbitrary(Gen.choose(0, Double.MaxValue))
+      Arbitrary(
+        arbitrary[Length].map(l =>
+          Distance
+            .option(l)
+            .getOrElse(throw IllegalRefinement(l, "Cannot refine length as distance"))
+        )
+      )
+
+    forAll { (l: Length, d: Distance) =>
+      val dAsL: Length = d
+      l < d shouldBe l < dAsL
+    }
 
 end TestDistance

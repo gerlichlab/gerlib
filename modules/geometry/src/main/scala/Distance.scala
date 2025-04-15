@@ -73,9 +73,9 @@ object PiecewiseDistance:
     NonnegativeReal.either((a.value - b.value).toDouble.abs)
 end PiecewiseDistance
 
-/** Semantic wrapper to denote that a nonnegative real number represents a Euclidean distance
+/** Semantic wrapper to denote that a nonnegative length represents a Euclidean distance
   */
-final case class EuclideanDistance private (get: Distance):
+final case class EuclideanDistance(get: Distance):
   final def isFinite = get.value.isFinite
   final def isInfinite = !isFinite
 end EuclideanDistance
@@ -83,8 +83,8 @@ end EuclideanDistance
 /** Helpers for working with Euclidean distances */
 object EuclideanDistance:
   /** Order distance by the wrapped value. */
-  given Order[EuclideanDistance] =
-    Order.by(_.get.value) // use the Double backing the squants.space.Length.
+  given (Order[Distance]) => Order[EuclideanDistance] =
+    Order.by(_.get) // use the Double backing the squants.space.Length.
 
   /** When something goes wrong with a distance computation or comparison */
   final case class OverflowException(message: String) extends Exception(message)

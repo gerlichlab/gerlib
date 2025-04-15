@@ -7,12 +7,13 @@ package object refinement:
     *
     * @param rawValue
     *   The value to refine
-    * @param msg The initial refinement failure message
+    * @param msg
+    *   The initial refinement failure message
     * @param context
     *   The context (e.g., purpose) in which the refinement's being attempted; this is used to craft
     *   a more informative error message
     */
-  final case class IllegalRefinement[A] private[refinement](
+  final case class IllegalRefinement[A] private[refinement] (
       rawValue: A,
       msg: String,
       context: Option[String]
