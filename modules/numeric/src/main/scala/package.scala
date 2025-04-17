@@ -2,6 +2,7 @@ package at.ac.oeaw.imba.gerlich.gerlib
 
 import scala.util.Try
 import cats.*
+import cats.data.NonEmptyList
 import cats.syntax.all.*
 
 import io.github.iltotore.iron.RefinedType
@@ -45,7 +46,10 @@ package object numeric:
       ais.map((a, i) =>
         a -> NonnegativeInt.either(i).fold(msg => throw IllegalRefinement(i, msg), identity)
       )
+    
+    def indexed[A](as: List[A]): List[(A, NonnegativeInt)] = indexed(as.zipWithIndex)
 
+    def indexed[A](as: NonEmptyList[A]): NonEmptyList[(A, NonnegativeInt)] = indexed(as.zipWithIndex)
   end NonnegativeInt
 
   /** Nonnegative real number */
