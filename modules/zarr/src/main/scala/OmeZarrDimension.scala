@@ -150,7 +150,7 @@ object OmeZarr:
     def fromDimensions(
         dims: NonEmptyList[OmeZarrDimension]
     ): Either[NonEmptyList[String], IndexMapping] =
-      val indexedDims = NonnegativeInt.indexed(dims.zipWithIndex)
+      val indexedDims = NonnegativeInt.indexed(dims)
       if indexedDims.length =!= 5
       then
         NonEmptyList
