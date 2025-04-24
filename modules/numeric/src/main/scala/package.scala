@@ -46,10 +46,12 @@ package object numeric:
       ais.map((a, i) =>
         a -> NonnegativeInt.either(i).fold(msg => throw IllegalRefinement(i, msg), identity)
       )
-    
+
     def indexed[A](as: List[A]): List[(A, NonnegativeInt)] = indexed(as.zipWithIndex)
 
-    def indexed[A](as: NonEmptyList[A]): NonEmptyList[(A, NonnegativeInt)] = indexed(as.zipWithIndex)
+    def indexed[A](as: NonEmptyList[A]): NonEmptyList[(A, NonnegativeInt)] = indexed(
+      as.zipWithIndex
+    )
   end NonnegativeInt
 
   /** Nonnegative real number */
