@@ -14,7 +14,7 @@ import io.github.iltotore.iron.constraint.string.Match
 import squants.MetricSystem
 import squants.space.{Length, LengthUnit, Nanometers}
 
-import at.ac.oeaw.imba.gerlich.gerlib.geometry.Point3D
+import at.ac.oeaw.imba.gerlich.gerlib.geometry.{Distance, EuclideanDistance, Point3D}
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 import at.ac.oeaw.imba.gerlich.gerlib.refinement.IllegalRefinement
 
@@ -152,14 +152,22 @@ package object imaging:
     def liftZ[A: Numeric](a: A): Length = z.lift(a)
   end Pixels3D
 
+  def euclideanDistanceBetweenImagePoints[A, C: Numeric](
+      pixels: Pixels3D
+  )(f: A => Point3D[C]): (A, A) => EuclideanDistance =
+    (a1, a2) => euclideanDistanceBetweenImagePoints(pixels)(f(a1), f(a2))
+
   def euclideanDistanceBetweenImagePoints[C: Numeric](
       pixels: Pixels3D
-  )(p: Point3D[C], q: Point3D[C]): Length =
+  )(p: Point3D[C], q: Point3D[C]): EuclideanDistance =
     import scala.math.Numeric.Implicits.infixNumericOps
-    val delX = pixels.liftX(p.x.value - q.x.value)
-    val delY = pixels.liftY(p.y.value - q.y.value)
-    val delZ = pixels.liftZ(p.z.value - q.z.value)
-    val distanceSquared = List(delX, delY, delZ).foldLeft(0.0): (sumSqs, pxDiff) =>
-      sumSqs + scala.math.pow(pxDiff to Nanometers, 2)
-    Nanometers(scala.math.sqrt(distanceSquared))
+    computeDistance(
+      pixels.liftX(p.x.value - q.x.value),
+      pixels.liftY(p.y.value - q.y.value),
+      pixels.liftZ(p.z.value - q.z.value)
+    )
+
+  private def computeDistance(delX: Length, delY: Length, delZ: Length): EuclideanDistance =
+    val d = (delX * delX + delY * delY + delZ * delZ).squareRoot
+    Distance.either(d).fold(msg => throw IllegalRefinement(d, msg), EuclideanDistance.apply)
 end imaging
