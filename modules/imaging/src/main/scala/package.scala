@@ -9,10 +9,10 @@ import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.any.{Not, StrictEqual}
 import io.github.iltotore.iron.constraint.char.{Digit, Letter}
 import io.github.iltotore.iron.constraint.collection.{Empty, ForAll}
-import io.github.iltotore.iron.constraint.numeric.{Negative, Positive}
+import io.github.iltotore.iron.constraint.numeric.Negative
 import io.github.iltotore.iron.constraint.string.Match
 import squants.MetricSystem
-import squants.space.{Length, LengthUnit, Nanometers}
+import squants.space.{Length, LengthUnit, Microns, Millimeters, Nanometers}
 
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.{Distance, EuclideanDistance, Point3D}
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
@@ -108,32 +108,26 @@ package object imaging:
     def unsafe = (s: String) => parse(s).fold(msg => throw IllegalArgumentException(msg), identity)
   end PositionName
 
-  // TODO: try to restrict the .symbol abstract member to be "px" singleton.
-  opaque type PixelDefinition = LengthUnit
+  // TODO: try typelevel restriction of the .symbol abstract member to be "px" singleton.
+  type PixelDefinition = LengthUnit
 
   /** A fundamental unit of length in imaging, the pixel */
   object PixelDefinition:
     /** Define a unit of length in pixels by specifying number of nanometers per pixel. */
-    def tryToDefine(onePixelIs: Length): Either[String, PixelDefinition] =
-      PositiveReal
-        .either(onePixelIs.to(Nanometers))
-        .bimap(
-          msg => s"Cannot define pixel by given length ($onePixelIs): $msg",
-          defineByNanometers
-        )
-
-    def unsafeDefine(onePixelIs: Length): PixelDefinition =
-      tryToDefine(onePixelIs)
-        .leftMap { msg => new Exception(msg) }
-        .fold(throw _, identity)
+    def tryToDefine(l: Length): Either[String, PixelDefinition] = for
+      baseFactor <- l.unit match {
+      case Nanometers  => MetricSystem.Nano.asRight
+      case Microns     => MetricSystem.Micro.asRight
+      case Millimeters => MetricSystem.Milli.asRight
+      case u => s"Cannot resolve base conversion factor for unit ($u) from length $l".asLeft
+      }
+      specificFactor <- PositiveReal.either(l.value)
+    yield new:
+      val conversionFactor: Double = specificFactor * baseFactor
+      val symbol: String = "px"
 
     given Show[PixelDefinition] =
       Show.show(pxDef => s"PixelDefinition: ${pxDef(1)}")
-
-    /** Define a unit of length in pixels by specifying number of nanometers per pixel. */
-    private def defineByNanometers(nmPerPx: Double :| Positive): PixelDefinition = new:
-      val conversionFactor: Double = nmPerPx * MetricSystem.Nano
-      val symbol: String = "px"
 
     object syntax:
       extension (pxDef: PixelDefinition)
