@@ -86,7 +86,4 @@ object EuclideanDistance:
   given Order[EuclideanDistance] =
     import Distance.given_Order_Distance
     Order.by(_.get) // use the Double backing the squants.space.Length.
-
-  /** When something goes wrong with a distance computation or comparison */
-  final case class OverflowException(message: String) extends Exception(message)
 end EuclideanDistance
