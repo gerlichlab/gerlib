@@ -83,7 +83,8 @@ end EuclideanDistance
 /** Helpers for working with Euclidean distances */
 object EuclideanDistance:
   /** Order distance by the wrapped value. */
-  given (Order[Distance]) => Order[EuclideanDistance] =
+  given Order[EuclideanDistance] =
+    import Distance.given_Order_Distance
     Order.by(_.get) // use the Double backing the squants.space.Length.
 
   /** When something goes wrong with a distance computation or comparison */

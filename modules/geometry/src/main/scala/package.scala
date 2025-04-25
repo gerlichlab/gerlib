@@ -1,5 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib
 
+import cats.Order
 import io.github.iltotore.iron.{RefinedType, RuntimeConstraint}
 import io.github.iltotore.iron.constraint.any.Not
 import io.github.iltotore.iron.constraint.numeric.Negative
@@ -45,7 +46,8 @@ package object geometry:
     */
   type Distance = Distance.T
 
-  object Distance extends RefinedType[Length, Not[Negative]]
+  object Distance extends RefinedType[Length, Not[Negative]]:
+    given Order[Distance] = Order.fromOrdering
 
   type AxisX = EuclideanAxis.X.type
 
