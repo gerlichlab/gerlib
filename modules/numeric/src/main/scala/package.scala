@@ -52,6 +52,8 @@ package object numeric:
     def indexed[A](as: NonEmptyList[A]): NonEmptyList[(A, NonnegativeInt)] = indexed(
       as.zipWithIndex
     )
+
+    def parse = (s: String) => Try(s.toInt).toEither.leftMap(_.getMessage)
   end NonnegativeInt
 
   /** Nonnegative real number */
