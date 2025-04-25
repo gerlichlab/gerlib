@@ -53,7 +53,7 @@ package object numeric:
       as.zipWithIndex
     )
 
-    def parse = (s: String) => Try(s.toInt).toEither.leftMap(_.getMessage)
+    def parse = (s: String) => Try(s.toInt).toEither.leftMap(_.getMessage).flatMap(either)
   end NonnegativeInt
 
   /** Nonnegative real number */
