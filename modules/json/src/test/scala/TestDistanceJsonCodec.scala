@@ -11,10 +11,11 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.Distance
 import at.ac.oeaw.imba.gerlich.gerlib.refinement.IllegalRefinement
+import ujson.IncompleteParseException
 
 /** Tests for positive integer refinement type */
 class TestDistanceJsonCodec extends AnyFunSuite, should.Matchers, ScalaCheckPropertyChecks:
-  test("Illegal distance fails with expected IllegalRefinement."):
+  test("Illegal distance fails with expected IncompleteParseException."):
     import geometry.given // for the ReadWriter instance
 
     forAll(
@@ -25,9 +26,8 @@ class TestDistanceJsonCodec extends AnyFunSuite, should.Matchers, ScalaCheckProp
         // Distance cannot be negative.
         (
           "-70 nm",
-          IllegalRefinement(
-            unsafeBuildLength(-70, Nanometers),
-            "Allegedly nonnegative length must actually be nonnegative."
+          IncompleteParseException(
+            "(parsing -70,0 nm): Allegedly nonnegative length must actually be nonnegative."
           )
         )
       )
