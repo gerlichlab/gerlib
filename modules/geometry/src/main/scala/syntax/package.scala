@@ -1,6 +1,7 @@
 package at.ac.oeaw.imba.gerlich.gerlib.geometry
 
-import cats.Monoid
+import scala.util.NotGiven
+import cats.{Monoid, Order}
 import cats.data.NonEmptyList
 import cats.syntax.all.*
 
@@ -27,3 +28,7 @@ package object syntax:
         YCoordinate(a.y.value - b.y.value),
         ZCoordinate(a.z.value - b.z.value)
       )
+
+  extension [A: Order, C <: Coordinate[A]: [C] =>> NotGiven[C =:= Coordinate[A]]](c1: C)(using
+      ord: Order[C]
+  ) infix def max(c2: C): C = ord.max(c1, c2)
