@@ -2,11 +2,11 @@ package at.ac.oeaw.imba.gerlich.gerlib.json
 package instances
 
 import scala.util.NotGiven
-import cats.syntax.all.*
 import squants.space.Length
+import ujson.IncompleteParseException
 import upickle.default.*
+
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.{Coordinate, Distance}
-import at.ac.oeaw.imba.gerlich.gerlib.refinement.IllegalRefinement
 
 /** JSON-related typeclass instances for geometry-related data types */
 trait JsonInstancesForGeometry:
@@ -20,8 +20,15 @@ trait JsonInstancesForGeometry:
   given (ReadWriter[String]) => ReadWriter[Distance] = readwriter[String].bimap(
     _.toString,
     s =>
-      Length(s).toEither
-        .flatMap(l => Distance.either(l).leftMap(msg => IllegalRefinement(l, msg)))
-        .fold(throw _, identity)
+      Length(s).fold(
+        throw _,
+        l =>
+          Distance
+            .either(l)
+            .fold(
+              msg => throw new IncompleteParseException(s"(parsing $l): $msg"),
+              identity
+            )
+      )
   )
 end JsonInstancesForGeometry
