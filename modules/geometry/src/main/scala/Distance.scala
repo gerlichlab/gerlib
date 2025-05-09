@@ -73,11 +73,15 @@ object PiecewiseDistance:
     NonnegativeReal.either((a.value - b.value).toDouble.abs)
 end PiecewiseDistance
 
+sealed trait DistanceLike:
+  def getDistanceValue: Distance
+
 /** Semantic wrapper to denote that a nonnegative length represents a Euclidean distance
   */
-final case class EuclideanDistance(get: Distance):
+final case class EuclideanDistance(get: Distance) extends DistanceLike:
   final def isFinite = get.value.isFinite
   final def isInfinite = !isFinite
+  final override def getDistanceValue: Distance = get
 end EuclideanDistance
 
 /** Helpers for working with Euclidean distances */
@@ -86,4 +90,7 @@ object EuclideanDistance:
   given Order[EuclideanDistance] =
     import Distance.given_Order_Distance
     Order.by(_.get) // use the Double backing the squants.space.Length.
+
+  def parse: String => Either[String, EuclideanDistance] =
+    s => Distance.parse(s).map(EuclideanDistance.apply)
 end EuclideanDistance

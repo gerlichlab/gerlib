@@ -4,6 +4,7 @@ import scala.util.NotGiven
 import cats.{Monoid, Order}
 import cats.data.NonEmptyList
 import cats.syntax.all.*
+import squants.space.Length
 
 /** Syntax enrichment on values of data types related to geometry */
 package object syntax:
@@ -32,3 +33,6 @@ package object syntax:
   extension [A: Order, C <: Coordinate[A]: [C] =>> NotGiven[C =:= Coordinate[A]]](c1: C)(using
       ord: Order[C]
   ) infix def max(c2: C): C = ord.max(c1, c2)
+
+  extension (L: Length.type)
+    def parse(s: String): Either[String, Length] = L(s).toEither.leftMap(_.getMessage)

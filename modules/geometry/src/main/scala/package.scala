@@ -49,6 +49,11 @@ package object geometry:
   object Distance extends RefinedType[Length, Not[Negative]]:
     given Order[Distance] = Order.fromOrdering
 
+    def parse(s: String): Either[String, Distance] =
+      import syntax.*
+      Length.parse(s).flatMap(either)
+  end Distance
+
   type AxisX = EuclideanAxis.X.type
 
   type AxisY = EuclideanAxis.Y.type

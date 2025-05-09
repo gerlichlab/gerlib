@@ -66,7 +66,10 @@ trait InstancesForGeometry:
       z |+| y |+| x
 
   given CellDecoder[Length] =
-    CellDecoder.instance(s => Length(s).toEither.leftMap(e => DecoderError(e.getMessage)))
+    import at.ac.oeaw.imba.gerlich.gerlib.geometry.syntax.*
+    CellDecoder.instance(s => Length.parse(s).leftMap(msg => DecoderError(msg)))
+
+  given CellEncoder[Length] = CellEncoder.fromToString
 
   given (dec: CellDecoder[Length]) => CellDecoder[EuclideanDistance] =
     dec.emap(l => Distance.either(l).bimap(msg => DecoderError(msg), EuclideanDistance.apply))
