@@ -2,11 +2,13 @@ package at.ac.oeaw.imba.gerlich.gerlib.imaging
 package instances
 
 import cats.syntax.all.*
+import io.github.iltotore.iron.:|
+import io.github.iltotore.iron.constraint.any.Not
+import io.github.iltotore.iron.constraint.numeric.Negative
 
 import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
-import at.ac.oeaw.imba.gerlich.gerlib.numeric.NonnegativeInt
 
 trait ImagingChannelInstances:
-  import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
   given SimpleShow[ImagingChannel] =
-    summon[SimpleShow[NonnegativeInt]].contramap(_.get)
+    import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given_SimpleShow_:|
+    summon[SimpleShow[Int :| Not[Negative]]].contramap(_.get)
