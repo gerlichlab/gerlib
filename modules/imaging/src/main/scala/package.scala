@@ -113,7 +113,7 @@ package object imaging:
 
   /** A fundamental unit of length in imaging, the pixel */
   object PixelDefinition:
-    /** Define a unit of length in pixels by specifying number of nanometers per pixel. */
+    /** Define a unit of length in pixels by specifying a physical length per pixel. */
     def tryToDefine(l: Length): Either[String, PixelDefinition] = for
       baseFactor <- l.unit match {
       case Nanometers  => MetricSystem.Nano.asRight
