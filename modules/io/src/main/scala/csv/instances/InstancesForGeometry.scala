@@ -2,8 +2,10 @@ package at.ac.oeaw.imba.gerlich.gerlib.io.csv
 package instances
 
 import scala.util.NotGiven
+
 import cats.syntax.all.*
 import fs2.data.csv.*
+import squants.space.Length
 
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.*
 import at.ac.oeaw.imba.gerlich.gerlib.geometry.Centroid.asPoint
@@ -62,3 +64,12 @@ trait InstancesForGeometry:
       val y = ColumnNames.yCenterColumnName[C].write(pt.y)
       val x = ColumnNames.xCenterColumnName[C].write(pt.x)
       z |+| y |+| x
+
+  given CellDecoder[Length] =
+    import at.ac.oeaw.imba.gerlich.gerlib.geometry.syntax.*
+    CellDecoder.instance(s => Length.parse(s).leftMap(msg => DecoderError(msg)))
+
+  given CellEncoder[Length] = CellEncoder.fromToString
+
+  given (dec: CellDecoder[Length]) => CellDecoder[EuclideanDistance] =
+    dec.emap(l => Distance.either(l).bimap(msg => DecoderError(msg), EuclideanDistance.apply))

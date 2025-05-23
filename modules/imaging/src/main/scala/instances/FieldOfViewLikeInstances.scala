@@ -2,10 +2,12 @@ package at.ac.oeaw.imba.gerlich.gerlib.imaging
 package instances
 
 import cats.syntax.all.*
+import io.github.iltotore.iron.:|
+import io.github.iltotore.iron.constraint.any.Not
+import io.github.iltotore.iron.constraint.numeric.Negative
 
 import at.ac.oeaw.imba.gerlich.gerlib.SimpleShow
 import at.ac.oeaw.imba.gerlich.gerlib.json.JsonValueWriter
-import at.ac.oeaw.imba.gerlich.gerlib.numeric.NonnegativeInt
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeInt.given
 import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
@@ -23,7 +25,7 @@ trait FieldOfViewLikeInstances:
   /** Simply show a field of view by the text representation of the underlying integer value.
     */
   given SimpleShow[FieldOfView] =
-    summon[SimpleShow[NonnegativeInt]].contramap(_.get)
+    summon[SimpleShow[Int :| Not[Negative]]].contramap(_.get)
 
   /** Simply show a position name by the underlying value. */
   given SimpleShow[PositionName] = SimpleShow.instance(_.get)

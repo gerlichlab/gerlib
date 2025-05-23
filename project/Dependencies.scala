@@ -7,7 +7,7 @@ object Dependencies {
         def moduleId = getModuleID(None)
         def getModuleID(name: String): ModuleID = getModuleID(Some(name))
         private def getModuleID(name: Option[String]): ModuleID = 
-            "io.github.iltotore" %% ("iron" ++ name.fold("")("-" ++ _)) % "2.6.0" 
+            "io.github.iltotore" %% ("iron" ++ name.fold("")("-" ++ _)) % "3.0.0" 
     }
 
     /** Build ModuleID for a com.lihaoyi JSON-related project. */
@@ -31,6 +31,9 @@ object Dependencies {
     lazy val uJson = HaoyiJson.getModuleId("ujson")
     lazy val uPickle = HaoyiJson.getModuleId("upickle")
     
+    /* geometry dependencies */
+    lazy val squants = "org.typelevel" %% "squants" % "1.8.3"
+
     /* graph dependencies */
     lazy val scalaGraphCore = "org.scala-graph" %% "graph-core" % "2.0.2"
 

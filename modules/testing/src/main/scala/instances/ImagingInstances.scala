@@ -5,18 +5,19 @@ import cats.syntax.all.*
 import org.scalacheck.*
 
 import io.github.iltotore.iron.:|
-import io.github.iltotore.iron.constraint.any.StrictEqual
+import io.github.iltotore.iron.constraint.any.{Not, StrictEqual}
 import io.github.iltotore.iron.constraint.char.{Digit, Letter}
+import io.github.iltotore.iron.constraint.numeric.Negative
 
 import at.ac.oeaw.imba.gerlich.gerlib.imaging.*
-import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 
 /** Scalacheck typeclass instances for some of the imaging datatypes */
 trait ImagingInstances extends CatsScalacheckInstances:
   /** [[org.scalacheck.Arbitrary]] instance for generating a
     * [[at.ac.oeaw.imba.gerlich.gerlib.imaging.FieldOfView]] value
     */
-  given (arbNN: Arbitrary[NonnegativeInt]) => Arbitrary[FieldOfView] = arbNN.map(FieldOfView.apply)
+  given (arbNN: Arbitrary[Int :| Not[Negative]]) => Arbitrary[FieldOfView] =
+    arbNN.map(FieldOfView.apply)
 
   /** Use the given instances of letter or digit generators as the base. */
   given (Arbitrary[Char :| Letter], Arbitrary[Char :| Digit]) => Arbitrary[PositionName] =
@@ -65,14 +66,14 @@ trait ImagingInstances extends CatsScalacheckInstances:
     * [[at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingChannel]] value
     */
   given (
-      arbNN: Arbitrary[NonnegativeInt]
+      arbNN: Arbitrary[Int :| Not[Negative]]
   ) => Arbitrary[ImagingChannel] = arbNN.map(ImagingChannel.apply)
 
   /** [[org.scalacheck.Arbitrary]] instance for generating a
     * [[at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingTimepoint]] value
     */
   given (
-      arbNN: Arbitrary[NonnegativeInt]
+      arbNN: Arbitrary[Int :| Not[Negative]]
   ) => Arbitrary[ImagingTimepoint] = arbNN.map(ImagingTimepoint.apply)
 
   given (
