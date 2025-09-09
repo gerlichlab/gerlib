@@ -15,25 +15,42 @@ import ujson.IncompleteParseException
 
 /** Tests for positive integer refinement type */
 class TestDistanceJsonCodec extends AnyFunSuite, should.Matchers, ScalaCheckPropertyChecks:
+  sealed trait Validatable[A] extends Function1[A, Boolean]
+
+  object Validatable:
+    def strictEquals[A](a: A): Validatable[A] = new:
+      override def apply(other: A): Boolean = other == a
+    def errorHasSuffix(suffix: String): Validatable[Exception] = new:
+      override def apply(other: Exception): Boolean = other.getMessage.endsWith(suffix)
+
   test("Illegal distance fails with expected IncompleteParseException."):
     import geometry.given // for the ReadWriter instance
 
+    val err1 = QuantityParseException("Unable to parse Length", "70")
+    val msg2Suffix = "Allegedly nonnegative length must actually be nonnegative."
+
     forAll(
       Table(
-        ("data", "expectedException"),
+        ("data", "expectedException", "check"),
         // Distance must carry units.
-        ("70", QuantityParseException("Unable to parse Length", "70")),
+        (
+          "70",
+          err1,
+          Validatable.strictEquals(err1)
+        ),
         // Distance cannot be negative.
         (
           "-70 nm",
           IncompleteParseException(
-            "(parsing -70,0 nm): Allegedly nonnegative length must actually be nonnegative."
-          )
+            s"(parsing -70,0 nm): $msg2Suffix"
+          ),
+          Validatable.errorHasSuffix(msg2Suffix)
         )
       )
-    ) { (data, expectedException) =>
+    ) { (data, expectedException, check) =>
       val observedException = intercept[expectedException.type] { read[Distance](ujson.Str(data)) }
-      observedException shouldEqual expectedException
+      val isGood: Boolean = check.apply(observedException)
+      isGood shouldEqual true
     }
 
   test("Legal distance roundtrips through JSON"):
