@@ -182,14 +182,15 @@ lazy val compileSettings = Def.settings(
       "-rewrite",
       // for scalafix RemoveUnused: https://scalacenter.github.io/scalafix/docs/rules/RemoveUnused.html
       "-Wunused:all", 
-      // These unused symbol warnings are expected in the tests related to availability of typeclass instances.
+      // Warnings about an unused symbol are expected in some source files testing whether code compiles or not.
+      "-Wconf:msg=unused import&src=./modules/imaging/src/test/scala/TestImagingInstances.scala:silent",
       "-Wconf:msg=unused import&src=./modules/testing/src/test/scala/TestInstanceAvailability.scala:silent",
       "-Werror",
     ),
   Test / console / scalacOptions := (Compile / console / scalacOptions).value,
 )
 
-lazy val versionNumber = "0.6.0-SNAPSHOT"
+lazy val versionNumber = "0.5.1"
 
 lazy val metadataSettings = Def.settings(
   name := projectName,
