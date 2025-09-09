@@ -1,7 +1,9 @@
 package at.ac.oeaw.imba.gerlich.gerlib.imaging
 package instances
 
+import cats.Eq
 import cats.syntax.all.*
+
 import io.github.iltotore.iron.:|
 import io.github.iltotore.iron.constraint.any.Not
 import io.github.iltotore.iron.constraint.numeric.Negative
@@ -14,6 +16,8 @@ import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 /** Typeclass instances for types related to representation of imaging field of view
   */
 trait FieldOfViewLikeInstances:
+  given Eq[FieldOfViewLike] = cats.derived.semiauto.eq
+
   given JsonValueWriter[PositionName, ujson.Str]:
     override def apply(posName: PositionName): ujson.Str =
       ujson.Str(posName.get)

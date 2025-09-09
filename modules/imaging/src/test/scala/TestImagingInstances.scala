@@ -1,5 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib.imaging
 
+import cats.Eq
 import org.scalacheck.*
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.*
@@ -83,5 +84,23 @@ class TestImagingInstances extends AnyFunSuite, ScalaCheckPropertyChecks, should
     }
 
     forAll { (fov: FieldOfView) => write(fov.asJson) shouldEqual s"${fov.get}" }
+  }
+
+  test("cats.Eq[FieldOfViewLike] is correct.") {
+    given Arbitrary[FieldOfView] = Arbitrary {
+      intervalArbitrary[Int, Not[Negative]](0, Int.MaxValue).arbitrary
+        .map(FieldOfView.apply)
+    }
+
+    def genFovLike: Gen[FieldOfViewLike] =
+      Gen.oneOf(Arbitrary.arbitrary[FieldOfView], Arbitrary.arbitrary[PositionName])
+
+    def genPair: Gen[((FieldOfViewLike, FieldOfViewLike), Boolean)] = for
+      a <- genFovLike
+      exp <- Arbitrary.arbitrary[Boolean]
+      b <- if exp then Gen.const(a) else genFovLike.suchThat(_ != a)
+    yield ((a, b), exp)
+
+    forAll(genPair) { case ((a, b), exp) => Eq[FieldOfViewLike].eqv(a, b) shouldEqual exp }
   }
 end TestImagingInstances
