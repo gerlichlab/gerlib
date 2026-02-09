@@ -12,7 +12,7 @@ val primaryOs = "ubuntu-latest"
 val isPrimaryOsAndPrimaryJavaTest = s"runner.os == '$primaryOs' && runner.java-version == '$primaryJavaVersion'"
 
 // Needed for ZARR (jzarr) (?)
-ThisBuild / resolvers += "Unidata UCAR" at "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/"
+ThisBuild / resolvers += "Unidata UCAR" at "https://artifacts.unidata.ucar.edu/repository/unidata-all/"
 
 /* scalafix */
 ThisBuild / semanticdbEnabled := true
