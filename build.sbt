@@ -21,7 +21,7 @@ ThisBuild / scalafixDependencies ++= Seq(
 ).map(prj => "org.typelevel" %% s"typelevel-scalafix-${prj}" % "0.2.0")
 
 /* sbt-github-actions settings */
-ThisBuild / githubWorkflowOSes := Seq(primaryOs, "ubuntu-20.04", "macos-latest")
+ThisBuild / githubWorkflowOSes := Set(primaryOs, "macos-latest", "ubuntu-latest").toSeq
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq()
 ThisBuild / githubWorkflowJavaVersions := Seq(primaryJavaVersion, "17", "19", "21").map(JavaSpec.temurin)
