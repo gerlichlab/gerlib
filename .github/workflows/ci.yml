@@ -23,11 +23,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         scala: [3.6.4]
-        java:
-          - temurin@11
-          - temurin@17
-          - temurin@19
-          - temurin@21
+        java: [temurin@17, temurin@21]
+        exclude:
+          - os: macos-latest
+            java: temurin@17
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
@@ -35,28 +34,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Java (temurin@11)
-        if: matrix.java == 'temurin@11'
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: 11
-          cache: sbt
-
       - name: Setup Java (temurin@17)
         if: matrix.java == 'temurin@17'
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
-          cache: sbt
-
-      - name: Setup Java (temurin@19)
-        if: matrix.java == 'temurin@19'
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: 19
           cache: sbt
 
       - name: Setup Java (temurin@21)
@@ -74,11 +57,11 @@ jobs:
         run: brew install sbt
 
       - name: Check formatting with scalafmt
-        if: runner.os == 'ubuntu-latest' && runner.java-version == '11'
+        if: runner.os == 'ubuntu-latest' && runner.java-version == '21'
         run: sbt '++ ${{ matrix.scala }}; scalafmtCheckAll'
 
       - name: Lint with scalafix
-        if: runner.os == 'ubuntu-latest' && runner.java-version == '11'
+        if: runner.os == 'ubuntu-latest' && runner.java-version == '21'
         run: sbt '++ ${{ matrix.scala }}; scalafixAll --check'
 
       - name: Check that workflows are up to date

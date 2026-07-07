@@ -7,7 +7,7 @@ val projectName = "gerlib"
 val rootPkg = s"at.ac.oeaw.imba.gerlich.$projectName"
 val gitHubOwner = "gerlichlab"
 val gitPubUrl = s"https://github.com/$gitHubOwner/$projectName.git"
-val primaryJavaVersion = "11"
+val primaryJavaVersion = "21"
 val primaryOs = "ubuntu-latest"
 val isPrimaryOsAndPrimaryJavaTest = s"runner.os == '$primaryOs' && runner.java-version == '$primaryJavaVersion'"
 
@@ -24,10 +24,11 @@ ThisBuild / scalafixDependencies ++= Seq(
 ThisBuild / githubWorkflowOSes := Set(primaryOs, "macos-latest", "ubuntu-latest").toSeq
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq()
-ThisBuild / githubWorkflowJavaVersions := Seq(primaryJavaVersion, "17", "19", "21").map(JavaSpec.temurin)
+ThisBuild / githubWorkflowJavaVersions := Seq("17", primaryJavaVersion).map(JavaSpec.temurin)
+ThisBuild / githubWorkflowBuildMatrixExclusions += MatrixExclude(Map("os" -> "macos-latest", "java" -> "temurin@17"))
 ThisBuild / githubWorkflowBuildPreamble ++= Seq(
   // Account for the absence of sbt in newer versions of the setup-java GitHub Action.
-  WorkflowStep.Run(commands = List("brew install sbt"), cond = Some("contains(runner.os, 'macos')")), 
+  WorkflowStep.Run(commands = List("brew install sbt"), cond = Some("contains(runner.os, 'macos')")),
   /* Add linting and formatting checks, but only limit to a single platform + Java combo. */
   WorkflowStep.Sbt(
     List("scalafmtCheckAll"), 
