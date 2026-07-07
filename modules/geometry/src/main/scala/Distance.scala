@@ -97,6 +97,10 @@ object EuclideanDistance:
   def parse: String => Either[String, EuclideanDistance] =
     s => Distance.parse(s).map(EuclideanDistance.apply)
 
-  /** Try to interpret the given length value as a distance in Euclidean space. */
+  /** Interpret the given length as a distance in Euclidean space.
+    *
+    * @throws java.lang.IllegalArgumentException
+    *   if the given length is negative
+    */
   def unsafe: Length => EuclideanDistance = Distance.applyUnsafe `andThen` EuclideanDistance.apply
 end EuclideanDistance

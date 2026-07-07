@@ -10,5 +10,4 @@ project/*
 !project/Dependencies.scala
 !project/build.properties
 !project/plugins.sbt
-
 .DS_Store
