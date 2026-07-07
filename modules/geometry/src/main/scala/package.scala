@@ -38,7 +38,7 @@ package object geometry:
   given RuntimeConstraint[Length, Not[Negative]] =
     new RuntimeConstraint(
       _.value >= 0,
-      "Allegedly nonnegative length must actually be nonnegative."
+      "Allegedly nonnegative length is actually negative."
     )
 
   /** Leave this alias transparent, since we just want the typelevel 'check' that the length is

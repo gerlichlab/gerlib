@@ -6,6 +6,8 @@ import cats.*
 import cats.data.Validated
 import cats.syntax.all.*
 
+import squants.space.Length
+
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 
 /** Piecewise / by-component distance, as absolute differences
@@ -91,6 +93,14 @@ object EuclideanDistance:
     import Distance.given_Order_Distance
     Order.by(_.get) // use the Double backing the squants.space.Length.
 
+  /** Try to read the given text (e.g., a configuration value) as a distance in Euclidean space. */
   def parse: String => Either[String, EuclideanDistance] =
     s => Distance.parse(s).map(EuclideanDistance.apply)
+
+  /** Interpret the given length as a distance in Euclidean space.
+    *
+    * @throws java.lang.IllegalArgumentException
+    *   if the given length is negative
+    */
+  def unsafe: Length => EuclideanDistance = Distance.applyUnsafe `andThen` EuclideanDistance.apply
 end EuclideanDistance

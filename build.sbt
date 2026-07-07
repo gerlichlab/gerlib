@@ -7,7 +7,7 @@ val projectName = "gerlib"
 val rootPkg = s"at.ac.oeaw.imba.gerlich.$projectName"
 val gitHubOwner = "gerlichlab"
 val gitPubUrl = s"https://github.com/$gitHubOwner/$projectName.git"
-val primaryJavaVersion = "11"
+val primaryJavaVersion = "21"
 val primaryOs = "ubuntu-latest"
 val isPrimaryOsAndPrimaryJavaTest = s"runner.os == '$primaryOs' && runner.java-version == '$primaryJavaVersion'"
 
@@ -24,10 +24,11 @@ ThisBuild / scalafixDependencies ++= Seq(
 ThisBuild / githubWorkflowOSes := Set(primaryOs, "macos-latest", "ubuntu-latest").toSeq
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq()
-ThisBuild / githubWorkflowJavaVersions := Seq(primaryJavaVersion, "17", "19", "21").map(JavaSpec.temurin)
+ThisBuild / githubWorkflowJavaVersions := Seq("17", primaryJavaVersion).map(JavaSpec.temurin)
+ThisBuild / githubWorkflowBuildMatrixExclusions += MatrixExclude(Map("os" -> "macos-latest", "java" -> "temurin@17"))
 ThisBuild / githubWorkflowBuildPreamble ++= Seq(
   // Account for the absence of sbt in newer versions of the setup-java GitHub Action.
-  WorkflowStep.Run(commands = List("brew install sbt"), cond = Some("contains(runner.os, 'macos')")), 
+  WorkflowStep.Run(commands = List("brew install sbt"), cond = Some("contains(runner.os, 'macos')")),
   /* Add linting and formatting checks, but only limit to a single platform + Java combo. */
   WorkflowStep.Sbt(
     List("scalafmtCheckAll"), 
@@ -52,7 +53,7 @@ ThisBuild / testOptions += Tests.Argument("-oF") // full stack traces
 
 lazy val root = project
   .in(file("."))
-  .aggregate(cell, geometry, graph, imaging, io, json, numeric, pan, refinement, roi, testing, zarr)
+  .aggregate(cell, configuration, geometry, graph, imaging, io, json, numeric, pan, refinement, roi, testing, zarr)
   .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings)
   .settings(noPublishSettings)
@@ -64,6 +65,15 @@ lazy val root = project
 
 lazy val cell = defineModule("cell")(project)
   .dependsOn(numeric)
+
+lazy val configuration = defineModule("configuration")(project)
+  .dependsOn(imaging)
+  .settings(
+    libraryDependencies ++= Seq(
+      pureconfigCore,
+      pureconfigGeneric,
+    )
+  )
 
 lazy val geometry = defineModule("geometry")(project)
   .dependsOn(numeric, refinement)
@@ -182,7 +192,8 @@ lazy val compileSettings = Def.settings(
       "-rewrite",
       // for scalafix RemoveUnused: https://scalacenter.github.io/scalafix/docs/rules/RemoveUnused.html
       "-Wunused:all", 
-      // Warnings about an unused symbol are expected in some source files testing whether code compiles or not.
+      /* Warnings about an unused symbol are expected in some source files testing whether code compiles or not. */
+      "-Wconf:msg=unused import&src=./modules/geometry/src/test/scala/TestDistance.scala:silent",
       "-Wconf:msg=unused import&src=./modules/imaging/src/test/scala/TestImagingInstances.scala:silent",
       "-Wconf:msg=unused import&src=./modules/testing/src/test/scala/TestInstanceAvailability.scala:silent",
       "-Werror",
@@ -190,7 +201,7 @@ lazy val compileSettings = Def.settings(
   Test / console / scalacOptions := (Compile / console / scalacOptions).value,
 )
 
-lazy val versionNumber = "0.5.2"
+lazy val versionNumber = "0.6.0"
 
 lazy val metadataSettings = Def.settings(
   name := projectName,

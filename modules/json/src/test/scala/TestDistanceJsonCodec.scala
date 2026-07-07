@@ -27,7 +27,7 @@ class TestDistanceJsonCodec extends AnyFunSuite, should.Matchers, ScalaCheckProp
     import geometry.given // for the ReadWriter instance
 
     val err1 = QuantityParseException("Unable to parse Length", "70")
-    val msg2Suffix = "Allegedly nonnegative length must actually be nonnegative."
+    val msg2Suffix = "Allegedly nonnegative length is actually negative."
 
     forAll(
       Table(

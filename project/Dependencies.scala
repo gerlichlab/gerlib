@@ -21,10 +21,18 @@ object Dependencies {
             "org.typelevel" %% s"cats-$name" % "2.13.0"
     }
 
+    object PureConfig {
+        def getModuleId(name: String): ModuleID = "com.github.pureconfig" %% s"pureconfig-$name" % "0.17.10"
+    }
+
     /* Versions */
     lazy val scalatestVersion = "3.2.19"
     
-    /* Core dependencies */
+    /* config dependencies */
+    lazy val pureconfigCore = PureConfig.getModuleId("core")
+    lazy val pureconfigGeneric = PureConfig.getModuleId("generic-scala3")
+
+    /* core dependencies */
     lazy val catsCore = Cats.getModuleId("core")
     lazy val kittens = "org.typelevel" %% "kittens" % "3.5.0"
     lazy val mouse = "org.typelevel" %% "mouse" % "1.3.2"
