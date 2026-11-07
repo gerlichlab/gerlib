@@ -9,7 +9,12 @@ val gitHubOwner = "gerlichlab"
 val gitPubUrl = s"https://github.com/$gitHubOwner/$projectName.git"
 val primaryJavaVersion = "21"
 val primaryOs = "ubuntu-latest"
-val isPrimaryOsAndPrimaryJavaTest = s"runner.os == '$primaryOs' && runner.java-version == '$primaryJavaVersion'"
+// Run the lint and format checks on one matrix job only. Use the runner's OS name
+// ('Linux'/'macOS', not the 'ubuntu-latest' label) and the matrix's Java entry: a
+// `runner.java-version` property does not exist, and the previous condition built on
+// it was never true, so scalafmt and scalafix were silently skipped on every job.
+val isPrimaryOsAndPrimaryJavaTest =
+  s"runner.os == 'Linux' && matrix.java == '${JavaSpec.temurin(primaryJavaVersion).render}'"
 
 // Needed for ZARR (jzarr) (?)
 ThisBuild / resolvers += "Unidata UCAR" at "https://artifacts.unidata.ucar.edu/repository/unidata-all/"

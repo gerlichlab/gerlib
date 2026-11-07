@@ -57,11 +57,11 @@ jobs:
         run: brew install sbt
 
       - name: Check formatting with scalafmt
-        if: runner.os == 'ubuntu-latest' && runner.java-version == '21'
+        if: runner.os == 'Linux' && matrix.java == 'temurin@21'
         run: sbt '++ ${{ matrix.scala }}; scalafmtCheckAll'
 
       - name: Lint with scalafix
-        if: runner.os == 'ubuntu-latest' && runner.java-version == '21'
+        if: runner.os == 'Linux' && matrix.java == 'temurin@21'
         run: sbt '++ ${{ matrix.scala }}; scalafixAll --check'
 
       - name: Check that workflows are up to date

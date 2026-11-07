@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **The sbt plugins at their newest releases:** sbt-assembly 2.3.1 -> 2.5.0, sbt-github-actions 0.31.0 -> 0.32.2, which moves the workflow to `actions/setup-java` v6, sbt-scalafmt 2.6.1 -> 2.6.2, sbt-buildinfo 0.13.1 -> 0.13.2 and sbt-scalafix 0.14.7 -> 0.14.9; and typelevel's scalafix rules 0.2.0 -> 0.6.0, which the code passes as it is.
 * scalafmt 3.9.3 -> 3.11.5, which aligns six `case` arrows anew.
 
+### Fixed
+* **CI runs the scalafmt and scalafix checks,** on Linux with Java 21. Their condition was never true, so no job ran them: it compared the runner's OS with the label `ubuntu-latest`, where the runner names its OS `Linux`, and tested `runner.java-version`, which does not exist. It now tests the matrix's Java entry, as looptrace's build does.
+
 ## [v0.6.0] - 2026-07-07
 
 ### Added
