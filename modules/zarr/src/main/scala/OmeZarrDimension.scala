@@ -292,7 +292,7 @@ object OmeZarr:
       .flatMap(safeCast[java.util.List[Object]]("raw multiscales to list"))
       .map(_.asScala.toList)
     multiscales <- rawMultiscales match
-    case Nil => "Multiscales list is empty".asLeft
+    case Nil      => "Multiscales list is empty".asLeft
     case h :: Nil =>
       safeCast[java.util.HashMap[String, Object]](
         "multiscales singleton to mapping"

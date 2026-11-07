@@ -16,7 +16,7 @@ class TestLookupBySubset extends AnyFunSuite, ScalaCheckPropertyChecks, should.M
   test("When search pool has exactly one entry, search never yields error (multi-hit) result."):
     forAll: (singlePoolEntry: (Set[Int], String), query: Set[Int]) =>
       lookupBySubset(List(singlePoolEntry))(query) match
-      case Right(_) => succeed
+      case Right(_)       => succeed
       case Left(multiHit) =>
         fail(s"Single-entry search pool yielded multi-hit result for query $query: $multiHit")
 

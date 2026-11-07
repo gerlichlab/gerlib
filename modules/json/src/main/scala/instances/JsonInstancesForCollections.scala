@@ -14,7 +14,7 @@ trait JsonInstancesForCollections:
   given [A: Reader] => Reader[AtLeast2[List, A]] =
     reader[ujson.Value].map(json =>
       json.arrOpt match
-      case None => throw IncompleteParseException(s"Cannot read value as array-like: $json")
+      case None     => throw IncompleteParseException(s"Cannot read value as array-like: $json")
       case Some(vs) =>
         Alternative[List].separate(
           vs.toList.map { v =>

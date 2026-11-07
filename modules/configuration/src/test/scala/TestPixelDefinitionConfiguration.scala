@@ -54,7 +54,7 @@ class TestPixelDefinitionConfiguration
       val rawConfigData =
         buildRawConfig(perX -> unit, perY -> unit, perZ -> unit)
       ConfigSource.string(rawConfigData).load[Pixels3D] match {
-      case Left(errors) => fail(s"Errors: $errors")
+      case Left(errors)   => fail(s"Errors: $errors")
       case Right(scaling) =>
         (scaling.liftX(x) in unit).value shouldEqual x * perX
         (scaling.liftY(y) in unit).value shouldEqual y * perY

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **`NonnegativeInt`, `NonnegativeReal`, `PositiveInt`, `PositiveReal` and `Distance` extend iron's `RefinedSubtype`,** where they extended `RefinedType`. Since iron 3.1.0, a `RefinedType` is a type of its own, no longer a subtype of the type it refines; `RefinedSubtype`, from iron 3.2.0, keeps them as they were, so a `PositiveInt` is still an `Int`.
 * **upickle traces `read` by default since 4.4.0:** an error while reading comes wrapped in `upickle.core.TraceVisitor.TraceException`, whose message is the JSON path, with the reader's own error as its cause, unless `read` is given `trace = false`. The codec of `DistanceLike` reads its value and metric type untraced, so its message still gives the value's own error, where it would have given only `$`; a test pins it.
 * **The sbt plugins at their newest releases:** sbt-assembly 2.3.1 -> 2.5.0, sbt-github-actions 0.31.0 -> 0.32.2, which moves the workflow to `actions/setup-java` v6, sbt-scalafmt 2.6.1 -> 2.6.2, sbt-buildinfo 0.13.1 -> 0.13.2 and sbt-scalafix 0.14.7 -> 0.14.9; and typelevel's scalafix rules 0.2.0 -> 0.6.0, which the code passes as it is.
+* scalafmt 3.9.3 -> 3.11.5, which aligns six `case` arrows anew.
 
 ## [v0.6.0] - 2026-07-07
 

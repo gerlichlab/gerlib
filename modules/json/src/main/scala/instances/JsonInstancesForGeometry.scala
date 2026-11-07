@@ -61,7 +61,7 @@ trait JsonInstancesForGeometry:
               .leftMap(_.getMessage)
               .flatMap {
                 case `euclideanSpecifier` => EuclideanDistance.apply.asRight
-                case unknownSpecifier =>
+                case unknownSpecifier     =>
                   s"Unrecognized distance metric specifier ($unknownSpecifier)".asLeft
               }
           )

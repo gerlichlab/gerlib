@@ -29,7 +29,7 @@ class TestPixelDefinition extends AnyFunSuite, ScalaCheckPropertyChecks, should.
     forAll(genLength, genPixelCount, minSuccessful(10000)) { (length, numPixels) =>
       PixelDefinition.tryToDefine(length) match {
       case Left(_) if length.value <= 0 => succeed
-      case Left(msg) =>
+      case Left(msg)                    =>
         fail(s"Pixel definition with length ${length} failed: $msg")
       case Right(_) if length.value <= 0 =>
         fail(s"Pixel definition with length ${length} succeded")
