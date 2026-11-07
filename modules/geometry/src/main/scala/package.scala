@@ -1,7 +1,7 @@
 package at.ac.oeaw.imba.gerlich.gerlib
 
 import cats.Order
-import io.github.iltotore.iron.{RefinedType, RuntimeConstraint}
+import io.github.iltotore.iron.{RefinedSubtype, RuntimeConstraint}
 import io.github.iltotore.iron.constraint.any.Not
 import io.github.iltotore.iron.constraint.numeric.Negative
 import squants.space.Length
@@ -46,7 +46,7 @@ package object geometry:
     */
   type Distance = Distance.T
 
-  object Distance extends RefinedType[Length, Not[Negative]]:
+  object Distance extends RefinedSubtype[Length, Not[Negative]]:
     given Order[Distance] = Order.fromOrdering
 
     def parse(s: String): Either[String, Distance] =

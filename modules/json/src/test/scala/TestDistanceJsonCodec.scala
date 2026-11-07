@@ -48,7 +48,10 @@ class TestDistanceJsonCodec extends AnyFunSuite, should.Matchers, ScalaCheckProp
         )
       )
     ) { (data, expectedException, check) =>
-      val observedException = intercept[expectedException.type] { read[Distance](ujson.Str(data)) }
+      // The codec's own exception: since upickle 4.4.0, a traced read wraps it with the JSON path.
+      val observedException = intercept[expectedException.type] {
+        read[Distance](ujson.Str(data), trace = false)
+      }
       val isGood: Boolean = check.apply(observedException)
       isGood shouldEqual true
     }
@@ -70,6 +73,17 @@ class TestDistanceJsonCodec extends AnyFunSuite, should.Matchers, ScalaCheckProp
       val reparsed: Distance = read(write(original))
       reparsed shouldEqual original
     }
+
+  test("An illegal distance-like value is reported with the value's own error."):
+    import geometry.given // for the ReadWriter instance
+
+    // Not just the JSON path, which is what a traced read of the value would give.
+    val data = ujson.Obj("value" -> ujson.Str("70"), "metricType" -> ujson.Str("Euclidean"))
+    val error = intercept[IncompleteParseException] {
+      read[at.ac.oeaw.imba.gerlich.gerlib.geometry.DistanceLike](data, trace = false)
+    }
+    error.getMessage shouldEqual
+      "Error(s): Cannot decode distance value (\"70\"): Unable to parse Length:70"
 
   private def unsafeBuildLength(value: Int | Double, units: LengthUnit): Length =
     Length(s"$value ${units.symbol}").fold(throw _, identity)

@@ -5,7 +5,7 @@ import cats.*
 import cats.data.NonEmptyList
 import cats.syntax.all.*
 
-import io.github.iltotore.iron.RefinedType
+import io.github.iltotore.iron.RefinedSubtype
 import io.github.iltotore.iron.constraint.any.Not
 // for summoning Order[Int :| P] or Order[Double :| P]
 import io.github.iltotore.iron.constraint.numeric.*
@@ -41,7 +41,7 @@ package object numeric:
   type NonnegativeInt = NonnegativeInt.T
 
   /** Helpers for working with nonnegative integers */
-  object NonnegativeInt extends RefinedType[Int, Not[Negative]]:
+  object NonnegativeInt extends RefinedSubtype[Int, Not[Negative]]:
     def indexed[F[_]: Functor, A](ais: F[(A, Int)]): F[(A, NonnegativeInt)] =
       ais.map((a, i) =>
         a -> NonnegativeInt.either(i).fold(msg => throw IllegalRefinement(i, msg), identity)
@@ -60,19 +60,19 @@ package object numeric:
   type NonnegativeReal = NonnegativeReal.T
 
   /** Helpers for working with nonnegative real numbers */
-  object NonnegativeReal extends RefinedType[Double, Not[Negative]]
+  object NonnegativeReal extends RefinedSubtype[Double, Not[Negative]]
 
   /** Refinement type for positive integers */
   type PositiveInt = PositiveInt.T
 
   /** Helpers for working with positive integers */
-  object PositiveInt extends RefinedType[Int, Positive]
+  object PositiveInt extends RefinedSubtype[Int, Positive]
 
   /** Positive real number */
   type PositiveReal = PositiveReal.T
 
   /** Helpers for working with positive real numbers */
-  object PositiveReal extends RefinedType[Double, Positive]
+  object PositiveReal extends RefinedSubtype[Double, Positive]
 
   /** Attempt to parse the given text as integer, wrapping error message as a [[scala.util.Left]]
     * for fail.

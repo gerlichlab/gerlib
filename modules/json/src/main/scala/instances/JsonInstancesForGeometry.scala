@@ -47,7 +47,9 @@ trait JsonInstancesForGeometry:
           .get(valueKey)
           .toRight(s"Missing value key ($valueKey) for distance")
           .flatMap(s =>
-            Try(read[Distance](s)).toEither
+            // Untraced, so the message is the value's own error: since upickle 4.4.0,
+            // a traced read's message is only the path, here always "$".
+            Try(read[Distance](s, trace = false)).toEither
               .leftMap(e => s"Cannot decode distance value ($s): ${e.getMessage}")
           )
           .toValidatedNel
@@ -55,7 +57,7 @@ trait JsonInstancesForGeometry:
           .get(typeKey)
           .toRight(s"Missing type key ($typeKey) for distance")
           .flatMap(s =>
-            Try(read[String](s)).toEither
+            Try(read[String](s, trace = false)).toEither
               .leftMap(_.getMessage)
               .flatMap {
                 case `euclideanSpecifier` => EuclideanDistance.apply.asRight
