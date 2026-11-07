@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v0.7.0] - 2026-11-08
 
 ### Changed
 * **Scala 3.6.4 -> 3.9.0,** the long-term support line, where 3.6.4 is no longer patched. A library compiled with 3.9 can't be read by an older Scala 3 compiler, so a project depending on this release needs Scala 3.9 too. Under `-source:future`, 3.9 no longer accepts `implicit val`, and wants implicit arguments passed with `using`: each test suite's `PropertyCheckConfiguration` is now a `given` of the suite, which is preferred over the inherited one. Its stricter unused-symbol checks, errors under `-Werror`, removed unused imports and parameters, among them the `A: Order` bound of `max` on coordinates, which orders with `Order[C]`, so it asks for less.
