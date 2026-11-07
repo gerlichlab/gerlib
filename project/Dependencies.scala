@@ -55,11 +55,6 @@ object Dependencies {
     lazy val fs2IO = "co.fs2" %% "fs2-io" % "3.14.0"
     lazy val os = "com.lihaoyi" %% "os-lib" % "0.11.10"
 
-    /** ZARR dependencies */
-    // Held at 0.4.2: 0.5.0 is a minor release of a 0.x version, so it may change
-    // behaviour, and no test covers the code that reads through it.
-    lazy val jzarr = "dev.zarr" % "jzarr" % "0.4.2"
-
     /* Test dependencies */
     lazy val catsLaws = Cats.getModuleId("laws")
     lazy val disciplineScalatest = "org.typelevel" %% "discipline-scalatest" % "2.3.0"

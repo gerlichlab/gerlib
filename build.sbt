@@ -16,9 +16,6 @@ val primaryOs = "ubuntu-latest"
 val isPrimaryOsAndPrimaryJavaTest =
   s"runner.os == 'Linux' && matrix.java == '${JavaSpec.temurin(primaryJavaVersion).render}'"
 
-// Needed for ZARR (jzarr) (?)
-ThisBuild / resolvers += "Unidata UCAR" at "https://artifacts.unidata.ucar.edu/repository/unidata-all/"
-
 /* scalafix */
 ThisBuild / semanticdbEnabled := true
 ThisBuild / scalafixDependencies ++= Seq(
@@ -58,7 +55,7 @@ ThisBuild / testOptions += Tests.Argument("-oF") // full stack traces
 
 lazy val root = project
   .in(file("."))
-  .aggregate(cell, configuration, geometry, graph, imaging, io, json, numeric, pan, refinement, roi, testing, zarr)
+  .aggregate(cell, configuration, geometry, graph, imaging, io, json, numeric, pan, refinement, roi, testing)
   .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings)
   .settings(noPublishSettings)
@@ -157,7 +154,7 @@ lazy val refinement = defineModule("refinement")(project)
   )
 
 lazy val roi = defineModule("roi")(project)
-  .dependsOn(geometry, numeric, zarr)
+  .dependsOn(geometry, imaging, numeric)
 
 lazy val testing = defineModule("testing", false)(project)
   .dependsOn(geometry, imaging, io, numeric)
@@ -167,10 +164,6 @@ lazy val testing = defineModule("testing", false)(project)
     scalatest % Test,
     scalatestScalacheck % Test,
   ))
-
-lazy val zarr = defineModule("zarr")(project)
-  .dependsOn(imaging, numeric)
-  .settings(libraryDependencies ++= Seq(jzarr))
 
 lazy val commonSettings = Def.settings(
   compileSettings, 

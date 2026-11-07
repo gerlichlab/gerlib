@@ -1,25 +1,13 @@
 package at.ac.oeaw.imba.gerlich.gerlib
 
 import scala.reflect.ClassTag
-import scala.util.Try
 
 import cats.*
-import cats.data.{NonEmptyList, ValidatedNel}
 import cats.syntax.all.*
 import mouse.boolean.*
-import com.bc.zarr.ZarrArray
 
-import at.ac.oeaw.imba.gerlich.gerlib.geometry.*
-import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingTimepoint
-import at.ac.oeaw.imba.gerlich.gerlib.imaging.ImagingChannel
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.*
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.extrema.*
-import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
-import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarrIndex
-import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarr.IndexMapping
-import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarrIndex.OmeZarrBlockSize
-import at.ac.oeaw.imba.gerlich.gerlib.zarr.OmeZarrIndex.OmeZarrStandardCoordinate
-import at.ac.oeaw.imba.gerlich.gerlib.zarr.ZarrArrayExtras.*
 
 /** Types and tools for working with regions of interest (ROIs) */
 package object roi:
@@ -81,92 +69,6 @@ package object roi:
       (n % 2 === 0).option { n: RoiDiameter }
     given showForRoiDiameter: Show[RoiDiameter] = Show.fromToString[RoiDiameter]
   end RoiDiameter
-
-  def readRoiData(
-      za: ZarrArray,
-      indexMapping: IndexMapping,
-      diameter: RoiDiameter
-  ): (
-      ImagingTimepoint,
-      ImagingChannel,
-      Centroid[NonnegativeReal]
-  ) => Either[NonEmptyList[String], Array[Int]] =
-    (time, channel, centroid) =>
-      val shape = za.getShape()
-      0.5 * diameter
-      val zDepthNel = Try { shape(indexMapping.zIndex) }.toEither
-        .leftMap(e => s"Failed to get Z axis raw length: ${e.getMessage}")
-        .flatMap(z =>
-          PositiveInt
-            .either(z)
-            .leftMap(msg => s"Cannot refine Z axis raw length (${z.show}) as positive: $msg")
-        )
-        .toValidatedNel
-      val zyxNel = getOriginZYX(centroid, diameter)
-      (zDepthNel, zyxNel).tupled.toEither.flatMap { case (zDepth, (z, y, x)) =>
-        val standardCoordinate =
-          OmeZarrStandardCoordinate(time, channel, z, y, x)
-        val blockSize = OmeZarrBlockSize(
-          OmeZarrIndex.LengthTime(PositiveInt(1)),
-          OmeZarrIndex.LengthChannel(PositiveInt(1)),
-          OmeZarrIndex.LengthZ(zDepth),
-          OmeZarrIndex.LengthY(diameter),
-          OmeZarrIndex.LengthX(diameter)
-        )
-        za.read(indexMapping)(standardCoordinate, blockSize)
-          .leftMap(NonEmptyList.one)
-      }
-
-  def readRoiData[D <: PivotSize](
-      za: ZarrArray,
-      indexMapping: IndexMapping,
-      depth: D,
-      diameter: RoiDiameter
-  ): (
-      ImagingTimepoint,
-      ImagingChannel,
-      Centroid[NonnegativeReal]
-  ) => Either[NonEmptyList[String], Multiarray[D, Int]] =
-    import PivotSize.given
-    (time, channel, centroid) =>
-      readRoiData(za, indexMapping, diameter)(time, channel, centroid).flatMap { rawResult =>
-        Multiarray
-          .maybe(depth)(rawResult)
-          .toValidNel(
-            s"Cannot refine array of length ${rawResult.length} as pivoting every ${depth.show_} elements"
-          )
-          .toEither
-      }
-
-  private def getOriginZYX(
-      centroid: Centroid[NonnegativeReal],
-      diameter: RoiDiameter
-  ): ValidatedNel[String, (OmeZarrIndex.Z, OmeZarrIndex.Y, OmeZarrIndex.X)] =
-    import at.ac.oeaw.imba.gerlich.gerlib.numeric.instances.nonnegativeReal.given // for Subtraction[NonnegativeReal, Double, Double]
-    import at.ac.oeaw.imba.gerlich.gerlib.numeric.Subtraction.*
-    val halfWidth: Double = 0.5 * diameter
-    val zNel =
-      val rawCoord: Double = centroid.z.value `minus` halfWidth
-      OmeZarrIndex.Z
-        .fromDouble(rawCoord)
-        .toValidNel(
-          s"Cannot refine z-component ($rawCoord) of origin as OME-ZARR index"
-        )
-    val yNel =
-      val rawCoord = centroid.y.value `minus` halfWidth
-      OmeZarrIndex.Y
-        .fromDouble(rawCoord)
-        .toValidNel(
-          s"Cannot refine y-component ($rawCoord) of origin as OME-ZARR index"
-        )
-    val xNel =
-      val rawCoord = centroid.x.value `minus` halfWidth
-      OmeZarrIndex.X
-        .fromDouble(rawCoord)
-        .toValidNel(
-          s"Cannot refine x-component ($rawCoord) of origin as OME-ZARR index"
-        )
-    (zNel, yNel, xNel).tupled
 
   def getMaxProjectionValues[D <: PivotSize, E: {AdmitsMinimum, ClassTag, Order}](
       d: D
