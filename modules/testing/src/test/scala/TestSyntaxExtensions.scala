@@ -36,13 +36,14 @@ class TestSyntaxExtensions
 
     // Use the instance under test to generate the values, then count by type.
     forAll(Gen.listOfN(n, arbitrary[Boolean | Int])) { values =>
-      val (bools, ints): (List[Boolean], List[Int]) =
+      val separated: (List[Boolean], List[Int]) =
         Alternative[List].separate(
           values map {
             case p: Boolean => p.asLeft
             case z: Int     => z.asRight
           }
         )
+      val (bools, ints) = separated
       bools.length > lowerBound shouldBe true
       bools.length < upperBound shouldBe true
       ints.length > lowerBound shouldBe true

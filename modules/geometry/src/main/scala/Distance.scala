@@ -1,7 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib.geometry
 
 import scala.util.NotGiven
-import scala.util.chaining.* // for pipe
 import cats.*
 import cats.data.Validated
 import cats.syntax.all.*

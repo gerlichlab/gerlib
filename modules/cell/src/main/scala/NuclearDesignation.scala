@@ -1,7 +1,6 @@
 package at.ac.oeaw.imba.gerlich.gerlib.cell
 
 import cats.*
-import cats.instances.int.*
 import cats.derived.*
 import cats.syntax.all.*
 

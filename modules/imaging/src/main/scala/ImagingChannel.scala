@@ -8,7 +8,6 @@ import io.github.iltotore.iron.constraint.any.Not
 import io.github.iltotore.iron.constraint.numeric.Negative
 
 import at.ac.oeaw.imba.gerlich.gerlib.numeric.parseThroughNonnegativeInt
-import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 
 /** Semantic wrapper around value representing 0-based imaging channel */
 final case class ImagingChannel(private[gerlib] get: Int :| Not[Negative]) derives Order

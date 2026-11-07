@@ -11,7 +11,7 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 /** Tests for positive integer refinement type */
 class TestNonnegativeInt extends AnyFunSuite, should.Matchers, ScalaCheckPropertyChecks:
-  override implicit val generatorDrivenConfig: PropertyCheckConfiguration =
+  given PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 100)
 
   test(

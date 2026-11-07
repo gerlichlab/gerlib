@@ -138,7 +138,7 @@ object collections:
           NonEmptySet.fromSetUnsafe(xs.toSortedSet)
 
         def toSortedSet(using ord: Order[X]): SortedSet[X] =
-          SortedSet.from(xs)(ord.toOrdering)
+          SortedSet.from(xs)(using ord.toOrdering)
 
       extension [X](xs: AtLeast2List[X])
         /** With knowledge that the given container type is an set, we can use the underlying

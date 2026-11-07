@@ -129,7 +129,6 @@ object OmeZarr:
 
   /** Helpers for working with mapping of OME-ZARR dimensions to array index */
   object IndexMapping:
-    import OmeZarr.*
 
     /** Attempt to get positional index for each OME-ZARR dimension, according to the metadata
       * associated with the given ZARR group.

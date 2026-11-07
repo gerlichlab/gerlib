@@ -5,7 +5,7 @@ import cats.syntax.all.*
 import org.scalacheck.*
 
 import io.github.iltotore.iron.:|
-import io.github.iltotore.iron.constraint.any.{Not, StrictEqual}
+import io.github.iltotore.iron.constraint.any.Not
 import io.github.iltotore.iron.constraint.char.{Digit, Letter}
 import io.github.iltotore.iron.constraint.numeric.Negative
 

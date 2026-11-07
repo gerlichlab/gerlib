@@ -1,7 +1,7 @@
 import Dependencies.*
 
 /* Core settings */
-ThisBuild / scalaVersion := "3.6.4"
+ThisBuild / scalaVersion := "3.9.0"
 val groupId = "com.github.gerlichlab"
 val projectName = "gerlib"
 val rootPkg = s"at.ac.oeaw.imba.gerlich.$projectName"
@@ -193,6 +193,7 @@ lazy val compileSettings = Def.settings(
       // for scalafix RemoveUnused: https://scalacenter.github.io/scalafix/docs/rules/RemoveUnused.html
       "-Wunused:all", 
       /* Warnings about an unused symbol are expected in some source files testing whether code compiles or not. */
+      "-Wconf:msg=unused import&src=./modules/geometry/src/test/scala/TestCoordinates.scala:silent",
       "-Wconf:msg=unused import&src=./modules/geometry/src/test/scala/TestDistance.scala:silent",
       "-Wconf:msg=unused import&src=./modules/imaging/src/test/scala/TestImagingInstances.scala:silent",
       "-Wconf:msg=unused import&src=./modules/testing/src/test/scala/TestInstanceAvailability.scala:silent",

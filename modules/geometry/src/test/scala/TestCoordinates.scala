@@ -15,7 +15,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.geometry.instances.coordinate.given
 
 /** Tests for the geometric coordinate abstractions */
 class TestCoordinates extends AnyFunSuite, should.Matchers, ScalaCheckPropertyChecks:
-  override implicit val generatorDrivenConfig: PropertyCheckConfiguration =
+  given PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 100)
 
   test("Ordering coordinates works.") {
@@ -29,7 +29,7 @@ class TestCoordinates extends AnyFunSuite, should.Matchers, ScalaCheckPropertyCh
       val builtFirst = Random
         .shuffle(rawValues)
         .map(build)
-        .sorted(summon[Order[C[A]]].toOrdering)
+        .sorted(using summon[Order[C[A]]].toOrdering)
       orderedFirst shouldEqual builtFirst
 
     enum CoordinateKey:

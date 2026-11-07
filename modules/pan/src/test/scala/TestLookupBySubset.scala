@@ -44,7 +44,7 @@ class TestLookupBySubset extends AnyFunSuite, ScalaCheckPropertyChecks, should.M
 
     forAll: (query: Set[Boolean]) =>
       lookupBySubset(namedBooleanPowerset)(query) match {
-      case Left(hits)       => query =!= Set(false, true) shouldBe true
+      case Left(_)          => query =!= Set(false, true) shouldBe true
       case Right(None)      => fail(s"Empty result for query: $query")
       case Right(Some(hit)) => hit shouldEqual "falsetrue"
       }

@@ -23,7 +23,7 @@ class TestGraph
       should.Matchers:
 
   // needed since we're in AnyFunSuiteLike land
-  override implicit val generatorDrivenConfig: PropertyCheckConfiguration =
+  given PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 100)
 
   private val maxOrder: Int = 10
@@ -53,7 +53,7 @@ class TestGraph
       )
     Arbitrary { Gen.frequency(1 -> genEmpty, (maxOrder - 1) -> genNonEmpty) }
 
-  given [N: Eq] => Eq[SimplestGraph[N]] =
+  given [N] => Eq[SimplestGraph[N]] =
     Eq.by: g =>
       (g.nodes.toOuter, g.edges.toOuter)
 

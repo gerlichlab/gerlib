@@ -19,7 +19,7 @@ import at.ac.oeaw.imba.gerlich.gerlib.syntax.all.*
 /** Tests for imaging-related types' typeclass instances */
 class TestImagingInstances extends AnyFunSuite, ScalaCheckPropertyChecks, should.Matchers:
 
-  override implicit val generatorDrivenConfig: PropertyCheckConfiguration =
+  given PropertyCheckConfiguration =
     // Boost up the minimum number of successes since the tests are fast, but the
     // space of cases is complex.
     PropertyCheckConfiguration(minSuccessful = 10000)

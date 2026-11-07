@@ -2,7 +2,7 @@ package at.ac.oeaw.imba.gerlich.gerlib.imaging
 
 import cats.*
 import cats.syntax.all.*
-import squants.space.{Length, LengthUnit, Microns, Nanometers}
+import squants.space.{Length, Microns, Nanometers}
 import org.scalacheck.*
 import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funsuite.AnyFunSuite

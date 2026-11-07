@@ -4,7 +4,6 @@ import cats.data.*
 import cats.laws.discipline.arbitrary.given // for Arbitrary[NonEmptySet[*]], Arbitrary[NonEmptyList[*]], etc.
 import cats.laws.discipline.SemigroupKTests
 import org.typelevel.discipline.scalatest.FunSuiteDiscipline
-import cats.syntax.all.*
 import io.github.iltotore.iron.Constraint
 import io.github.iltotore.iron.constraint.collection.MinLength
 import org.scalacheck.*
@@ -22,7 +21,7 @@ class TestAtLeast2
       ScalaCheckPropertyChecks,
       should.Matchers:
 
-  override implicit val generatorDrivenConfig: PropertyCheckConfiguration =
+  given PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 500)
 
   inline given [C[*] <: Iterable[*], E] => (
