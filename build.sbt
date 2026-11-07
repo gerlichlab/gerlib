@@ -18,7 +18,7 @@ ThisBuild / resolvers += "Unidata UCAR" at "https://artifacts.unidata.ucar.edu/r
 ThisBuild / semanticdbEnabled := true
 ThisBuild / scalafixDependencies ++= Seq(
   "cats", "cats-effect", "fs2"
-).map(prj => "org.typelevel" %% s"typelevel-scalafix-${prj}" % "0.2.0")
+).map(prj => "org.typelevel" %% s"typelevel-scalafix-${prj}" % "0.6.0")
 
 /* sbt-github-actions settings */
 ThisBuild / githubWorkflowOSes := Set(primaryOs, "macos-latest", "ubuntu-latest").toSeq
