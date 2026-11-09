@@ -28,6 +28,12 @@ ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq()
 // Java 21 only, which looptrace builds and runs this library with.
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin(primaryJavaVersion))
+// The sbt launcher CI installs is the version project/build.properties asks for, where
+// setup-sbt would install the newest sbt.
+ThisBuild / githubWorkflowJobSetup := (ThisBuild / githubWorkflowJobSetup).value.map {
+  case step if step.name.contains("Setup sbt") => WorkflowStep.SetupSbt(Some(sbtVersion.value))
+  case step                                    => step
+}
 ThisBuild / githubWorkflowBuildPreamble ++= Seq(
   // Account for the absence of sbt in newer versions of the setup-java GitHub Action.
   WorkflowStep.Run(commands = List("brew install sbt"), cond = Some("contains(runner.os, 'macos')")),
