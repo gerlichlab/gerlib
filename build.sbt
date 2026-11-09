@@ -26,8 +26,8 @@ ThisBuild / scalafixDependencies ++= Seq(
 ThisBuild / githubWorkflowOSes := Set(primaryOs, "macos-latest", "ubuntu-latest").toSeq
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq()
-ThisBuild / githubWorkflowJavaVersions := Seq("17", primaryJavaVersion).map(JavaSpec.temurin)
-ThisBuild / githubWorkflowBuildMatrixExclusions += MatrixExclude(Map("os" -> "macos-latest", "java" -> "temurin@17"))
+// Java 21 only, which looptrace builds and runs this library with.
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin(primaryJavaVersion))
 ThisBuild / githubWorkflowBuildPreamble ++= Seq(
   // Account for the absence of sbt in newer versions of the setup-java GitHub Action.
   WorkflowStep.Run(commands = List("brew install sbt"), cond = Some("contains(runner.os, 'macos')")),
