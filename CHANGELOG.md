@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 * CI tests on Java 21 only, on Linux and macOS, and no longer on Java 17: looptrace builds and runs this library with Java 21.
 * CI installs the sbt launcher of the version `project/build.properties` names, 1.13.1, rather than setup-sbt's default, the newest one, so a new sbt release can't change how CI starts the build.
+* CI no longer installs sbt with Homebrew on macOS: setup-sbt installs it on every runner, and Homebrew's sbt was shadowed by it.
 
 ## [v0.7.0] - 2026-11-08
 

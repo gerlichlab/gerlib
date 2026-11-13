@@ -44,9 +44,6 @@ jobs:
         with:
           sbt-runner-version: 1.13.1
 
-      - if: contains(runner.os, 'macos')
-        run: brew install sbt
-
       - name: Check formatting with scalafmt
         if: runner.os == 'Linux' && matrix.java == 'temurin@21'
         run: sbt '++ ${{ matrix.scala }}; scalafmtCheckAll'

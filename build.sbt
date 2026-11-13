@@ -35,8 +35,6 @@ ThisBuild / githubWorkflowJobSetup := (ThisBuild / githubWorkflowJobSetup).value
   case step                                    => step
 }
 ThisBuild / githubWorkflowBuildPreamble ++= Seq(
-  // Account for the absence of sbt in newer versions of the setup-java GitHub Action.
-  WorkflowStep.Run(commands = List("brew install sbt"), cond = Some("contains(runner.os, 'macos')")),
   /* Add linting and formatting checks, but only limit to a single platform + Java combo. */
   WorkflowStep.Sbt(
     List("scalafmtCheckAll"), 
